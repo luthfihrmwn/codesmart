@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CodeSmart - Sidebar Menu</title>
+  <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'>
+  <link rel="stylesheet" href="../css/module.css">
+
+</head>
+<body>
+<nav class="sidebar close">
+  <header>
+    <div class="image-text">
+      <div class="text logo-text">
+        <span class="name">CodeSmart</span>
+        <span class="profession">Fundamental JavaScript</span>
+        <span class="profession">Module</span>
+      </div>
+    </div>
+    <i class='bx bx-chevron-right toggle'></i>
+  </header>
+
+  <div class="menu-bar">
+    <ul class="menu-links">
+      <li class="nav-link has-dropdown">
+        <a href="#">
+          <i class='bx bx-code-alt icon'></i>
+          <span class="text nav-text">Introduction</span>
+          <span class="arrow">&#9660;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Pengenalan Javascript</a></li>
+          <li><a href="#">Menulis Kode JS</a></li>
+          <li><a href="#">Variabel</a></li>
+          <li><a href="#">Data</a></li>
+          <li><a href="#">Operator</a></li>
+        </ul>
+      </li>
+      <li class="nav-link has-dropdown">
+        <a href="#">
+          <i class='bx bx-code-alt icon'></i>
+          <span class="text nav-text">Logika</span>
+          <span class="arrow">&#9660;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Percabangan</a></li>
+          <li><a href="#">Perulangan</a></li>
+          <li><a href="#">Function Dasar</a></li>
+        </ul>
+      </li>
+      <li class="nav-link has-dropdown">
+        <a href="#">
+          <i class='bx bx-code-alt icon'></i>
+          <span class="text nav-text">Manipulasi DOM</span>
+          <span class="arrow">&#9660;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Seleksi Element</a></li>
+          <li><a href="#">Teks dan Atribut</a></li>
+          <li><a href="#">Event Listiner</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="bottom-content">
+      <li>
+        <a href="../../index.html">
+          <i class='bx bx-log-out icon'></i>
+          <span class="text nav-text">Exit Module</span>
+        </a>
+      </li>
+
+      <li class="mode">
+        <div class="sun-moon">
+          <i class='bx bx-moon icon moon'></i>
+          <i class='bx bx-sun icon sun'></i>
+        </div>
+        <span class="mode-text text">Dark mode</span>
+        <div class="toggle-switch">
+          <span class="switch"></span>
+        </div>
+      </li>
+    </div>
+  </div>
+</nav>
+
+<section class="home">
+  <div class="text">FUNDAMENTAL JAVASCRIPT</div>
+</section>
+
+<script src="../js/module.js"></script>
+</body>
+</html>

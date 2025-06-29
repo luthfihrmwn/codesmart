@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeSmart Admin Panel - Settings</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Sidebar Section -->
+  <nav class="sidebar">
+    <header>
+      <div class="image">
+        <i class='bx bx-code-alt icon'></i>
+        <div class="image-text">
+          <span class="name">CodeSmart Admin</span>
+          <span class="profession">Administrator Panel</span>
+        </div>
+      </div>
+    </header>
+    <div class="menu">
+      <ul class="menu-links">
+        <li class="nav-link">
+          <a href="admin-dashboard.html">
+            <i class='bx bx-home icon'></i>
+            <span class="text nav-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="admin-users.html">
+            <i class='bx bx-user icon'></i>
+            <span class="text nav-text">Users</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="admin-report.html">
+            <i class='bx bx-bar-chart-alt icon'></i>
+            <span class="text nav-text">Reports</span>
+          </a>
+        </li>
+                <!-- Materi Menu -->
+        <li class="nav-link">
+          <a href="admin-course.html">
+            <i class='bx bx-book icon'></i>
+            <span class="text nav-text">Materi</span>
+          </a>
+        </li>
+        <li class="nav-link">
+          <a href="admin-setting.html">
+            <i class='bx bx-cog icon'></i>
+            <span class="text nav-text">Settings</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content Section -->
+  <section class="home">
+    <div class="toggle" id="toggleDark">
+      <i class='bx bx-moon'></i>
+    </div>
+    <div class="text">Settings</div>
+    <div class="settings-form">
+      <form action="#">
+        <label for="site-name">Site Name:</label>
+        <input type="text" id="site-name" name="site-name" value="CodeSmart">
+        <label for="site-email">Admin Email:</label>
+        <input type="email" id="site-email" name="site-email" value="admin@codesmart.com">
+        <label for="site-password">Change Password:</label>
+        <input type="password" id="site-password" name="site-password">
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </section>
+
+  <script src="../js/admin.js"></script>
+</body>
+</html>

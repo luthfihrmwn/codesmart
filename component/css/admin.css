@@ -1,0 +1,312 @@
+:root {
+  --body-color: #E4E9F7;
+  --sidebar-color: #FFF;
+  --primary-color: #695CFE;
+  --primary-color-light: #F0F0FF;
+  --toggle-color: #DDD;
+  --text-color: #333;
+  --btn-primary: #695CFE;
+  --btn-secondary: #4CAF50;
+  --btn-danger: #F44336;
+  --btn-info: #FFC107;
+  --btn-light: #F2F2F2;
+}
+
+body.dark {
+  --body-color: #18191A;
+  --sidebar-color: #242526;
+  --primary-color: #3A3B3C;
+  --primary-color-light: #3A3B3C;
+  --toggle-color: #FFF;
+  --text-color: #EEE;
+  --btn-primary: #4E73DF;
+  --btn-secondary: #45B39D;
+  --btn-danger: #D32F2F;
+  --btn-info: #FFB300;
+  --btn-light: #3A3B3C;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background: var(--body-color);
+  transition: 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 250px;
+  background: var(--sidebar-color);
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar header .image {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.sidebar header .image-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar header .name {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.sidebar header .profession {
+  font-size: 14px;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.sidebar .menu {
+  margin-top: 30px;
+}
+
+.menu-links li {
+  list-style: none;
+  margin-bottom: 10px;
+}
+
+.menu-links a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: var(--text-color);
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.menu-links a:hover {
+  background: var(--primary-color-light);
+  color: var(--primary-color);
+}
+
+.menu-links .icon {
+  font-size: 20px;
+}
+
+.home {
+  position: relative;
+  margin-left: 250px;
+  padding: 30px 40px;
+  min-height: 100vh;
+  transition: 0.3s;
+}
+
+.home .text {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+.toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--text-color);
+}
+
+/* Table Styles */
+.user-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.user-list th, .user-list td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-list th {
+  background-color: var(--primary-color-light);
+  color: var(--text-color);
+}
+
+.user-list td button {
+  margin-right: 5px;
+}
+
+/* Button Styles */
+button {
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+button#addBtn {
+  background: var(--btn-secondary);
+}
+
+button#importBtn {
+  background: var(--btn-primary);
+}
+
+button.edit-btn {
+  background: var(--btn-info);
+}
+
+button.delete-btn {
+  background: var(--btn-danger);
+}
+
+button.save-btn, button.upload-btn {
+  background: var(--btn-primary);
+}
+
+button.light {
+  background: var(--btn-light);
+  color: var(--text-color);
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.modal-header {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.modal-body {
+  margin-top: 10px;
+}
+
+.modal-body label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 500;
+}
+
+.modal-body input, 
+.modal-body select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.modal-footer {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.modal button {
+  margin-left: 10px;
+}
+
+.modal .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.modal .close:hover {
+  color: #000;
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .home {
+    margin-left: 200px;
+    padding: 20px;
+  }
+
+  .toggle {
+    top: 15px;
+    right: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    display: none;
+  }
+
+  .home {
+    margin: 0;
+    padding: 15px;
+  }
+
+  .user-list table,
+  .user-list th,
+  .user-list td {
+    font-size: 12px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+}
