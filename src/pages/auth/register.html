@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#754ef9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CodeSmart">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/src/images/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/src/images/icon-192x192.png">
+
+    <title>Register - CodeSmart</title>
+
+    <!-- box icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- custom css -->
+    <link rel="stylesheet" href="../../css/index.css">
+
+    <style>
+        .register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .register-box {
+            background: var(--bg-color);
+            padding: 4rem 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            width: 100%;
+            max-width: 500px;
+            border-top: .6rem solid var(--main-color);
+            border-bottom: .6rem solid var(--main-color);
+        }
+
+        .register-box h2 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--main-color);
+        }
+
+        .register-box p {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 3rem;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.6rem;
+            margin-bottom: .5rem;
+            color: var(--text-color);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1.5rem;
+            font-size: 1.6rem;
+            border-radius: .8rem;
+            border: .2rem solid var(--main-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: .3s ease;
+        }
+
+        .form-group input:focus {
+            box-shadow: 0 0 1rem var(--main-color);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 1.5rem;
+            font-size: 1.8rem;
+            background: var(--main-color);
+            color: var(--white-color);
+            border: none;
+            border-radius: .8rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .5s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-register:hover {
+            background: transparent;
+            color: var(--main-color);
+            border: .2rem solid var(--main-color);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1.4rem;
+        }
+
+        .login-link a {
+            color: var(--main-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 1.5rem;
+            border-radius: .8rem;
+            margin-bottom: 2rem;
+            font-size: 1.4rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: .1rem solid #f5c6cb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: .1rem solid #c3e6cb;
+        }
+
+        .back-home {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            font-size: 3rem;
+            color: var(--main-color);
+            z-index: 100;
+        }
+
+        .back-home:hover {
+            transform: scale(1.1);
+        }
+
+        .password-requirements {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin-top: .5rem;
+            opacity: .7;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/index.html" class="back-home">
+        <i class='bx bx-home-circle'></i>
+    </a>
+
+    <section class="register-container">
+        <div class="register-box">
+            <h2>Daftar</h2>
+            <p>Bergabunglah dengan CodeSmart sekarang!</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Nama Lengkap</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required minlength="4">
+                    <div class="password-requirements">Minimal 4 karakter</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required minlength="6">
+                    <div class="password-requirements">Minimal 6 karakter</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Konfirmasi Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+
+                <button type="submit" class="btn-register">Daftar</button>
+            </form>
+
+            <div class="login-link">
+                Sudah punya akun? <a href="login.html">Login Sekarang</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Load database and auth -->
+    <script src="../../data/database.js"></script>
+    <script src="../../js/auth.js"></script>
+
+    <script>
+        // Check if already logged in
+        if (authService.isLoggedIn()) {
+            authService.redirectToDashboard();
+        }
+
+        const registerForm = document.getElementById('registerForm');
+        const alertBox = document.getElementById('alert');
+
+        function showAlert(message, type = 'error') {
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+
+        registerForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validate password match
+            if (password !== confirmPassword) {
+                showAlert('Password dan konfirmasi password tidak cocok!', 'error');
+                return;
+            }
+
+            // Validate password length
+            if (password.length < 6) {
+                showAlert('Password minimal 6 karakter!', 'error');
+                return;
+            }
+
+            // Validate username length
+            if (username.length < 4) {
+                showAlert('Username minimal 4 karakter!', 'error');
+                return;
+            }
+
+            const result = authService.register({
+                name: name,
+                email: email,
+                username: username,
+                password: password
+            });
+
+            if (result.success) {
+                showAlert('Registrasi berhasil! Silakan login...', 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            } else {
+                showAlert(result.message, 'error');
+            }
+        });
+
+        // Dark mode toggle
+        const body = document.body;
+        const savedMode = localStorage.getItem('darkMode');
+
+        if (savedMode === 'enabled') {
+            body.classList.add('dark-mode');
+        }
+    </script>
+
+    <!-- PWA js -->
+    <script src="/src/js/pwa.js"></script>
+</body>
+
+</html>

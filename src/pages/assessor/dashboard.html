@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#754ef9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CodeSmart">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/src/images/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/src/images/icon-192x192.png">
+
+    <title>Assessor Dashboard - CodeSmart</title>
+
+    <!-- box icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            outline: none;
+            scroll-behavior: smooth;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --bg-color: #fdfdfd;
+            --text-color: #333;
+            --main-color: #754ef9;
+            --white-color: #fdfdfd;
+            --shadow-color: rgba(0, 0, 0, .2);
+        }
+
+        .dark-mode {
+            --bg-color: #0b061f;
+            --text-color: #fdfdfd;
+            --shadow-color: rgba(0, 0, 0, .7);
+        }
+
+        html {
+            font-size: 62.5%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Header */
+        .dashboard-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 7%;
+            background: var(--bg-color);
+            box-shadow: 0 .1rem 1rem var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .dashboard-header .logo {
+            font-size: 2.5rem;
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .dashboard-nav a {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: .3s ease;
+        }
+
+        .dashboard-nav a:hover,
+        .dashboard-nav a.active {
+            color: var(--main-color);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: var(--main-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white-color);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-color);
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            margin-top: 1rem;
+            min-width: 200px;
+        }
+
+        .user-dropdown.active {
+            display: block;
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 1rem 2rem;
+            font-size: 1.4rem;
+            color: var(--text-color);
+            transition: .3s ease;
+            border-radius: .5rem;
+        }
+
+        .user-dropdown a:hover {
+            background: var(--main-color);
+            color: var(--white-color);
+        }
+
+        /* Main Content */
+        .dashboard-content {
+            padding: 12rem 7% 4rem;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            margin-bottom: 3rem;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            margin-bottom: 3rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: .2rem solid var(--main-color);
+            margin-bottom: 3rem;
+        }
+
+        .tab {
+            padding: 1.5rem 3rem;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-color);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: .3s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: var(--main-color);
+        }
+
+        .tab.active {
+            color: var(--main-color);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -.2rem;
+            left: 0;
+            width: 100%;
+            height: .3rem;
+            background: var(--main-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Module Header */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--main-color), #9d7bea);
+            border-radius: 1.5rem;
+            color: var(--white-color);
+        }
+
+        .module-info h2 {
+            font-size: 2.8rem;
+            margin-bottom: .5rem;
+        }
+
+        .module-info p {
+            font-size: 1.4rem;
+            opacity: .9;
+        }
+
+        .module-stats {
+            text-align: right;
+        }
+
+        .module-stats .stat {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        .module-stats .label {
+            font-size: 1.2rem;
+            opacity: .9;
+        }
+
+        /* Classes Grid */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .class-card {
+            background: var(--bg-color);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            border-left: .5rem solid var(--main-color);
+            transition: .3s ease;
+        }
+
+        .class-card:hover {
+            transform: translateY(-.5rem);
+            box-shadow: 0 1rem 3rem var(--shadow-color);
+        }
+
+        .class-order {
+            display: inline-block;
+            width: 4rem;
+            height: 4rem;
+            background: var(--main-color);
+            color: var(--white-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .class-card h3 {
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .class-card p {
+            font-size: 1.4rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            opacity: .8;
+        }
+
+        .class-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--main-color);
+            color: var(--white-color);
+            border-radius: .8rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border: .2rem solid var(--main-color);
+            transition: .3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: var(--main-color);
+        }
+
+        .btn-small {
+            padding: .8rem 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: transparent;
+            color: #dc3545;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 1.5rem;
+            background: transparent;
+            border: .2rem dashed var(--main-color);
+            font-size: 1.6rem;
+        }
+
+        .btn-add:hover {
+            background: var(--main-color);
+            color: var(--white-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            color: var(--main-color);
+        }
+
+        .modal-close {
+            font-size: 3rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: .3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--main-color);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.4rem;
+            color: var(--text-color);
+            margin-bottom: .5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.4rem;
+            border: .2rem solid var(--main-color);
+            border-radius: .8rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            html {
+                font-size: 55%;
+            }
+
+            .dashboard-header {
+                padding: 2rem 3%;
+            }
+
+            .dashboard-content {
+                padding: 12rem 3% 4rem;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab {
+                white-space: nowrap;
+            }
+
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .module-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .module-stats {
+                text-align: center;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <a href="#" class="logo">CodeSmart</a>
+
+        <nav class="dashboard-nav">
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="#" id="darkModeToggle"><i class='bx bx-moon'></i></a>
+        </nav>
+
+        <div class="user-menu" onclick="toggleUserMenu()">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userName" style="font-size: 1.6rem; color: var(--text-color);"></span>
+            <i class='bx bx-chevron-down' style="font-size: 2rem; color: var(--text-color);"></i>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="#" onclick="authService.logout()">
+                    <i class='bx bx-log-out'></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <section class="dashboard-content">
+        <h1 class="page-title">Assessor Dashboard</h1>
+        <p class="page-subtitle">Kelola modul dan kelas pembelajaran JavaScript</p>
+
+        <!-- Module Tabs -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('fundamental')">
+                    <i class='bx bx-code-block'></i> Fundamental
+                </button>
+                <button class="tab" onclick="switchTab('intermediate')">
+                    <i class='bx bx-code-curly'></i> Intermediate
+                </button>
+                <button class="tab" onclick="switchTab('advance')">
+                    <i class='bx bx-code-alt'></i> Advance
+                </button>
+            </div>
+
+            <!-- Fundamental Tab -->
+            <div class="tab-content active" id="tab-fundamental">
+                <div class="module-header">
+                    <div class="module-info">
+                        <h2>Fundamental JavaScript</h2>
+                        <p>Pelajari konsep dasar dan cara kerja JavaScript dalam pengembangan web</p>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat" id="fundamental-count">0</div>
+                        <div class="label">Kelas Tersedia</div>
+                    </div>
+                </div>
+
+                <div class="classes-grid" id="classes-fundamental">
+                    <!-- Classes will be populated here -->
+                </div>
+
+                <button class="btn btn-add" onclick="openAddClassModal(1)">
+                    <i class='bx bx-plus'></i> Tambah Kelas Baru
+                </button>
+            </div>
+
+            <!-- Intermediate Tab -->
+            <div class="tab-content" id="tab-intermediate">
+                <div class="module-header">
+                    <div class="module-info">
+                        <h2>Intermediate JavaScript</h2>
+                        <p>Dalami konsep lanjutan dan teknik pemrograman yang lebih kompleks</p>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat" id="intermediate-count">0</div>
+                        <div class="label">Kelas Tersedia</div>
+                    </div>
+                </div>
+
+                <div class="classes-grid" id="classes-intermediate">
+                    <!-- Classes will be populated here -->
+                </div>
+
+                <button class="btn btn-add" onclick="openAddClassModal(2)">
+                    <i class='bx bx-plus'></i> Tambah Kelas Baru
+                </button>
+            </div>
+
+            <!-- Advance Tab -->
+            <div class="tab-content" id="tab-advance">
+                <div class="module-header">
+                    <div class="module-info">
+                        <h2>Advance JavaScript</h2>
+                        <p>Kuasai teknologi dan metode pengembangan modern untuk aplikasi web</p>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat" id="advance-count">0</div>
+                        <div class="label">Kelas Tersedia</div>
+                    </div>
+                </div>
+
+                <div class="classes-grid" id="classes-advance">
+                    <!-- Classes will be populated here -->
+                </div>
+
+                <button class="btn btn-add" onclick="openAddClassModal(3)">
+                    <i class='bx bx-plus'></i> Tambah Kelas Baru
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add/Edit Class Modal -->
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Tambah Kelas</h2>
+                <span class="modal-close" onclick="closeClassModal()">&times;</span>
+            </div>
+
+            <form id="classForm" onsubmit="saveClass(event)">
+                <input type="hidden" id="classId">
+                <input type="hidden" id="moduleId">
+
+                <div class="form-group">
+                    <label for="title">Judul Kelas *</label>
+                    <input type="text" id="title" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Deskripsi *</label>
+                    <textarea id="description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Konten Pembelajaran *</label>
+                    <textarea id="content" required placeholder="Masukkan materi pembelajaran dalam format markdown atau HTML"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="order">Urutan Kelas *</label>
+                    <input type="number" id="order" min="1" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="closeClassModal()">Batal</button>
+                    <button type="submit" class="btn">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load database and auth -->
+    <script src="../../data/database.js"></script>
+    <script src="../../js/auth.js"></script>
+
+    <script>
+        // Check authentication and role
+        if (!authService.requireRole('assessor')) {
+            // Will redirect automatically
+        }
+
+        const currentUser = authService.getCurrentUser();
+
+        // Initialize
+        function init() {
+            loadFromLocalStorage();
+            renderAllModules();
+
+            // Set user info
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+        }
+
+        // Render all modules
+        function renderAllModules() {
+            renderModule(1, 'fundamental');
+            renderModule(2, 'intermediate');
+            renderModule(3, 'advance');
+        }
+
+        // Render module classes
+        function renderModule(moduleId, level) {
+            const module = Database.modules.find(m => m.id === moduleId);
+            if (!module) return;
+
+            const container = document.getElementById(`classes-${level}`);
+            const countElement = document.getElementById(`${level}-count`);
+
+            container.innerHTML = '';
+
+            // Sort classes by order
+            const sortedClasses = [...module.classes].sort((a, b) => a.order - b.order);
+
+            countElement.textContent = sortedClasses.length;
+
+            sortedClasses.forEach(classItem => {
+                const card = document.createElement('div');
+                card.className = 'class-card';
+                card.innerHTML = `
+                    <div class="class-order">${classItem.order}</div>
+                    <h3>${classItem.title}</h3>
+                    <p>${classItem.description}</p>
+                    <div class="class-actions">
+                        <button class="btn btn-small" onclick="editClass(${classItem.id})">
+                            <i class='bx bx-edit'></i> Edit
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="deleteClass(${classItem.id})">
+                            <i class='bx bx-trash'></i> Hapus
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Switch tab
+        function switchTab(level) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to selected tab and content
+            event.target.closest('.tab').classList.add('active');
+            document.getElementById(`tab-${level}`).classList.add('active');
+        }
+
+        // Open add class modal
+        function openAddClassModal(moduleId) {
+            document.getElementById('modalTitle').textContent = 'Tambah Kelas';
+            document.getElementById('classForm').reset();
+            document.getElementById('classId').value = '';
+            document.getElementById('moduleId').value = moduleId;
+
+            // Set default order (next available)
+            const module = Database.modules.find(m => m.id === moduleId);
+            const maxOrder = module.classes.length > 0
+                ? Math.max(...module.classes.map(c => c.order))
+                : 0;
+            document.getElementById('order').value = maxOrder + 1;
+
+            document.getElementById('classModal').classList.add('active');
+        }
+
+        // Edit class
+        function editClass(classId) {
+            let classItem = null;
+            let moduleId = null;
+
+            // Find class in all modules
+            for (let module of Database.modules) {
+                const found = module.classes.find(c => c.id === classId);
+                if (found) {
+                    classItem = found;
+                    moduleId = module.id;
+                    break;
+                }
+            }
+
+            if (!classItem) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Kelas';
+            document.getElementById('classId').value = classItem.id;
+            document.getElementById('moduleId').value = moduleId;
+            document.getElementById('title').value = classItem.title;
+            document.getElementById('description').value = classItem.description;
+            document.getElementById('content').value = classItem.content;
+            document.getElementById('order').value = classItem.order;
+
+            document.getElementById('classModal').classList.add('active');
+        }
+
+        // Close class modal
+        function closeClassModal() {
+            document.getElementById('classModal').classList.remove('active');
+        }
+
+        // Save class
+        function saveClass(event) {
+            event.preventDefault();
+
+            const classId = document.getElementById('classId').value;
+            const moduleId = parseInt(document.getElementById('moduleId').value);
+            const classData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                content: document.getElementById('content').value,
+                order: parseInt(document.getElementById('order').value)
+            };
+
+            if (classId) {
+                // Edit existing class
+                Database.updateClass(parseInt(classId), classData);
+            } else {
+                // Add new class
+                Database.addClass(moduleId, classData);
+            }
+
+            saveToLocalStorage();
+            closeClassModal();
+            renderAllModules();
+        }
+
+        // Delete class
+        function deleteClass(classId) {
+            if (confirm('Apakah Anda yakin ingin menghapus kelas ini?')) {
+                Database.deleteClass(classId);
+                saveToLocalStorage();
+                renderAllModules();
+            }
+        }
+
+        // Toggle user menu
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('active');
+            }
+        });
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        const savedMode = localStorage.getItem('darkMode');
+
+        if (savedMode === 'enabled') {
+            body.classList.add('dark-mode');
+            darkModeToggle.innerHTML = '<i class="bx bx-sun"></i>';
+        }
+
+        darkModeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                darkModeToggle.innerHTML = '<i class="bx bx-sun"></i>';
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                darkModeToggle.innerHTML = '<i class="bx bx-moon"></i>';
+            }
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                closeClassModal();
+            }
+        });
+
+        // Initialize dashboard
+        init();
+    </script>
+
+    <!-- PWA js -->
+    <script src="/src/js/pwa.js"></script>
+</body>
+
+</html>

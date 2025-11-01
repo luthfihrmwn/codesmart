@@ -35,27 +35,7 @@ window.onscroll = () => {
     navbar.classList.remove('active');
 };
 
-document.addEventListener("DOMContentLoaded", function () {
-    let selectedModule = ""; // Variabel untuk menyimpan halaman tujuan
-
-    // Menampilkan pop-up
-    window.showPopup = function (module) {
-        selectedModule = module; // Simpan halaman modul yang dipilih
-        document.getElementById("popup").style.display = "flex";
-    };
-
-    // Menutup pop-up
-    window.closePopup = function () {
-        document.getElementById("popup").style.display = "none";
-    };
-
-    // Konfirmasi dan pindah ke halaman modul yang dipilih
-    window.confirmAction = function () {
-        if (selectedModule) {
-            window.location.href = "component/module/" + selectedModule; // Pastikan path benar
-        }
-    };
-});
+// Module navigation removed - users must login first
 
 
 
@@ -96,26 +76,3 @@ ScrollReveal().reveal('.home-content, .heading', { origin: 'top' });
 ScrollReveal().reveal('.home-img img, .services-container, .portfolio-box, .testimonial-wrapper, .contact form', { origin: 'bottom' });
 ScrollReveal().reveal('.home-content h1, .about-img img', { origin: 'left' });
 ScrollReveal().reveal('.home-content h3, .home-content p, .about-content', { origin: 'right' });
-
-
-    // Ambil elemen-elemen
-    const loginBtn = document.getElementById('loginBtn');
-    const modal = document.getElementById('loginModal');
-    const closeModalBtn = document.getElementById('closeModal');
-
-    // Menampilkan modal login saat tombol login ditekan
-    loginBtn.addEventListener('click', () => {
-        modal.style.display = 'flex';
-    });
-
-    // Menutup modal saat tombol cancel ditekan
-    closeModalBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
-    // Menutup modal jika area luar modal ditekan
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });

@@ -4,8 +4,45 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeSmart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CodeSmart - Platform Pembelajaran JavaScript</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Platform pembelajaran interaktif JavaScript dengan sistem pretest berbasis SVM untuk menentukan level pembelajaran yang sesuai">
+    <meta name="keywords" content="JavaScript, belajar coding, programming, pretest, SVM, pembelajaran online">
+    <meta name="author" content="CodeSmart">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#754ef9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CodeSmart">
+    <meta name="application-name" content="CodeSmart">
+    <meta name="msapplication-TileColor" content="#754ef9">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/src/images/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/src/images/icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/src/images/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/src/images/icon-512x512.png">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="CodeSmart - Platform Pembelajaran JavaScript">
+    <meta property="og:description" content="Platform pembelajaran interaktif JavaScript dengan sistem pretest berbasis SVM">
+    <meta property="og:image" content="/src/images/icon-512x512.png">
+    <meta property="og:url" content="https://codesmart.com">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CodeSmart - Platform Pembelajaran JavaScript">
+    <meta name="twitter:description" content="Platform pembelajaran interaktif JavaScript dengan sistem pretest berbasis SVM">
+    <meta name="twitter:image" content="/src/images/icon-512x512.png">
 
     <!-- swiper css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
@@ -14,10 +51,67 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
     <!-- custom css -->
-    <link rel="stylesheet" href="component/css/index.css">
+    <link rel="stylesheet" href="src/css/index.css">
+    <link rel="stylesheet" href="src/css/pwa.css">
+
+    <style>
+        /* PWA Splash Screen Loading */
+        .pwa-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #754ef9, #9d7bea);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .pwa-loading.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .pwa-loading-logo {
+            font-size: 6rem;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        .pwa-loading-spinner {
+            width: 5rem;
+            height: 5rem;
+            border: .5rem solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
 </head>
 
 <body>
+    <!-- PWA Loading Splash Screen -->
+    <div class="pwa-loading" id="pwaLoading">
+        <div class="pwa-loading-logo">CodeSmart</div>
+        <div class="pwa-loading-spinner"></div>
+    </div>
+
     <!-- header design -->
     <header class="header">
         <a href="#" class="logo">CodeSmart</a>
@@ -26,27 +120,12 @@
             <a href="#about">About</a>
             <a href="#javascript">Module</a>
             <a href="#contact">Contact</a>
-            <a href="javascript:void(0)" id="loginBtn">Login</a> <!-- Added Login Button -->
+            <a href="src/pages/auth/login.html">Login</a>
         </nav>
         <div class="bx bx-moon" id="darkMode-icon"></div>
         <div class="bx bx-menu" id="menu-icon"></div>
     </header>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="popup-overlay">
-        <div class="popup-box">
-            <h2>Login to CodeSmart</h2>
-            <form action="#" method="post">
-                <input type="text" placeholder="Username" required><br>
-                <input type="password" placeholder="Password" required><br>
-                <div class="btn-container">
-                    <button type="submit" class="btn-yes">Login</button>
-                    <button type="button" class="btn-no" id="closeModal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
     <!-- home section design -->
     <section class="home" id="home">
         <div class="home-content">
@@ -91,14 +170,14 @@
             <div class="overlay"></div>
         </div>
         <div class="home-img">
-            <img src="component\images\JS-LOGO.png" alt="">
+            <img src="src/images/JS-LOGO.png" alt="">
         </div>
     </section>
 
     <!-- about section design -->
     <section class="about" id="about">
         <div class="about-img">
-            <img src="component\images\JS-LOGO.png" alt="">
+            <img src="src/images/JS-LOGO.png" alt="">
         </div>
         <div class="about-content">
             <h2 class="heading">About <span>JavaScript</span></h2>
@@ -131,9 +210,9 @@
             <i class='bx bx-code-alt'></i>
             <h3>Fundamental</h3>
             <h3>JavaScript</h3>
-            <p>Pelajari konsep dasar dan cara kerja JavaScript 
+            <p>Pelajari konsep dasar dan cara kerja JavaScript
                 dalam pengembangan web dengan materi yang mudah dipahami.</p>
-            <button class="btn" onclick="showPopup('module-fundamental.html')">Learn Module</button>
+            <a href="src/pages/auth/login.html" class="btn">Learn Module</a>
         </div>
     
         <!-- Intermediate JavaScript -->
@@ -141,9 +220,9 @@
             <i class='bx bx-code-alt'></i>
             <h3>Intermediate</h3>
             <h3>JavaScript</h3>
-            <p>Dalami konsep lanjutan dan teknik pemrograman 
+            <p>Dalami konsep lanjutan dan teknik pemrograman
                 yang lebih kompleks untuk meningkatkan keterampilan coding.</p>
-            <button class="btn" onclick="showPopup('module-intermediate.html')">Learn Module</button>
+            <a href="src/pages/auth/login.html" class="btn">Learn Module</a>
         </div>
     
         <!-- Advance JavaScript -->
@@ -151,18 +230,9 @@
             <i class='bx bx-code-alt'></i>
             <h3>Advance</h3>
             <h3>JavaScript</h3>
-            <p>Kuasai teknologi dan metode pengembangan modern 
+            <p>Kuasai teknologi dan metode pengembangan modern
                 untuk membangun aplikasi web yang lebih efisien.</p>
-            <button class="btn" onclick="showPopup('module-advance.html')">Learn Module</button>
-        </div>
-    </div>
-    
-    <!-- Pop-up Notifikasi -->
-    <div class="popup-overlay" id="popup">
-        <div class="popup-box">
-            <p>Apakah Anda yakin ingin memulai module ini?</p>
-            <button class="btn-yes" onclick="confirmAction()">Yes</button>
-            <button class="btn-no" onclick="closePopup()">No</button>
+            <a href="src/pages/auth/login.html" class="btn">Learn Module</a>
         </div>
     </div>
 </section>
@@ -201,7 +271,22 @@
     <!-- swiper js -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
+    <!-- PWA js -->
+    <script src="src/js/pwa.js"></script>
+
     <!-- custom js -->
-    <script src="component/js/index.js"></script>
+    <script src="src/js/index.js"></script>
+
+    <script>
+        // Hide loading screen after page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('pwaLoading').classList.add('hide');
+                setTimeout(() => {
+                    document.getElementById('pwaLoading').remove();
+                }, 500);
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

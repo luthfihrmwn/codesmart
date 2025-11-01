@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#754ef9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CodeSmart">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/src/images/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/src/images/icon-192x192.png">
+
+    <title>Admin Dashboard - CodeSmart</title>
+
+    <!-- box icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            text-decoration: none;
+            border: none;
+            outline: none;
+            scroll-behavior: smooth;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --bg-color: #fdfdfd;
+            --text-color: #333;
+            --main-color: #754ef9;
+            --white-color: #fdfdfd;
+            --shadow-color: rgba(0, 0, 0, .2);
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        .dark-mode {
+            --bg-color: #0b061f;
+            --text-color: #fdfdfd;
+            --shadow-color: rgba(0, 0, 0, .7);
+        }
+
+        html {
+            font-size: 62.5%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: .3s;
+        }
+
+        /* Header */
+        .dashboard-header {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-color);
+            box-shadow: 0 .2rem 1rem var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3rem;
+            z-index: 99;
+            transition: left .3s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .menu-toggle {
+            font-size: 2.4rem;
+            color: var(--text-color);
+            cursor: pointer;
+            display: none;
+        }
+
+        .page-title-header {
+            font-size: 2rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .dark-mode-toggle {
+            font-size: 2.4rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: var(--main-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white-color);
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .user-role {
+            font-size: 1.2rem;
+            color: var(--main-color);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--main-color);
+            padding: 2rem 0;
+            z-index: 100;
+            transition: left .3s ease;
+        }
+
+        .sidebar-logo {
+            padding: 0 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .sidebar-logo h2 {
+            font-size: 2.5rem;
+            color: var(--white-color);
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            margin-bottom: .5rem;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.5rem;
+            transition: .3s ease;
+        }
+
+        .menu-item a:hover,
+        .menu-item a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white-color);
+            border-left: .4rem solid var(--white-color);
+        }
+
+        .menu-item i {
+            font-size: 2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 3rem;
+            min-height: calc(100vh - var(--header-height));
+            transition: margin-left .3s ease;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: none;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--text-color);
+            border: .2rem solid var(--main-color);
+            border-radius: .8rem;
+            font-size: 1.4rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: .3s ease;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: var(--main-color);
+            color: var(--white-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-color);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            border-top: .4rem solid var(--main-color);
+            transition: .3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-.5rem);
+            box-shadow: 0 1rem 3rem var(--shadow-color);
+        }
+
+        .stat-card .icon {
+            width: 5rem;
+            height: 5rem;
+            background: rgba(117, 78, 249, 0.1);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card .icon i {
+            font-size: 2.5rem;
+            color: var(--main-color);
+        }
+
+        .stat-card h3 {
+            font-size: 3.2rem;
+            color: var(--main-color);
+            margin-bottom: .5rem;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            font-size: 1.4rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .stat-card .breakdown {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: var(--bg-color);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+        }
+
+        .chart-title {
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        /* Pie Chart */
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .pie-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .legend-color {
+            width: 2rem;
+            height: 2rem;
+            border-radius: .4rem;
+        }
+
+        /* Bar Chart */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 250px;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar {
+            width: 100%;
+            background: var(--main-color);
+            border-radius: .5rem .5rem 0 0;
+            position: relative;
+            transition: .3s ease;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .bar-label {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        /* Progress Bars */
+        .progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .progress-item {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 2rem;
+            background: rgba(117, 78, 249, 0.1);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--main-color);
+            border-radius: 1rem;
+            transition: width .5s ease;
+        }
+
+        /* Activity List */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-color);
+            border-radius: 1rem;
+            border-left: .4rem solid var(--main-color);
+        }
+
+        .activity-icon {
+            width: 4rem;
+            height: 4rem;
+            background: rgba(117, 78, 249, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .activity-icon i {
+            font-size: 2rem;
+            color: var(--main-color);
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 1.4rem;
+            color: var(--text-color);
+            margin-bottom: .5rem;
+        }
+
+        .activity-time {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        /* Table */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 1.2rem 4rem 1.2rem 1.5rem;
+            font-size: 1.4rem;
+            border: .2rem solid var(--main-color);
+            border-radius: .8rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: var(--main-color);
+        }
+
+        .filter-select {
+            padding: 1.2rem 1.5rem;
+            font-size: 1.4rem;
+            border: .2rem solid var(--main-color);
+            border-radius: .8rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1.2rem 2.5rem;
+            background: var(--main-color);
+            color: var(--white-color);
+            border-radius: .8rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            border: .2rem solid var(--main-color);
+            transition: .3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: var(--main-color);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: transparent;
+            color: #dc3545;
+        }
+
+        .btn-success {
+            background: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background: transparent;
+            color: #28a745;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: transparent;
+            color: #ffc107;
+        }
+
+        .table-container {
+            background: var(--bg-color);
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        thead {
+            background: var(--main-color);
+            color: var(--white-color);
+        }
+
+        th {
+            padding: 1.5rem;
+            text-align: left;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1.5rem;
+            font-size: 1.4rem;
+            border-bottom: .1rem solid var(--shadow-color);
+        }
+
+        tbody tr {
+            transition: .3s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(117, 78, 249, 0.03);
+        }
+
+        tbody tr:hover {
+            background: rgba(117, 78, 249, 0.1);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: .5rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .role-admin {
+            background: #dc3545;
+            color: white;
+        }
+
+        .role-assessor {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .role-user {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: .5rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-pending {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: .5rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .level-fundamental {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .level-intermediate {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .level-advance {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: .5rem;
+        }
+
+        .btn-icon {
+            padding: .8rem 1.2rem;
+            font-size: 1.6rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: auto;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            color: var(--main-color);
+        }
+
+        .modal-close {
+            font-size: 3rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: .3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--main-color);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.4rem;
+            color: var(--text-color);
+            margin-bottom: .5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.4rem;
+            border: .2rem solid var(--main-color);
+            border-radius: .8rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Module Tabs */
+        .module-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: .2rem solid var(--main-color);
+        }
+
+        .module-tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--text-color);
+            border: none;
+            font-size: 1.4rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: .3rem solid transparent;
+            transition: .3s ease;
+        }
+
+        .module-tab.active {
+            color: var(--main-color);
+            border-bottom-color: var(--main-color);
+        }
+
+        .module-content {
+            display: none;
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            html {
+                font-size: 55%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            html {
+                font-size: 50%;
+            }
+
+            .sidebar {
+                left: calc(-1 * var(--sidebar-width));
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .dashboard-header {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <h2>CodeSmart</h2>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="#" class="menu-link active" data-tab="overview">
+                    <i class='bx bx-grid-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link" data-tab="users">
+                    <i class='bx bx-user'></i>
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link" data-tab="classes">
+                    <i class='bx bx-book'></i>
+                    <span>Class Management</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link" data-tab="pretest">
+                    <i class='bx bx-file'></i>
+                    <span>Pretest Results</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link" data-tab="reports">
+                    <i class='bx bx-bar-chart'></i>
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="menu-link" data-tab="settings">
+                    <i class='bx bx-cog'></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" onclick="authService.logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <i class='bx bx-menu menu-toggle' id="menuToggle"></i>
+            <h1 class="page-title-header" id="pageTitle">Dashboard Overview</h1>
+        </div>
+
+        <div class="header-right">
+            <i class='bx bx-moon dark-mode-toggle' id="darkModeToggle"></i>
+            <div class="user-menu">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <div class="user-info">
+                    <span class="user-name" id="userName"></span>
+                    <span class="user-role">Admin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="overviewTab">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-user'></i>
+                    </div>
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total Users</p>
+                    <div class="breakdown" id="userBreakdown"></div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-book'></i>
+                    </div>
+                    <h3 id="totalClasses">15</h3>
+                    <p>Total Classes</p>
+                    <div class="breakdown">Across 3 modules</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <h3 id="pretestCompleted">0</h3>
+                    <p>Pretest Completed</p>
+                    <div class="breakdown" id="completionRate"></div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-trending-up'></i>
+                    </div>
+                    <h3 id="averageScore">0</h3>
+                    <p>Average Score</p>
+                    <div class="breakdown" id="scoreRange"></div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <!-- User Distribution Pie Chart -->
+                <div class="chart-card">
+                    <h3 class="chart-title">User Distribution by Role</h3>
+                    <div class="pie-chart" id="userPieChart"></div>
+                    <div class="pie-legend" id="userPieLegend"></div>
+                </div>
+
+                <!-- Module Popularity Bar Chart -->
+                <div class="chart-card">
+                    <h3 class="chart-title">Module Popularity</h3>
+                    <div class="bar-chart" id="moduleBarChart"></div>
+                </div>
+
+                <!-- Score Distribution -->
+                <div class="chart-card">
+                    <h3 class="chart-title">Pretest Score Distribution</h3>
+                    <div class="bar-chart" id="scoreBarChart"></div>
+                </div>
+
+                <!-- Module Completion Rate -->
+                <div class="chart-card">
+                    <h3 class="chart-title">Module Completion Rate</h3>
+                    <div class="progress-list" id="moduleProgress"></div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="chart-card">
+                <h3 class="chart-title">Recent Activity</h3>
+                <div class="activity-list" id="activityList"></div>
+            </div>
+        </div>
+
+        <!-- User Management Tab -->
+        <div class="tab-content" id="usersTab">
+            <div class="controls-bar">
+                <div class="search-filter">
+                    <div class="search-box">
+                        <input type="text" id="userSearchInput" placeholder="Search by name, username, or email...">
+                        <i class='bx bx-search'></i>
+                    </div>
+                    <select class="filter-select" id="userRoleFilter">
+                        <option value="all">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="assessor">Assessor</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="openAddUserModal()">
+                    <i class='bx bx-plus'></i> Add New User
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Pretest Score</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Class Management Tab -->
+        <div class="tab-content" id="classesTab">
+            <div class="module-tabs">
+                <button class="module-tab active" data-module="1">Fundamental</button>
+                <button class="module-tab" data-module="2">Intermediate</button>
+                <button class="module-tab" data-module="3">Advance</button>
+            </div>
+
+            <div class="module-content active" data-module="1">
+                <div class="controls-bar">
+                    <h3 style="font-size: 1.8rem; color: var(--text-color);">Fundamental JavaScript Classes</h3>
+                    <button class="btn" onclick="openAddClassModal(1)">
+                        <i class='bx bx-plus'></i> Add New Class
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesTableModule1"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="module-content" data-module="2">
+                <div class="controls-bar">
+                    <h3 style="font-size: 1.8rem; color: var(--text-color);">Intermediate JavaScript Classes</h3>
+                    <button class="btn" onclick="openAddClassModal(2)">
+                        <i class='bx bx-plus'></i> Add New Class
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesTableModule2"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="module-content" data-module="3">
+                <div class="controls-bar">
+                    <h3 style="font-size: 1.8rem; color: var(--text-color);">Advance JavaScript Classes</h3>
+                    <button class="btn" onclick="openAddClassModal(3)">
+                        <i class='bx bx-plus'></i> Add New Class
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesTableModule3"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pretest Results Tab -->
+        <div class="tab-content" id="pretestTab">
+            <div class="controls-bar">
+                <div class="search-filter">
+                    <div class="search-box">
+                        <input type="text" id="pretestSearchInput" placeholder="Search by user name...">
+                        <i class='bx bx-search'></i>
+                    </div>
+                    <select class="filter-select" id="pretestLevelFilter">
+                        <option value="all">All Levels</option>
+                        <option value="fundamental">Fundamental</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advance">Advance</option>
+                    </select>
+                </div>
+                <button class="btn btn-success">
+                    <i class='bx bx-download'></i> Export to CSV
+                </button>
+            </div>
+
+            <div class="stats-grid" style="margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <h3 id="pretestAvgScore">0</h3>
+                    <p>Average Score</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="pretestPassRate">0%</h3>
+                    <p>Pass Rate (Score > 50)</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="pretestHighScore">0</h3>
+                    <p>Highest Score</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="pretestLowScore">0</h3>
+                    <p>Lowest Score</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Score</th>
+                            <th>Level Recommendation</th>
+                            <th>Date Completed</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pretestTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reports & Analytics Tab -->
+        <div class="tab-content" id="reportsTab">
+            <h2 style="font-size: 2.5rem; color: var(--main-color); margin-bottom: 2rem;">System Analytics & Reports</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-user-check'></i>
+                    </div>
+                    <h3 id="reportTotalUsers">0</h3>
+                    <p>Total Registered Users</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-check-shield'></i>
+                    </div>
+                    <h3 id="reportCompletedPretest">0</h3>
+                    <p>Completed Pretests</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-trophy'></i>
+                    </div>
+                    <h3 id="reportTopModule">-</h3>
+                    <p>Most Popular Module</p>
+                </div>
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class='bx bx-trending-up'></i>
+                    </div>
+                    <h3 id="reportSuccessRate">0%</h3>
+                    <p>Overall Success Rate</p>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">Module Distribution</h3>
+                    <div class="pie-chart" id="reportModulePie"></div>
+                    <div class="pie-legend" id="reportModuleLegend"></div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">User Growth (Monthly)</h3>
+                    <div class="bar-chart" id="reportGrowthChart"></div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">Performance Metrics</h3>
+                    <div class="progress-list">
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span>Fundamental Success Rate</span>
+                                <span id="fundamentalRate">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="fundamentalProgress"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span>Intermediate Success Rate</span>
+                                <span id="intermediateRate">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="intermediateProgress"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <span>Advance Success Rate</span>
+                                <span id="advanceRate">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="advanceProgress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">Role Distribution</h3>
+                    <div class="progress-list" id="roleDistribution"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="settingsTab">
+            <h2 style="font-size: 2.5rem; color: var(--main-color); margin-bottom: 2rem;">Settings</h2>
+
+            <div class="chart-card" style="max-width: 600px; margin-bottom: 2rem;">
+                <h3 class="chart-title">Admin Profile</h3>
+                <form id="profileForm" onsubmit="updateProfile(event)">
+                    <div class="form-group">
+                        <label for="profileName">Full Name</label>
+                        <input type="text" id="profileName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileEmail">Email</label>
+                        <input type="email" id="profileEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileUsername">Username</label>
+                        <input type="text" id="profileUsername" readonly>
+                    </div>
+                    <button type="submit" class="btn btn-success">Update Profile</button>
+                </form>
+            </div>
+
+            <div class="chart-card" style="max-width: 600px;">
+                <h3 class="chart-title">System Settings</h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableNotifications" checked>
+                        Enable Email Notifications
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="autoBackup">
+                        Enable Auto Backup
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="maintenanceMode">
+                        Maintenance Mode
+                    </label>
+                </div>
+                <button class="btn btn-success" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="userModalTitle">Add New User</h2>
+                <span class="modal-close" onclick="closeUserModal()">&times;</span>
+            </div>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label for="userName">Full Name *</label>
+                    <input type="text" id="userNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="userUsername">Username *</label>
+                    <input type="text" id="userUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email *</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">Password *</label>
+                    <input type="password" id="userPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="userRole">Role *</label>
+                    <select id="userRole" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="assessor">Assessor</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="closeUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="classModalTitle">Add New Class</h2>
+                <span class="modal-close" onclick="closeClassModal()">&times;</span>
+            </div>
+            <form id="classForm" onsubmit="saveClass(event)">
+                <input type="hidden" id="classId">
+                <input type="hidden" id="classModuleId">
+                <div class="form-group">
+                    <label for="classOrder">Order *</label>
+                    <input type="number" id="classOrder" required min="1">
+                </div>
+                <div class="form-group">
+                    <label for="classTitle">Title *</label>
+                    <input type="text" id="classTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="classDescription">Description *</label>
+                    <textarea id="classDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="classContent">Content</label>
+                    <textarea id="classContent"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="closeClassModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load database and auth -->
+    <script src="../../data/database.js"></script>
+    <script src="../../js/auth.js"></script>
+
+    <script>
+        // Check authentication
+        if (!authService.requireRole('admin')) {
+            // Will redirect automatically
+        }
+
+        const currentUser = authService.getCurrentUser();
+
+        // Global variables
+        let currentModuleId = 1;
+
+        // Initialize
+        function init() {
+            loadFromLocalStorage();
+            setupEventListeners();
+            updateDashboard();
+            loadUserProfile();
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Menu toggle
+            document.getElementById('menuToggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+
+            // Sidebar navigation
+            document.querySelectorAll('.menu-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabName = link.dataset.tab;
+                    if (tabName) {
+                        switchTab(tabName);
+                        document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Module tabs
+            document.querySelectorAll('.module-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const moduleId = parseInt(tab.dataset.module);
+                    switchModuleTab(moduleId);
+                });
+            });
+
+            // User search and filter
+            document.getElementById('userSearchInput').addEventListener('keyup', filterUsers);
+            document.getElementById('userRoleFilter').addEventListener('change', filterUsers);
+
+            // Pretest search and filter
+            document.getElementById('pretestSearchInput').addEventListener('keyup', filterPretest);
+            document.getElementById('pretestLevelFilter').addEventListener('change', filterPretest);
+
+            // Dark mode toggle
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const savedMode = localStorage.getItem('darkMode');
+            if (savedMode === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.classList.replace('bx-moon', 'bx-sun');
+            }
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+
+            // User info
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+        }
+
+        // Switch Tab
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            const titles = {
+                overview: 'Dashboard Overview',
+                users: 'User Management',
+                classes: 'Class Management',
+                pretest: 'Pretest Results',
+                reports: 'Reports & Analytics',
+                settings: 'Settings'
+            };
+            document.getElementById('pageTitle').textContent = titles[tabName] || 'Dashboard';
+
+            // Render specific tab content
+            if (tabName === 'users') renderUsersTable();
+            if (tabName === 'classes') renderClassesTables();
+            if (tabName === 'pretest') renderPretestTable();
+            if (tabName === 'reports') updateReports();
+        }
+
+        // Switch Module Tab
+        function switchModuleTab(moduleId) {
+            currentModuleId = moduleId;
+            document.querySelectorAll('.module-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.module-content').forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`.module-tab[data-module="${moduleId}"]`).classList.add('active');
+            document.querySelector(`.module-content[data-module="${moduleId}"]`).classList.add('active');
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            updateStats();
+            renderPieChart();
+            renderModuleBarChart();
+            renderScoreBarChart();
+            renderModuleProgress();
+            renderRecentActivity();
+            renderUsersTable();
+            renderClassesTables();
+            renderPretestTable();
+            updateReports();
+        }
+
+        // Update Stats
+        function updateStats() {
+            const users = Database.users;
+            const totalUsers = users.length;
+            const admins = users.filter(u => u.role === 'admin').length;
+            const assessors = users.filter(u => u.role === 'assessor').length;
+            const regularUsers = users.filter(u => u.role === 'user').length;
+            const completedPretest = users.filter(u => u.pretestCompleted).length;
+
+            const scores = users.filter(u => u.pretestScore !== null).map(u => u.pretestScore);
+            const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+            const minScore = scores.length > 0 ? Math.min(...scores) : 0;
+            const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
+
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('userBreakdown').textContent = `Admin: ${admins} | Assessor: ${assessors} | User: ${regularUsers}`;
+            document.getElementById('pretestCompleted').textContent = completedPretest;
+            document.getElementById('completionRate').textContent = `${Math.round(completedPretest / totalUsers * 100)}% completion rate`;
+            document.getElementById('averageScore').textContent = avgScore;
+            document.getElementById('scoreRange').textContent = scores.length > 0 ? `Range: ${minScore} - ${maxScore}` : 'No data';
+
+            // Count total classes
+            let totalClasses = 0;
+            Database.modules.forEach(module => {
+                totalClasses += module.classes.length;
+            });
+            document.getElementById('totalClasses').textContent = totalClasses;
+        }
+
+        // Render Pie Chart (User Distribution)
+        function renderPieChart() {
+            const users = Database.users;
+            const admins = users.filter(u => u.role === 'admin').length;
+            const assessors = users.filter(u => u.role === 'assessor').length;
+            const regularUsers = users.filter(u => u.role === 'user').length;
+            const total = users.length;
+
+            const adminPercent = (admins / total * 100) || 0;
+            const assessorPercent = (assessors / total * 100) || 0;
+            const userPercent = (regularUsers / total * 100) || 0;
+
+            const pieChart = document.getElementById('userPieChart');
+            pieChart.style.background = `conic-gradient(
+                #dc3545 0% ${adminPercent}%,
+                #ffc107 ${adminPercent}% ${adminPercent + assessorPercent}%,
+                #28a745 ${adminPercent + assessorPercent}% 100%
+            )`;
+
+            const legend = document.getElementById('userPieLegend');
+            legend.innerHTML = `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #dc3545;"></div>
+                    <span>Admin (${admins})</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffc107;"></div>
+                    <span>Assessor (${assessors})</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #28a745;"></div>
+                    <span>User (${regularUsers})</span>
+                </div>
+            `;
+        }
+
+        // Render Module Popularity Bar Chart
+        function renderModuleBarChart() {
+            const users = Database.users;
+            const fundamental = users.filter(u => u.recommendedModule === 'fundamental').length;
+            const intermediate = users.filter(u => u.recommendedModule === 'intermediate').length;
+            const advance = users.filter(u => u.recommendedModule === 'advance').length;
+            const max = Math.max(fundamental, intermediate, advance, 1);
+
+            const chart = document.getElementById('moduleBarChart');
+            chart.innerHTML = `
+                <div class="bar-item">
+                    <div class="bar" style="height: ${(fundamental / max * 100)}%;">
+                        <span class="bar-value">${fundamental}</span>
+                    </div>
+                    <span class="bar-label">Fundamental</span>
+                </div>
+                <div class="bar-item">
+                    <div class="bar" style="height: ${(intermediate / max * 100)}%;">
+                        <span class="bar-value">${intermediate}</span>
+                    </div>
+                    <span class="bar-label">Intermediate</span>
+                </div>
+                <div class="bar-item">
+                    <div class="bar" style="height: ${(advance / max * 100)}%;">
+                        <span class="bar-value">${advance}</span>
+                    </div>
+                    <span class="bar-label">Advance</span>
+                </div>
+            `;
+        }
+
+        // Render Score Distribution Bar Chart
+        function renderScoreBarChart() {
+            const users = Database.users.filter(u => u.pretestScore !== null);
+            const low = users.filter(u => u.pretestScore <= 45).length;
+            const medium = users.filter(u => u.pretestScore >= 46 && u.pretestScore <= 65).length;
+            const high = users.filter(u => u.pretestScore >= 66).length;
+            const max = Math.max(low, medium, high, 1);
+
+            const chart = document.getElementById('scoreBarChart');
+            chart.innerHTML = `
+                <div class="bar-item">
+                    <div class="bar" style="height: ${(low / max * 100)}%; background: #17a2b8;">
+                        <span class="bar-value">${low}</span>
+                    </div>
+                    <span class="bar-label">0-45 (Fundamental)</span>
+                </div>
+                <div class="bar-item">
+                    <div class="bar" style="height: ${(medium / max * 100)}%; background: #ffc107;">
+                        <span class="bar-value">${medium}</span>
+                    </div>
+                    <span class="bar-label">46-65 (Intermediate)</span>
+                </div>
+                <div class="bar-item">
+                    <div class="bar" style="height: ${(high / max * 100)}%; background: #dc3545;">
+                        <span class="bar-value">${high}</span>
+                    </div>
+                    <span class="bar-label">66-100 (Advance)</span>
+                </div>
+            `;
+        }
+
+        // Render Module Progress
+        function renderModuleProgress() {
+            const users = Database.users;
+            const completedUsers = users.filter(u => u.pretestCompleted);
+            const total = completedUsers.length;
+
+            const fundamental = users.filter(u => u.recommendedModule === 'fundamental').length;
+            const intermediate = users.filter(u => u.recommendedModule === 'intermediate').length;
+            const advance = users.filter(u => u.recommendedModule === 'advance').length;
+
+            const fundamentalPercent = total > 0 ? (fundamental / total * 100) : 0;
+            const intermediatePercent = total > 0 ? (intermediate / total * 100) : 0;
+            const advancePercent = total > 0 ? (advance / total * 100) : 0;
+
+            document.getElementById('moduleProgress').innerHTML = `
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>Fundamental Module</span>
+                        <span>${fundamental} users (${Math.round(fundamentalPercent)}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${fundamentalPercent}%; background: #17a2b8;"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>Intermediate Module</span>
+                        <span>${intermediate} users (${Math.round(intermediatePercent)}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${intermediatePercent}%; background: #ffc107;"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>Advance Module</span>
+                        <span>${advance} users (${Math.round(advancePercent)}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${advancePercent}%; background: #dc3545;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Recent Activity
+        function renderRecentActivity() {
+            const users = Database.users;
+            const activities = [];
+
+            users.forEach(user => {
+                if (user.pretestCompleted) {
+                    activities.push({
+                        icon: 'bx-check-circle',
+                        text: `${user.name} completed pretest with score ${user.pretestScore}`,
+                        time: 'Recently'
+                    });
+                }
+            });
+
+            const recentActivities = activities.slice(-5).reverse();
+
+            if (recentActivities.length === 0) {
+                document.getElementById('activityList').innerHTML = '<p style="font-size: 1.4rem; color: var(--text-color); opacity: 0.7;">No recent activity</p>';
+                return;
+            }
+
+            document.getElementById('activityList').innerHTML = recentActivities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class='bx ${activity.icon}'></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-text">${activity.text}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Users Table
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            const users = Database.users;
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td><span class="role-badge role-${user.role}">${user.role.toUpperCase()}</span></td>
+                    <td>${user.pretestScore !== null ? user.pretestScore : '-'}</td>
+                    <td><span class="status-badge status-${user.pretestCompleted ? 'completed' : 'pending'}">${user.pretestCompleted ? 'Completed' : 'Pending'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-icon btn-warning" onclick="editUser(${user.id})" title="Edit">
+                                <i class='bx bx-edit'></i>
+                            </button>
+                            <button class="btn btn-danger btn-icon" onclick="deleteUser(${user.id})" title="Delete">
+                                <i class='bx bx-trash'></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter Users
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('userRoleFilter').value;
+            const rows = document.querySelectorAll('#usersTableBody tr');
+
+            rows.forEach(row => {
+                const name = row.cells[1].textContent.toLowerCase();
+                const username = row.cells[2].textContent.toLowerCase();
+                const email = row.cells[3].textContent.toLowerCase();
+                const role = row.cells[4].textContent.toLowerCase();
+
+                const matchesSearch = name.includes(searchTerm) || username.includes(searchTerm) || email.includes(searchTerm);
+                const matchesRole = roleFilter === 'all' || role.includes(roleFilter);
+
+                row.style.display = (matchesSearch && matchesRole) ? '' : 'none';
+            });
+        }
+
+        // User CRUD Functions
+        function openAddUserModal() {
+            document.getElementById('userModalTitle').textContent = 'Add New User';
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function editUser(userId) {
+            const user = Database.findUserById(userId);
+            if (!user) return;
+
+            document.getElementById('userModalTitle').textContent = 'Edit User';
+            document.getElementById('userId').value = user.id;
+            document.getElementById('userNameInput').value = user.name;
+            document.getElementById('userUsername').value = user.username;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userPassword').value = user.password;
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function deleteUser(userId) {
+            if (userId === currentUser.id) {
+                alert('You cannot delete your own account!');
+                return;
+            }
+
+            if (confirm('Are you sure you want to delete this user?')) {
+                Database.deleteUser(userId);
+                saveToLocalStorage();
+                updateDashboard();
+            }
+        }
+
+        function saveUser(event) {
+            event.preventDefault();
+
+            const userId = document.getElementById('userId').value;
+            const userData = {
+                name: document.getElementById('userNameInput').value,
+                username: document.getElementById('userUsername').value,
+                email: document.getElementById('userEmail').value,
+                password: document.getElementById('userPassword').value,
+                role: document.getElementById('userRole').value
+            };
+
+            if (userId) {
+                Database.updateUser(parseInt(userId), userData);
+            } else {
+                if (Database.findUserByUsername(userData.username)) {
+                    alert('Username already exists!');
+                    return;
+                }
+                if (Database.users.find(u => u.email === userData.email)) {
+                    alert('Email already exists!');
+                    return;
+                }
+                Database.addUser(userData);
+            }
+
+            saveToLocalStorage();
+            closeUserModal();
+            updateDashboard();
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        // Render Classes Tables
+        function renderClassesTables() {
+            [1, 2, 3].forEach(moduleId => {
+                const module = Database.modules.find(m => m.id === moduleId);
+                const tbody = document.getElementById(`classesTableModule${moduleId}`);
+
+                if (module) {
+                    tbody.innerHTML = module.classes.map(cls => `
+                        <tr>
+                            <td>${cls.order}</td>
+                            <td>${cls.title}</td>
+                            <td>${cls.description}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-icon btn-warning" onclick="editClass(${cls.id})" title="Edit">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-icon" onclick="deleteClass(${cls.id})" title="Delete">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            });
+        }
+
+        // Class CRUD Functions
+        function openAddClassModal(moduleId) {
+            document.getElementById('classModalTitle').textContent = 'Add New Class';
+            document.getElementById('classForm').reset();
+            document.getElementById('classId').value = '';
+            document.getElementById('classModuleId').value = moduleId;
+            document.getElementById('classModal').classList.add('active');
+        }
+
+        function editClass(classId) {
+            let foundClass = null;
+            Database.modules.forEach(module => {
+                const cls = module.classes.find(c => c.id === classId);
+                if (cls) foundClass = cls;
+            });
+
+            if (!foundClass) return;
+
+            document.getElementById('classModalTitle').textContent = 'Edit Class';
+            document.getElementById('classId').value = foundClass.id;
+            document.getElementById('classModuleId').value = foundClass.moduleId;
+            document.getElementById('classOrder').value = foundClass.order;
+            document.getElementById('classTitle').value = foundClass.title;
+            document.getElementById('classDescription').value = foundClass.description;
+            document.getElementById('classContent').value = foundClass.content || '';
+            document.getElementById('classModal').classList.add('active');
+        }
+
+        function deleteClass(classId) {
+            if (confirm('Are you sure you want to delete this class?')) {
+                Database.deleteClass(classId);
+                saveToLocalStorage();
+                renderClassesTables();
+            }
+        }
+
+        function saveClass(event) {
+            event.preventDefault();
+
+            const classId = document.getElementById('classId').value;
+            const classData = {
+                order: parseInt(document.getElementById('classOrder').value),
+                title: document.getElementById('classTitle').value,
+                description: document.getElementById('classDescription').value,
+                content: document.getElementById('classContent').value
+            };
+
+            if (classId) {
+                Database.updateClass(parseInt(classId), classData);
+            } else {
+                const moduleId = parseInt(document.getElementById('classModuleId').value);
+                Database.addClass(moduleId, classData);
+            }
+
+            saveToLocalStorage();
+            closeClassModal();
+            renderClassesTables();
+        }
+
+        function closeClassModal() {
+            document.getElementById('classModal').classList.remove('active');
+        }
+
+        // Render Pretest Table
+        function renderPretestTable() {
+            const tbody = document.getElementById('pretestTableBody');
+            const users = Database.users.filter(u => u.pretestCompleted);
+
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No pretest results yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.name}</td>
+                    <td><strong>${user.pretestScore}</strong></td>
+                    <td><span class="level-badge level-${user.recommendedModule}">${user.recommendedModule ? user.recommendedModule.toUpperCase() : '-'}</span></td>
+                    <td>Recently</td>
+                    <td><span class="status-badge status-completed">Completed</span></td>
+                </tr>
+            `).join('');
+
+            // Update pretest stats
+            const scores = users.map(u => u.pretestScore);
+            const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            const passRate = Math.round(users.filter(u => u.pretestScore > 50).length / users.length * 100);
+            const highScore = Math.max(...scores);
+            const lowScore = Math.min(...scores);
+
+            document.getElementById('pretestAvgScore').textContent = avgScore;
+            document.getElementById('pretestPassRate').textContent = passRate + '%';
+            document.getElementById('pretestHighScore').textContent = highScore;
+            document.getElementById('pretestLowScore').textContent = lowScore;
+        }
+
+        // Filter Pretest
+        function filterPretest() {
+            const searchTerm = document.getElementById('pretestSearchInput').value.toLowerCase();
+            const levelFilter = document.getElementById('pretestLevelFilter').value;
+            const rows = document.querySelectorAll('#pretestTableBody tr');
+
+            rows.forEach(row => {
+                if (row.cells.length === 1) return; // Skip empty state row
+
+                const name = row.cells[0].textContent.toLowerCase();
+                const level = row.cells[2].textContent.toLowerCase();
+
+                const matchesSearch = name.includes(searchTerm);
+                const matchesLevel = levelFilter === 'all' || level.includes(levelFilter);
+
+                row.style.display = (matchesSearch && matchesLevel) ? '' : 'none';
+            });
+        }
+
+        // Update Reports
+        function updateReports() {
+            const users = Database.users;
+            const completedUsers = users.filter(u => u.pretestCompleted);
+
+            document.getElementById('reportTotalUsers').textContent = users.length;
+            document.getElementById('reportCompletedPretest').textContent = completedUsers.length;
+
+            // Most popular module
+            const fundamental = users.filter(u => u.recommendedModule === 'fundamental').length;
+            const intermediate = users.filter(u => u.recommendedModule === 'intermediate').length;
+            const advance = users.filter(u => u.recommendedModule === 'advance').length;
+
+            let topModule = 'Fundamental';
+            let maxCount = fundamental;
+            if (intermediate > maxCount) { topModule = 'Intermediate'; maxCount = intermediate; }
+            if (advance > maxCount) { topModule = 'Advance'; maxCount = advance; }
+
+            document.getElementById('reportTopModule').textContent = maxCount > 0 ? topModule : '-';
+
+            // Success rate
+            const successRate = users.length > 0 ? Math.round(completedUsers.length / users.length * 100) : 0;
+            document.getElementById('reportSuccessRate').textContent = successRate + '%';
+
+            // Module distribution pie chart
+            const total = fundamental + intermediate + advance;
+            if (total > 0) {
+                const fundPercent = fundamental / total * 100;
+                const intPercent = intermediate / total * 100;
+
+                document.getElementById('reportModulePie').style.background = `conic-gradient(
+                    #17a2b8 0% ${fundPercent}%,
+                    #ffc107 ${fundPercent}% ${fundPercent + intPercent}%,
+                    #dc3545 ${fundPercent + intPercent}% 100%
+                )`;
+
+                document.getElementById('reportModuleLegend').innerHTML = `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #17a2b8;"></div>
+                        <span>Fundamental (${fundamental})</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffc107;"></div>
+                        <span>Intermediate (${intermediate})</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc3545;"></div>
+                        <span>Advance (${advance})</span>
+                    </div>
+                `;
+            }
+
+            // User growth chart (dummy data)
+            document.getElementById('reportGrowthChart').innerHTML = `
+                <div class="bar-item">
+                    <div class="bar" style="height: 60%;">
+                        <span class="bar-value">5</span>
+                    </div>
+                    <span class="bar-label">Jan</span>
+                </div>
+                <div class="bar-item">
+                    <div class="bar" style="height: 80%;">
+                        <span class="bar-value">8</span>
+                    </div>
+                    <span class="bar-label">Feb</span>
+                </div>
+                <div class="bar-item">
+                    <div class="bar" style="height: 100%;">
+                        <span class="bar-value">${users.length}</span>
+                    </div>
+                    <span class="bar-label">Mar</span>
+                </div>
+            `;
+
+            // Performance metrics
+            const totalCompleted = completedUsers.length;
+            const fundRate = totalCompleted > 0 ? Math.round(fundamental / totalCompleted * 100) : 0;
+            const intRate = totalCompleted > 0 ? Math.round(intermediate / totalCompleted * 100) : 0;
+            const advRate = totalCompleted > 0 ? Math.round(advance / totalCompleted * 100) : 0;
+
+            document.getElementById('fundamentalRate').textContent = fundRate + '%';
+            document.getElementById('fundamentalProgress').style.width = fundRate + '%';
+            document.getElementById('intermediateRate').textContent = intRate + '%';
+            document.getElementById('intermediateProgress').style.width = intRate + '%';
+            document.getElementById('advanceRate').textContent = advRate + '%';
+            document.getElementById('advanceProgress').style.width = advRate + '%';
+
+            // Role distribution
+            const admins = users.filter(u => u.role === 'admin').length;
+            const assessors = users.filter(u => u.role === 'assessor').length;
+            const regularUsers = users.filter(u => u.role === 'user').length;
+            const userTotal = users.length;
+
+            document.getElementById('roleDistribution').innerHTML = `
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>Admin</span>
+                        <span>${admins} (${Math.round(admins / userTotal * 100)}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${admins / userTotal * 100}%; background: #dc3545;"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>Assessor</span>
+                        <span>${assessors} (${Math.round(assessors / userTotal * 100)}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${assessors / userTotal * 100}%; background: #ffc107;"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span>User</span>
+                        <span>${regularUsers} (${Math.round(regularUsers / userTotal * 100)}%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${regularUsers / userTotal * 100}%; background: #28a745;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load User Profile
+        function loadUserProfile() {
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileEmail').value = currentUser.email;
+            document.getElementById('profileUsername').value = currentUser.username;
+        }
+
+        // Update Profile
+        function updateProfile(event) {
+            event.preventDefault();
+
+            const updates = {
+                name: document.getElementById('profileName').value,
+                email: document.getElementById('profileEmail').value
+            };
+
+            const result = authService.updateCurrentUser(updates);
+            if (result.success) {
+                alert('Profile updated successfully!');
+                document.getElementById('userName').textContent = updates.name;
+                document.getElementById('userAvatar').textContent = updates.name.charAt(0).toUpperCase();
+            } else {
+                alert('Failed to update profile');
+            }
+        }
+
+        // Save Settings
+        function saveSettings() {
+            alert('Settings saved successfully!');
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                darkModeToggle.classList.replace('bx-moon', 'bx-sun');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                darkModeToggle.classList.replace('bx-sun', 'bx-moon');
+            }
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                closeUserModal();
+                closeClassModal();
+            }
+        });
+
+        // Initialize
+        init();
+    </script>
+
+    <!-- PWA js -->
+    <script src="/src/js/pwa.js"></script>
+</body>
+
+</html>
