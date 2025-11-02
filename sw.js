@@ -1,6 +1,7 @@
-// Service Worker for CodeSmart PWA
-const CACHE_NAME = 'codesmart-v1';
-const RUNTIME_CACHE = 'codesmart-runtime-v1';
+// Service Worker for CodeSmart PWA with Export/Import Feature
+const CACHE_NAME = 'codesmart-lms-v2.2';
+const RUNTIME_CACHE = 'codesmart-runtime-v2.2';
+const FILES_CACHE = 'codesmart-files-v2.2';
 
 // Files to cache on install
 const PRECACHE_URLS = [
@@ -8,9 +9,13 @@ const PRECACHE_URLS = [
   '/src/css/index.css',
   '/src/css/module.css',
   '/src/css/admin.css',
+  '/src/css/pwa.css',
+  '/src/css/lms.css',
   '/src/js/index.js',
   '/src/js/auth.js',
   '/src/js/svm.js',
+  '/src/js/pwa.js',
+  '/src/js/export-import.js',
   '/src/data/database.js',
   '/src/images/JS-LOGO.png',
   '/src/pages/auth/login.html',
@@ -18,6 +23,9 @@ const PRECACHE_URLS = [
   '/src/pages/user/dashboard.html',
   '/src/pages/user/profile.html',
   '/src/pages/user/pretest.html',
+  '/src/pages/modules/lms-user.html',
+  '/src/pages/admin/dashboard.html',
+  '/src/pages/assessor/dashboard.html',
   '/manifest.json',
   'https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css',
   'https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css',

@@ -181,16 +181,74 @@
         }
 
         .module-card.locked {
-            opacity: .6;
-            pointer-events: none;
+            opacity: .5;
+            filter: grayscale(80%);
+            position: relative;
+        }
+
+        .module-card.locked::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2rem;
+            z-index: 1;
         }
 
         .module-card.locked::after {
-            content: '\1F512';
+            content: '\1F512 Terkunci';
             position: absolute;
-            top: 2rem;
-            right: 2rem;
-            font-size: 3rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            background: rgba(255, 69, 58, 0.9);
+            padding: 1.5rem 3rem;
+            border-radius: 1rem;
+            z-index: 2;
+            white-space: nowrap;
+        }
+
+        .module-card.locked .btn-module {
+            display: none;
+        }
+
+        .unlock-notice {
+            background: linear-gradient(135deg, #ff4500, #ff6347);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .request-promotion-btn {
+            background: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.8rem;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .request-promotion-btn:hover {
+            background: #059669;
+        }
+
+        .request-promotion-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
         }
 
         .module-card i {
@@ -339,6 +397,7 @@
                     <button class="btn-module" onclick="openModule('fundamental')">
                         Mulai Belajar <i class='bx bx-right-arrow-alt'></i>
                     </button>
+                    <div id="unlock-notice-fundamental" class="unlock-notice" style="display: none;"></div>
                 </div>
 
                 <!-- Intermediate Module -->
@@ -358,6 +417,10 @@
                     <button class="btn-module" onclick="openModule('intermediate')">
                         Mulai Belajar <i class='bx bx-right-arrow-alt'></i>
                     </button>
+                    <div id="unlock-notice-intermediate" class="unlock-notice" style="display: none;"></div>
+                    <button id="request-btn-intermediate" class="request-promotion-btn" style="display: none;" onclick="requestPromotion(2)">
+                        <i class='bx bx-lock-open'></i> Ajukan Naik Tingkat
+                    </button>
                 </div>
 
                 <!-- Advance Module -->
@@ -376,6 +439,10 @@
 
                     <button class="btn-module" onclick="openModule('advance')">
                         Mulai Belajar <i class='bx bx-right-arrow-alt'></i>
+                    </button>
+                    <div id="unlock-notice-advance" class="unlock-notice" style="display: none;"></div>
+                    <button id="request-btn-advance" class="request-promotion-btn" style="display: none;" onclick="requestPromotion(3)">
+                        <i class='bx bx-lock-open'></i> Ajukan Naik Tingkat
                     </button>
                 </div>
             </div>
@@ -427,31 +494,122 @@
         }
 
         function setModuleAccess() {
-            const modules = ['fundamental', 'intermediate', 'advance'];
-            const recommendedModule = currentUser.recommendedModule;
+            loadFromLocalStorage();
+            const user = Database.findUserById(currentUser.id);
+
+            // Initialize unlockedModules based on pretest score if not set
+            if (!user.unlockedModules || user.unlockedModules.length === 0) {
+                if (user.pretestScore >= 70) {
+                    // High score - unlock all
+                    user.unlockedModules = ['fundamental', 'intermediate', 'advance'];
+                } else if (user.pretestScore >= 40) {
+                    // Medium score - unlock fundamental and intermediate only
+                    user.unlockedModules = ['fundamental', 'intermediate'];
+                } else {
+                    // Low score - unlock fundamental only
+                    user.unlockedModules = ['fundamental'];
+                }
+                saveToLocalStorage();
+            }
+
+            const modules = [
+                { level: 'fundamental', id: 1 },
+                { level: 'intermediate', id: 2 },
+                { level: 'advance', id: 3 }
+            ];
+            const recommendedModule = user.recommendedModule;
 
             modules.forEach(module => {
-                const canAccess = authService.canAccessModule(module);
-                const moduleCard = document.getElementById(`module-${module}`);
+                const canAccess = user.unlockedModules.includes(module.level);
+                const moduleCard = document.getElementById(`module-${module.level}`);
+                const unlockNotice = document.getElementById(`unlock-notice-${module.level}`);
+                const requestBtn = document.getElementById(`request-btn-${module.level}`);
 
                 if (!canAccess) {
                     moduleCard.classList.add('locked');
+
+                    // Show unlock instructions
+                    let unlockText = '';
+                    if (module.level === 'intermediate') {
+                        unlockText = 'Modul ini terkunci. Selesaikan modul Fundamental dan ajukan naik tingkat kepada assessor.';
+                    } else if (module.level === 'advance') {
+                        unlockText = 'Modul ini terkunci. Selesaikan modul Intermediate dan ajukan naik tingkat kepada assessor.';
+                    }
+
+                    if (unlockNotice && unlockText) {
+                        unlockNotice.textContent = unlockText;
+                        unlockNotice.style.display = 'block';
+                    }
+
+                    // Show request button if user has completed previous module
+                    if (requestBtn && canRequestPromotion(module.id, user)) {
+                        requestBtn.style.display = 'inline-flex';
+
+                        // Check if already has pending request
+                        const hasPendingRequest = user.promotionRequests?.some(
+                            r => r.moduleId === module.id && r.status === 'pending'
+                        );
+                        if (hasPendingRequest) {
+                            requestBtn.textContent = '⏳ Menunggu Persetujuan';
+                            requestBtn.disabled = true;
+                        }
+                    }
                 } else {
                     moduleCard.classList.remove('locked');
+                    if (unlockNotice) unlockNotice.style.display = 'none';
+                    if (requestBtn) requestBtn.style.display = 'none';
                 }
 
                 // Show recommendation badge
-                if (module === recommendedModule) {
-                    document.getElementById(`badge-${module}`).style.display = 'inline-block';
+                if (module.level === recommendedModule) {
+                    document.getElementById(`badge-${module.level}`).style.display = 'inline-block';
                 }
             });
         }
 
+        // Check if user can request promotion to a module
+        function canRequestPromotion(moduleId, user) {
+            // For intermediate (id: 2), user must have completed fundamental
+            if (moduleId === 2) {
+                const fundamentalEnrollment = Database.enrollments.find(
+                    e => e.userId === user.id && e.moduleId === 1
+                );
+                return fundamentalEnrollment && fundamentalEnrollment.progress >= 80;
+            }
+
+            // For advance (id: 3), user must have completed intermediate
+            if (moduleId === 3) {
+                const intermediateEnrollment = Database.enrollments.find(
+                    e => e.userId === user.id && e.moduleId === 2
+                );
+                return intermediateEnrollment && intermediateEnrollment.progress >= 80;
+            }
+
+            return false;
+        }
+
+        // Request module promotion
+        function requestPromotion(moduleId) {
+            loadFromLocalStorage();
+
+            const request = Database.requestPromotion(currentUser.id, moduleId);
+            if (request) {
+                saveToLocalStorage();
+                alert('Permintaan naik tingkat telah dikirim! Silakan tunggu persetujuan dari assessor.');
+                location.reload();
+            } else {
+                alert('Anda sudah mengajukan permintaan untuk modul ini atau tidak memenuhi syarat.');
+            }
+        }
+
         function openModule(level) {
-            if (authService.canAccessModule(level)) {
+            loadFromLocalStorage();
+            const user = Database.findUserById(currentUser.id);
+
+            if (user.unlockedModules && user.unlockedModules.includes(level)) {
                 window.location.href = `../modules/module-${level}.html`;
             } else {
-                alert('Modul ini terkunci. Tingkatkan skor pretest Anda untuk membuka modul ini.');
+                alert('Modul ini terkunci. Selesaikan modul sebelumnya dan ajukan naik tingkat kepada assessor.');
             }
         }
 

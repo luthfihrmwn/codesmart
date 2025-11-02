@@ -890,43 +890,6 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        /* Badge Styles */
-        .badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 1rem;
-            font-size: 1.2rem;
-            font-weight: 600;
-            background: #ef4444;
-            color: white;
-            margin-left: 0.5rem;
-        }
-
-        /* Action Buttons */
-        .btn-action {
-            padding: 0.8rem 1.2rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1.4rem;
-            color: white;
-            transition: .3s ease;
-            margin: 0 0.3rem;
-        }
-
-        .btn-action:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
-
-        .btn-action.approve {
-            background: #10b981;
-        }
-
-        .btn-action.reject {
-            background: #ef4444;
-        }
     </style>
 </head>
 
@@ -951,24 +914,11 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a href="#" class="menu-link" data-tab="approvals">
-                    <i class='bx bx-user-check'></i>
-                    <span>User Approvals</span>
-                    <span id="approvalsBadge" class="badge" style="display: none;">0</span>
-                </a>
-            </li>
-            <li class="menu-item">
                 <a href="#" class="menu-link" data-tab="classes">
                     <i class='bx bx-book'></i>
                     <span>Class Management</span>
                 </a>
             </li>
-            </li>
-            <li class="menu-item">
-                <a href="#" class="menu-link" data-tab="lms">
-                    <i class='bx bx-chalkboard'></i>
-                    <span>LMS Management</span>
-                </a>
             <li class="menu-item">
                 <a href="#" class="menu-link" data-tab="pretest">
                     <i class='bx bx-file'></i>
@@ -1132,41 +1082,6 @@
             </div>
         </div>
 
-        <!-- User Approvals Tab -->
-        <div class="tab-content" id="approvalsTab">
-            <div style="margin-bottom: 2rem;">
-                <h3 style="font-size: 2rem; color: var(--main-color); margin-bottom: 1rem;">
-                    <i class='bx bx-user-check'></i> Pending User Approvals
-                </h3>
-                <p style="font-size: 1.4rem; color: var(--text-color);">
-                    Review and approve new user registrations below. Approved users will be able to login and access the platform.
-                </p>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Registered At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="approvalsTableBody">
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-color);">
-                                <i class='bx bx-check-circle' style="font-size: 5rem; color: #10b981; display: block; margin-bottom: 1rem;"></i>
-                                No pending approvals
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
         <!-- Class Management Tab -->
         <div class="tab-content" id="classesTab">
             <div class="module-tabs">
@@ -1189,8 +1104,6 @@
                                 <th>Order</th>
                                 <th>Title</th>
                                 <th>Description</th>
-                                <th>Assessor</th>
-                                <th>Students</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1213,8 +1126,6 @@
                                 <th>Order</th>
                                 <th>Title</th>
                                 <th>Description</th>
-                                <th>Assessor</th>
-                                <th>Students</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1237,8 +1148,6 @@
                                 <th>Order</th>
                                 <th>Title</th>
                                 <th>Description</th>
-                                <th>Assessor</th>
-                                <th>Students</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1391,191 +1300,23 @@
         </div>
 
         <!-- Settings Tab -->
-        <!-- LMS Management Tab -->
-        <div class="tab-content" id="lmsTab">
-            <h2 style="font-size: 2.5rem; color: var(--main-color); margin-bottom: 2rem;">
-                <i class='bx bx-chalkboard'></i> LMS Management
-            </h2>
-
-            <!-- Module Selector -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-                <div class="stat-card" style="cursor: pointer; transition: all 0.3s;" onclick="selectLMSModule(1)">
-                    <div class="stat-icon" style="background: #d1fae5;"><i class='bx bx-book' style="color: #065f46;"></i></div>
-                    <div class="stat-info">
-                        <h3 id="lmsFundamentalCount">0</h3>
-                        <p>Fundamental JavaScript</p>
-                        <small id="lmsFundamentalDetails">0 tugas • 0 siswa</small>
-                    </div>
-                </div>
-                <div class="stat-card" style="cursor: pointer; transition: all 0.3s;" onclick="selectLMSModule(2)">
-                    <div class="stat-icon" style="background: #fef3c7;"><i class='bx bx-book' style="color: #92400e;"></i></div>
-                    <div class="stat-info">
-                        <h3 id="lmsIntermediateCount">0</h3>
-                        <p>Intermediate JavaScript</p>
-                        <small id="lmsIntermediateDetails">0 tugas • 0 siswa</small>
-                    </div>
-                </div>
-                <div class="stat-card" style="cursor: pointer; transition: all 0.3s;" onclick="selectLMSModule(3)">
-                    <div class="stat-icon" style="background: #fee2e2;"><i class='bx bx-book' style="color: #991b1b;"></i></div>
-                    <div class="stat-info">
-                        <h3 id="lmsAdvanceCount">0</h3>
-                        <p>Advance JavaScript</p>
-                        <small id="lmsAdvanceDetails">0 tugas • 0 siswa</small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- LMS Stats Cards -->
-            <div class="stats-grid" style="margin-bottom: 3rem;">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class='bx bx-task'></i></div>
-                    <div class="stat-info">
-                        <h3 id="totalAssignments">0</h3>
-                        <p>Total Tugas</p>
-                        <small>Semua modul</small>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fef3c7;"><i class='bx bx-file' style="color: #92400e;"></i></div>
-                    <div class="stat-info">
-                        <h3 id="pendingSubmissions">0</h3>
-                        <p>Pending Review</p>
-                        <small>Belum dinilai</small>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #d1fae5;"><i class='bx bx-check-circle' style="color: #065f46;"></i></div>
-                    <div class="stat-info">
-                        <h3 id="gradedSubmissions">0</h3>
-                        <p>Sudah Dinilai</p>
-                        <small>Completed</small>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #dbeafe;"><i class='bx bx-group' style="color: #1e3a8a;"></i></div>
-                    <div class="stat-info">
-                        <h3 id="totalEnrollments">0</h3>
-                        <p>Total Enrollments</p>
-                        <small>Semua modul</small>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="chart-card" style="margin-bottom: 3rem;">
-                <h3 class="chart-title">Quick Actions</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-                    <button onclick="viewAllAssignments()" style="padding: 1.5rem; background: var(--main-color); color: white; border-radius: 1rem; font-size: 1.4rem; cursor: pointer; transition: all 0.3s; border: none;">
-                        <i class='bx bx-task'></i> View All Assignments
-                    </button>
-                    <button onclick="viewPendingGrades()" style="padding: 1.5rem; background: #fbbf24; color: white; border-radius: 1rem; font-size: 1.4rem; cursor: pointer; transition: all 0.3s; border: none;">
-                        <i class='bx bx-clipboard'></i> Pending Grades
-                    </button>
-                    <button onclick="viewStudentProgress()" style="padding: 1.5rem; background: #10b981; color: white; border-radius: 1rem; font-size: 1.4rem; cursor: pointer; transition: all 0.3s; border: none;">
-                        <i class='bx bx-bar-chart-alt'></i> Student Progress
-                    </button>
-                    <button onclick="exportLMSData()" style="padding: 1.5rem; background: #3b82f6; color: white; border-radius: 1rem; font-size: 1.4rem; cursor: pointer; transition: all 0.3s; border: none;">
-                        <i class='bx bx-download'></i> Export Data
-                    </button>
-                </div>
-            </div>
-
-            <!-- Recent Assignments Table -->
-            <div class="chart-card">
-                <h3 class="chart-title">Recent Assignments</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Module</th>
-                                <th>Class</th>
-                                <th>Assignment Title</th>
-                                <th>Deadline</th>
-                                <th>Submissions</th>
-                                <th>Graded</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lmsAssignmentsTable">
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 3rem;">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Recent Submissions -->
-            <div class="chart-card" style="margin-top: 3rem;">
-                <h3 class="chart-title">Recent Submissions (Pending Review)</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Assignment</th>
-                                <th>Module</th>
-                                <th>Submitted</th>
-                                <th>File</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lmsSubmissionsTable">
-                            <tr>
-                                <td colspan="7" style="text-align: center; padding: 3rem;">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
         <div class="tab-content" id="settingsTab">
             <h2 style="font-size: 2.5rem; color: var(--main-color); margin-bottom: 2rem;">Settings</h2>
 
             <div class="chart-card" style="max-width: 600px; margin-bottom: 2rem;">
                 <h3 class="chart-title">Admin Profile</h3>
                 <form id="profileForm" onsubmit="updateProfile(event)">
-                    <!-- Profile Photo Upload -->
-                    <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
-                        <label style="display: block; margin-bottom: 1rem; font-weight: 600;">Profile Photo</label>
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
-                            <img id="profilePhotoPreview"
-                                 src=""
-                                 alt="Profile Photo"
-                                 style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 0.4rem solid var(--main-color); box-shadow: 0 0.5rem 1.5rem var(--shadow-color);">
-                            <label for="profilePhotoInput" class="btn" style="cursor: pointer; display: inline-block;">
-                                <i class='bx bx-upload'></i> Upload Photo
-                            </label>
-                            <input type="file"
-                                   id="profilePhotoInput"
-                                   accept="image/*"
-                                   style="display: none;"
-                                   onchange="handleProfilePhotoUpload(this)">
-                            <small style="color: #666; font-size: 1.2rem;">Max 2MB (JPG, PNG, GIF, WEBP)</small>
-                        </div>
-                    </div>
-
                     <div class="form-group">
-                        <label for="profileName">Full Name *</label>
+                        <label for="profileName">Full Name</label>
                         <input type="text" id="profileName" required>
                     </div>
                     <div class="form-group">
-                        <label for="profileEmail">Email *</label>
+                        <label for="profileEmail">Email</label>
                         <input type="email" id="profileEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="profilePhone">Phone Number</label>
-                        <input type="tel" id="profilePhone" placeholder="08123456789 or +628123456789">
-                        <small id="phoneError" style="color: #e74c3c; display: none; font-size: 1.2rem; margin-top: 0.5rem;"></small>
                     </div>
                     <div class="form-group">
                         <label for="profileUsername">Username</label>
                         <input type="text" id="profileUsername" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="profileRole">Role</label>
-                        <input type="text" id="profileRole" readonly>
                     </div>
                     <button type="submit" class="btn btn-success">Update Profile</button>
                 </form>
@@ -1602,70 +1343,6 @@
                     </label>
                 </div>
                 <button class="btn btn-success" onclick="saveSettings()">Save Settings</button>
-            </div>
-
-            <div class="chart-card" style="max-width: 800px; margin-top: 2rem;">
-                <h3 class="chart-title"><i class='bx bx-export'></i> Export Data</h3>
-                <p style="margin-bottom: 2rem; font-size: 1.4rem; color: var(--text-color);">Download data in JSON or CSV format for backup or analysis</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-                    <button onclick="ExportImport.exportUsers()" class="btn" style="background: #10b981; color: white;">
-                        <i class='bx bx-user'></i> Export Users (JSON)
-                    </button>
-                    <button onclick="ExportImport.exportUsersCSV()" class="btn" style="background: #10b981; color: white;">
-                        <i class='bx bx-user'></i> Export Users (CSV)
-                    </button>
-                    <button onclick="ExportImport.exportLMSData()" class="btn" style="background: #3b82f6; color: white;">
-                        <i class='bx bx-book'></i> Export LMS Data
-                    </button>
-                    <button onclick="ExportImport.exportPretestResults()" class="btn" style="background: #8b5cf6; color: white;">
-                        <i class='bx bx-task'></i> Export Pretest (JSON)
-                    </button>
-                    <button onclick="ExportImport.exportPretestResultsCSV()" class="btn" style="background: #8b5cf6; color: white;">
-                        <i class='bx bx-task'></i> Export Pretest (CSV)
-                    </button>
-                    <button onclick="ExportImport.exportAssignments()" class="btn" style="background: #f59e0b; color: white;">
-                        <i class='bx bx-file'></i> Export Assignments
-                    </button>
-                    <button onclick="ExportImport.exportSubmissions()" class="btn" style="background: #06b6d4; color: white;">
-                        <i class='bx bx-upload'></i> Export Submissions (JSON)
-                    </button>
-                    <button onclick="ExportImport.exportSubmissionsCSV()" class="btn" style="background: #06b6d4; color: white;">
-                        <i class='bx bx-upload'></i> Export Submissions (CSV)
-                    </button>
-                    <button onclick="ExportImport.exportModulesClasses()" class="btn" style="background: #ec4899; color: white;">
-                        <i class='bx bx-folder'></i> Export Modules
-                    </button>
-                    <button onclick="ExportImport.exportCompleteBackup()" class="btn" style="background: #dc2626; color: white;">
-                        <i class='bx bx-download'></i> Complete Backup
-                    </button>
-                </div>
-            </div>
-
-            <div class="chart-card" style="max-width: 800px; margin-top: 2rem;">
-                <h3 class="chart-title"><i class='bx bx-import'></i> Import Data</h3>
-                <p style="margin-bottom: 2rem; font-size: 1.4rem; color: var(--text-color);">Upload JSON files to restore or import data</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-                    <button onclick="ExportImport.importUsers(true)" class="btn" style="background: #10b981; color: white;">
-                        <i class='bx bx-user-plus'></i> Import Users (Merge)
-                    </button>
-                    <button onclick="ExportImport.importUsers(false)" class="btn" style="background: #f59e0b; color: white;">
-                        <i class='bx bx-user-x'></i> Import Users (Replace)
-                    </button>
-                    <button onclick="ExportImport.importLMSData()" class="btn" style="background: #3b82f6; color: white;">
-                        <i class='bx bx-book-add'></i> Import LMS Data
-                    </button>
-                    <button onclick="ExportImport.importCompleteBackup()" class="btn" style="background: #dc2626; color: white;">
-                        <i class='bx bx-upload'></i> Restore Complete Backup
-                    </button>
-                </div>
-                <div style="margin-top: 2rem; padding: 1.5rem; background: #fef3c7; border-radius: 0.8rem; border-left: 4px solid #f59e0b;">
-                    <strong style="color: #92400e; font-size: 1.4rem;">⚠️ Warning:</strong>
-                    <p style="color: #92400e; font-size: 1.3rem; margin-top: 0.5rem;">
-                        - "Replace" mode will overwrite existing data<br>
-                        - "Merge" mode will add new items without removing existing ones<br>
-                        - Always create a complete backup before importing!
-                    </p>
-                </div>
             </div>
         </div>
     </main>
@@ -1745,53 +1422,9 @@
         </div>
     </div>
 
-    <!-- Manage Class Assignments Modal -->
-    <div class="modal" id="manageAssignmentsModal">
-        <div class="modal-content" style="max-width: 700px;">
-            <div class="modal-header">
-                <h2 class="modal-title">Manage Class Assignments</h2>
-                <span class="modal-close" onclick="closeManageAssignmentsModal()">&times;</span>
-            </div>
-            <div style="padding: 2rem;">
-                <input type="hidden" id="manageClassId">
-
-                <h3 id="manageClassName" style="font-size: 1.8rem; margin-bottom: 2rem; color: var(--main-color);"></h3>
-
-                <!-- Assign Assessor Section -->
-                <div class="form-group" style="margin-bottom: 3rem; padding: 2rem; background: #f3f4f6; border-radius: 1rem;">
-                    <label style="font-size: 1.6rem; font-weight: 600; margin-bottom: 1rem; display: block;">
-                        <i class='bx bx-user-check'></i> Assign Assessor to Class
-                    </label>
-                    <select id="assignAssessorSelect" style="width: 100%; padding: 1rem; font-size: 1.4rem; border-radius: 0.8rem; border: 0.2rem solid #e5e7eb; margin-bottom: 1rem;">
-                        <option value="">Select Assessor</option>
-                    </select>
-                    <button onclick="assignAssessorToClass()" class="btn btn-success" style="width: 100%;">
-                        <i class='bx bx-check'></i> Assign Assessor
-                    </button>
-
-                    <div id="currentAssessor" style="margin-top: 1.5rem; padding: 1rem; background: white; border-radius: 0.8rem;"></div>
-                </div>
-
-                <!-- View Students Section -->
-                <div class="form-group" style="padding: 2rem; background: #f3f4f6; border-radius: 1rem;">
-                    <label style="font-size: 1.6rem; font-weight: 600; margin-bottom: 1rem; display: block;">
-                        <i class='bx bx-group'></i> Enrolled Students
-                    </label>
-                    <div id="enrolledStudentsList" style="max-height: 300px; overflow-y: auto;"></div>
-                </div>
-
-                <div class="modal-footer" style="margin-top: 2rem;">
-                    <button type="button" class="btn btn-danger" onclick="closeManageAssignmentsModal()">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Load database and auth -->
     <script src="../../data/database.js"></script>
     <script src="../../js/auth.js"></script>
-    <script src="../../js/utils.js"></script>
-    <script src="../../js/export-import.js"></script>
 
     <script>
         // Check authentication
@@ -1870,22 +1503,18 @@
             const titles = {
                 overview: 'Dashboard Overview',
                 users: 'User Management',
-                approvals: 'User Approvals',
                 classes: 'Class Management',
                 pretest: 'Pretest Results',
                 reports: 'Reports & Analytics',
-                lms: 'LMS Management',
                 settings: 'Settings'
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Dashboard';
 
             // Render specific tab content
             if (tabName === 'users') renderUsersTable();
-            if (tabName === 'approvals') loadPendingApprovals();
             if (tabName === 'classes') renderClassesTables();
             if (tabName === 'pretest') renderPretestTable();
             if (tabName === 'reports') updateReports();
-            if (tabName === 'lms') loadLMSData();
         }
 
         // Switch Module Tab
@@ -1910,7 +1539,6 @@
             renderClassesTables();
             renderPretestTable();
             updateReports();
-            loadPendingApprovals(); // Load approval badge count
         }
 
         // Update Stats
@@ -2244,54 +1872,23 @@
                 const tbody = document.getElementById(`classesTableModule${moduleId}`);
 
                 if (module) {
-                    tbody.innerHTML = module.classes.map(cls => {
-                        // Find assessor assigned to this class
-                        const assignedAssessor = Database.users.find(u =>
-                            u.role === 'assessor' &&
-                            u.assignedClasses &&
-                            u.assignedClasses.some(ac => ac.classId === cls.id && ac.moduleId === moduleId)
-                        );
-
-                        // Count students enrolled in this class
-                        const students = Database.getStudentsByClass(cls.id);
-                        const studentCount = students.length;
-
-                        return `
-                            <tr>
-                                <td>${cls.order}</td>
-                                <td>${cls.title}</td>
-                                <td>${cls.description}</td>
-                                <td>
-                                    ${assignedAssessor
-                                        ? `<span style="color: var(--main-color); font-weight: 600;">
-                                            <i class='bx bx-user-check'></i> ${assignedAssessor.name}
-                                           </span>`
-                                        : `<span style="color: #9ca3af;">
-                                            <i class='bx bx-user-x'></i> Not assigned
-                                           </span>`
-                                    }
-                                </td>
-                                <td>
-                                    <span style="color: ${studentCount > 0 ? 'var(--main-color)' : '#9ca3af'}; font-weight: 600;">
-                                        <i class='bx bx-group'></i> ${studentCount} students
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-icon btn-success" onclick="openManageAssignmentsModal(${cls.id}, ${moduleId})" title="Manage Assignments">
-                                            <i class='bx bx-cog'></i>
-                                        </button>
-                                        <button class="btn btn-icon btn-warning" onclick="editClass(${cls.id})" title="Edit">
-                                            <i class='bx bx-edit'></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-icon" onclick="deleteClass(${cls.id})" title="Delete">
-                                            <i class='bx bx-trash'></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
+                    tbody.innerHTML = module.classes.map(cls => `
+                        <tr>
+                            <td>${cls.order}</td>
+                            <td>${cls.title}</td>
+                            <td>${cls.description}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-icon btn-warning" onclick="editClass(${cls.id})" title="Edit">
+                                        <i class='bx bx-edit'></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-icon" onclick="deleteClass(${cls.id})" title="Delete">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
                 }
             });
         }
@@ -2537,118 +2134,27 @@
 
         // Load User Profile
         function loadUserProfile() {
-            document.getElementById('profileName').value = currentUser.name || '';
-            document.getElementById('profileEmail').value = currentUser.email || '';
-            document.getElementById('profilePhone').value = currentUser.phone || '';
-            document.getElementById('profileUsername').value = currentUser.username || '';
-            document.getElementById('profileRole').value = currentUser.role || '';
-
-            // Load profile photo
-            const photoPreview = document.getElementById('profilePhotoPreview');
-            if (currentUser.photoUrl) {
-                photoPreview.src = currentUser.photoUrl;
-            } else {
-                photoPreview.src = generateAvatarUrl(currentUser.name);
-            }
-
-            // Check profile completion
-            initProfileCompletionIndicator(currentUser);
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileEmail').value = currentUser.email;
+            document.getElementById('profileUsername').value = currentUser.username;
         }
 
         // Update Profile
         function updateProfile(event) {
             event.preventDefault();
 
-            const name = document.getElementById('profileName').value.trim();
-            const email = document.getElementById('profileEmail').value.trim();
-            const phone = document.getElementById('profilePhone').value.trim();
-
-            // Validate name
-            const nameValidation = validateName(name);
-            if (!nameValidation.valid) {
-                alert(nameValidation.message);
-                return;
-            }
-
-            // Validate email
-            const emailValidation = validateEmail(email);
-            if (!emailValidation.valid) {
-                alert(emailValidation.message);
-                return;
-            }
-
-            // Validate phone if provided
-            if (phone) {
-                const phoneValidation = validatePhoneNumber(phone);
-                if (!phoneValidation.valid) {
-                    const phoneError = document.getElementById('phoneError');
-                    phoneError.textContent = phoneValidation.message;
-                    phoneError.style.display = 'block';
-                    return;
-                } else {
-                    document.getElementById('phoneError').style.display = 'none';
-                }
-            }
-
             const updates = {
-                name: name,
-                email: email,
-                phone: phone,
-                photoUrl: currentUser.photoUrl || ''
+                name: document.getElementById('profileName').value,
+                email: document.getElementById('profileEmail').value
             };
 
             const result = authService.updateCurrentUser(updates);
             if (result.success) {
                 alert('Profile updated successfully!');
                 document.getElementById('userName').textContent = updates.name;
-
-                // Update avatar in header
-                const headerAvatar = document.getElementById('userAvatar');
-                if (updates.photoUrl) {
-                    headerAvatar.innerHTML = `<img src="${updates.photoUrl}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">`;
-                } else {
-                    headerAvatar.textContent = updates.name.charAt(0).toUpperCase();
-                }
-
-                // Refresh profile completion indicator
-                currentUser = result.user;
-                initProfileCompletionIndicator(currentUser);
+                document.getElementById('userAvatar').textContent = updates.name.charAt(0).toUpperCase();
             } else {
-                alert('Failed to update profile: ' + result.message);
-            }
-        }
-
-        // Handle Profile Photo Upload
-        async function handleProfilePhotoUpload(input) {
-            const preview = document.getElementById('profilePhotoPreview');
-
-            try {
-                const photoUrl = await handlePhotoUpload(input, preview);
-
-                if (photoUrl) {
-                    // Store in current user object temporarily
-                    currentUser.photoUrl = photoUrl;
-
-                    // Auto-save to database
-                    const result = authService.updateCurrentUser({ photoUrl: photoUrl });
-                    if (result.success) {
-                        // Update header avatar
-                        const headerAvatar = document.getElementById('userAvatar');
-                        headerAvatar.innerHTML = `<img src="${photoUrl}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">`;
-
-                        alert('Profile photo uploaded successfully!');
-
-                        // Refresh profile completion indicator
-                        currentUser = result.user;
-                        initProfileCompletionIndicator(currentUser);
-                    } else {
-                        alert('Failed to save photo. Please try again.');
-                        preview.src = currentUser.photoUrl || generateAvatarUrl(currentUser.name);
-                    }
-                }
-            } catch (error) {
-                console.error('Photo upload error:', error);
-                alert('Failed to upload photo. Please try again.');
+                alert('Failed to update profile');
             }
         }
 
@@ -2676,462 +2182,10 @@
             if (e.target.classList.contains('modal')) {
                 closeUserModal();
                 closeClassModal();
-                closeManageAssignmentsModal();
             }
         });
 
         // Initialize
-
-        // ========== LMS MANAGEMENT FUNCTIONS ==========
-
-        // Load LMS Data
-        function loadLMSData() {
-            // Count assignments per module
-            const modules = Database.modules;
-            modules.forEach(module => {
-                const assignments = module.classes.flatMap(cls => 
-                    Database.getAssignmentsByClassId(cls.id)
-                );
-                const enrollments = Database.enrollments.filter(e => e.moduleId === module.id);
-                
-                const levelName = module.level.charAt(0).toUpperCase() + module.level.slice(1);
-                const countEl = document.getElementById('lms' + levelName + 'Count');
-                const detailsEl = document.getElementById('lms' + levelName + 'Details');
-                if (countEl) countEl.textContent = assignments.length;
-                if (detailsEl) detailsEl.textContent = assignments.length + ' tugas • ' + enrollments.length + ' siswa';
-            });
-
-            // Total stats
-            const allAssignments = Database.assignments;
-            const allSubmissions = Database.submissions;
-            const pendingCount = allSubmissions.filter(s => s.score === null).length;
-            const gradedCount = allSubmissions.filter(s => s.score !== null).length;
-            const totalEnrollments = Database.enrollments.length;
-
-            document.getElementById('totalAssignments').textContent = allAssignments.length;
-            document.getElementById('pendingSubmissions').textContent = pendingCount;
-            document.getElementById('gradedSubmissions').textContent = gradedCount;
-            document.getElementById('totalEnrollments').textContent = totalEnrollments;
-
-            // Load tables
-            loadLMSAssignmentsTable();
-            loadLMSSubmissionsTable();
-        }
-
-        // Load Assignments Table
-        function loadLMSAssignmentsTable() {
-            const tableBody = document.getElementById('lmsAssignmentsTable');
-            const assignments = Database.assignments.slice(0, 10);
-
-            if (assignments.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem;">Belum ada tugas</td></tr>';
-                return;
-            }
-
-            tableBody.innerHTML = assignments.map(assignment => {
-                let className = 'Unknown';
-                let moduleName = 'Unknown';
-                
-                Database.modules.forEach(module => {
-                    const foundClass = module.classes.find(c => c.id === assignment.classId);
-                    if (foundClass) {
-                        className = foundClass.title;
-                        moduleName = module.name;
-                    }
-                });
-
-                const submissions = Database.getSubmissionsByAssignmentId(assignment.id);
-                const gradedCount = submissions.filter(s => s.score !== null).length;
-
-                return '<tr><td><span class="badge">' + moduleName.split(' ')[0] + '</span></td><td>' + className + '</td><td><strong>' + assignment.title + '</strong></td><td>' + new Date(assignment.dueDate).toLocaleDateString('id-ID') + '</td><td>' + submissions.length + '</td><td>' + gradedCount + '/' + submissions.length + '</td><td><button onclick="viewAssignmentDetails(' + assignment.id + ')" class="btn-action" style="background: var(--main-color);"><i class=\'bx bx-show\'></i></button></td></tr>';
-            }).join('');
-        }
-
-        // Load Submissions Table (Pending only)
-        function loadLMSSubmissionsTable() {
-            const tableBody = document.getElementById('lmsSubmissionsTable');
-            const pendingSubmissions = Database.submissions.filter(s => s.score === null).slice(0, 10);
-
-            if (pendingSubmissions.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem;">Tidak ada pengumpulan yang perlu direview</td></tr>';
-                return;
-            }
-
-            tableBody.innerHTML = pendingSubmissions.map(submission => {
-                const user = Database.findUserById(submission.userId);
-                const assignment = Database.assignments.find(a => a.id === submission.assignmentId);
-                
-                let moduleName = 'Unknown';
-                if (assignment) {
-                    Database.modules.forEach(module => {
-                        if (module.classes.find(c => c.id === assignment.classId)) {
-                            moduleName = module.name.split(' ')[0];
-                        }
-                    });
-                }
-
-                return '<tr><td><strong>' + (user ? user.name : 'Unknown') + '</strong></td><td>' + (assignment ? assignment.title : 'Unknown') + '</td><td><span class="badge">' + moduleName + '</span></td><td>' + new Date(submission.submittedAt).toLocaleDateString('id-ID') + '</td><td><a href="#" class="download-link"><i class=\'bx bx-download\'></i> ' + submission.fileName + '</a></td><td><span class="badge" style="background: #fef3c7; color: #92400e;">Pending</span></td><td><button onclick="quickGrade(' + submission.id + ')" class="btn-action" style="background: #10b981;"><i class=\'bx bx-check-circle\'></i> Grade</button></td></tr>';
-            }).join('');
-        }
-
-        // Quick Actions
-        function selectLMSModule(moduleId) {
-            if (confirm('Redirect to detailed LMS management for this module?')) {
-                window.location.href = '../assessor/dashboard.html';
-            }
-        }
-
-        function viewAllAssignments() {
-            alert('Total Assignments: ' + Database.assignments.length + '\nClick OK to view detailed list');
-        }
-
-        function viewPendingGrades() {
-            const pending = Database.submissions.filter(s => s.score === null).length;
-            alert('Pending Reviews: ' + pending + ' submissions need grading');
-        }
-
-        function viewStudentProgress() {
-            const enrolled = Database.enrollments.length;
-            alert('Total Enrollments: ' + enrolled + '\nClick OK for detailed analytics');
-        }
-
-        function exportLMSData() {
-            const data = {
-                assignments: Database.assignments,
-                submissions: Database.submissions,
-                enrollments: Database.enrollments,
-                exportDate: new Date().toISOString()
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'lms-data-' + new Date().toISOString().split('T')[0] + '.json';
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            alert('LMS data exported successfully!');
-        }
-
-        function viewAssignmentDetails(assignmentId) {
-            const assignment = Database.assignments.find(a => a.id === assignmentId);
-            if (assignment) {
-                alert('Assignment: ' + assignment.title + '\nDeadline: ' + assignment.dueDate + '\n\nClick OK to view full details');
-            }
-        }
-
-        function quickGrade(submissionId) {
-            const submission = Database.submissions.find(s => s.id === submissionId);
-            const user = Database.findUserById(submission.userId);
-            const assignment = Database.assignments.find(a => a.id === submission.assignmentId);
-
-            const score = prompt('Grade submission from ' + user.name + '\nAssignment: ' + assignment.title + '\n\nEnter score (0-' + assignment.maxScore + '):', '');
-
-            if (score !== null && score !== '') {
-                const numScore = parseInt(score);
-                if (numScore >= 0 && numScore <= assignment.maxScore) {
-                    const feedback = prompt('Enter feedback (optional):', '');
-                    Database.gradeSubmission(submissionId, numScore, feedback || '', authService.getCurrentUser().id);
-                    saveToLocalStorage();
-                    alert('Submission graded successfully!');
-                    loadLMSData();
-                } else {
-                    alert('Invalid score! Must be between 0 and ' + assignment.maxScore);
-                }
-            }
-        }
-
-        // ========== CLASS ASSIGNMENT MANAGEMENT FUNCTIONS ==========
-
-        // Reload classes for a specific module
-        function loadClasses(moduleId) {
-            renderClassesTables();
-        }
-
-        // Open Manage Assignments Modal
-        function openManageAssignmentsModal(classId, moduleId) {
-            loadFromLocalStorage();
-
-            const module = Database.modules.find(m => m.id === moduleId);
-            if (!module) {
-                alert('Module not found');
-                return;
-            }
-
-            const classData = module.classes.find(c => c.id === classId);
-            if (!classData) {
-                alert('Class not found');
-                return;
-            }
-
-            // Store current class and module IDs
-            document.getElementById('manageClassId').value = classId;
-            document.getElementById('manageClassId').dataset.moduleId = moduleId;
-            document.getElementById('manageClassName').textContent = classData.title + ' - ' + module.name;
-
-            // Load assessor dropdown
-            loadAssessorDropdown();
-
-            // Show current assessor assignment
-            displayCurrentAssessor(classId, moduleId);
-
-            // Load enrolled students
-            loadEnrolledStudents(classId, moduleId);
-
-            // Show modal
-            document.getElementById('manageAssignmentsModal').style.display = 'flex';
-        }
-
-        // Close Manage Assignments Modal
-        function closeManageAssignmentsModal() {
-            document.getElementById('manageAssignmentsModal').style.display = 'none';
-        }
-
-        // Load Assessor Dropdown
-        function loadAssessorDropdown() {
-            loadFromLocalStorage();
-            const assessors = Database.users.filter(u => u.role === 'assessor');
-            const select = document.getElementById('assignAssessorSelect');
-
-            select.innerHTML = '<option value="">Select Assessor</option>';
-            assessors.forEach(assessor => {
-                select.innerHTML += `<option value="${assessor.id}">${assessor.name} (${assessor.email})</option>`;
-            });
-        }
-
-        // Display Current Assessor Assignment
-        function displayCurrentAssessor(classId, moduleId) {
-            loadFromLocalStorage();
-            const module = Database.modules.find(m => m.id === moduleId);
-            const currentAssessorDiv = document.getElementById('currentAssessor');
-
-            // Find assessor assigned to this class
-            const assignedAssessor = Database.users.find(u =>
-                u.role === 'assessor' &&
-                u.assignedClasses &&
-                u.assignedClasses.some(ac => ac.classId === classId && ac.moduleId === moduleId)
-            );
-
-            if (assignedAssessor) {
-                currentAssessorDiv.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 0.3rem;">Currently Assigned</p>
-                            <p style="font-size: 1.5rem; font-weight: 600; color: var(--main-color);">
-                                <i class='bx bx-user-check'></i> ${assignedAssessor.name}
-                            </p>
-                            <p style="font-size: 1.2rem; color: #6b7280;">${assignedAssessor.email}</p>
-                        </div>
-                        <button onclick="unassignAssessorFromClass(${assignedAssessor.id}, ${classId}, ${moduleId})"
-                                class="btn-action"
-                                style="background: #ef4444;">
-                            <i class='bx bx-x'></i>
-                        </button>
-                    </div>
-                `;
-            } else {
-                currentAssessorDiv.innerHTML = `
-                    <p style="text-align: center; color: #9ca3af; font-size: 1.3rem;">
-                        <i class='bx bx-info-circle'></i> No assessor assigned to this class yet
-                    </p>
-                `;
-            }
-        }
-
-        // Load Enrolled Students
-        function loadEnrolledStudents(classId, moduleId) {
-            loadFromLocalStorage();
-            const students = Database.getStudentsByClass(classId);
-            const container = document.getElementById('enrolledStudentsList');
-
-            if (students.length === 0) {
-                container.innerHTML = `
-                    <p style="text-align: center; padding: 2rem; color: #9ca3af; font-size: 1.3rem;">
-                        <i class='bx bx-user-x'></i> No students enrolled in this class yet
-                    </p>
-                `;
-                return;
-            }
-
-            container.innerHTML = `
-                <div style="display: grid; gap: 1rem;">
-                    ${students.map(student => `
-                        <div style="padding: 1.2rem; background: white; border: 1px solid #e5e7eb; border-radius: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <p style="font-size: 1.4rem; font-weight: 600; margin-bottom: 0.3rem;">
-                                    <i class='bx bx-user'></i> ${student.userName}
-                                </p>
-                                <p style="font-size: 1.2rem; color: #6b7280;">${student.userEmail}</p>
-                                <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem; font-size: 1.2rem;">
-                                    <span><i class='bx bx-task'></i> ${student.submittedAssignments}/${student.totalAssignments} assignments</span>
-                                    <span><i class='bx bx-bar-chart'></i> Avg: ${student.avgScore}</span>
-                                </div>
-                            </div>
-                            <span style="padding: 0.5rem 1rem; background: #dbeafe; color: #1e40af; border-radius: 0.5rem; font-size: 1.2rem;">
-                                Student
-                            </span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        // Assign Assessor to Class
-        function assignAssessorToClass() {
-            const assessorId = parseInt(document.getElementById('assignAssessorSelect').value);
-            const classId = parseInt(document.getElementById('manageClassId').value);
-            const moduleId = parseInt(document.getElementById('manageClassId').dataset.moduleId);
-
-            if (!assessorId) {
-                alert('Please select an assessor');
-                return;
-            }
-
-            loadFromLocalStorage();
-
-            // Check if another assessor is already assigned
-            const currentAssessor = Database.users.find(u =>
-                u.role === 'assessor' &&
-                u.assignedClasses &&
-                u.assignedClasses.some(ac => ac.classId === classId && ac.moduleId === moduleId)
-            );
-
-            if (currentAssessor && currentAssessor.id !== assessorId) {
-                if (!confirm(`Class is already assigned to ${currentAssessor.name}. Replace with new assessor?`)) {
-                    return;
-                }
-                // Unassign current assessor
-                unassignAssessorFromClass(currentAssessor.id, classId, moduleId, false);
-            }
-
-            const result = Database.assignAssessorToClass(assessorId, classId);
-
-            if (result) {
-                saveToLocalStorage();
-                alert('Assessor assigned successfully!');
-
-                // Reload the class table and modal content
-                loadClasses(moduleId);
-                displayCurrentAssessor(classId, moduleId);
-
-                // Reset dropdown
-                document.getElementById('assignAssessorSelect').value = '';
-            } else {
-                alert('Failed to assign assessor. Assessor may already be assigned to this class.');
-            }
-        }
-
-        // Unassign Assessor from Class
-        function unassignAssessorFromClass(assessorId, classId, moduleId, showConfirm = true) {
-            if (showConfirm && !confirm('Remove this assessor from the class?')) {
-                return;
-            }
-
-            loadFromLocalStorage();
-
-            const assessor = Database.findUserById(assessorId);
-            if (!assessor || !assessor.assignedClasses) {
-                alert('Assessor not found or has no assignments');
-                return;
-            }
-
-            // Remove the class assignment
-            assessor.assignedClasses = assessor.assignedClasses.filter(
-                ac => !(ac.classId === classId && ac.moduleId === moduleId)
-            );
-
-            saveToLocalStorage();
-
-            if (showConfirm) {
-                alert('Assessor unassigned successfully!');
-
-                // Reload the class table and modal content
-                loadClasses(moduleId);
-                displayCurrentAssessor(classId, moduleId);
-            }
-        }
-
-        // ==================== USER APPROVAL FUNCTIONS ====================
-
-        // Load pending user approvals
-        function loadPendingApprovals() {
-            loadFromLocalStorage();
-            const pendingUsers = Database.getPendingUsers();
-            const tbody = document.getElementById('approvalsTableBody');
-            const badge = document.getElementById('approvalsBadge');
-
-            // Update badge count
-            if (pendingUsers.length > 0) {
-                badge.textContent = pendingUsers.length;
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
-            }
-
-            if (pendingUsers.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-color);">
-                            <i class='bx bx-check-circle' style="font-size: 5rem; color: #10b981; display: block; margin-bottom: 1rem;"></i>
-                            No pending approvals
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = pendingUsers.map(user => `
-                <tr>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
-                    <td>${new Date().toLocaleDateString('id-ID')}</td>
-                    <td>
-                        <button class="btn-action approve" onclick="approveUser(${user.id})" title="Approve">
-                            <i class='bx bx-check'></i>
-                        </button>
-                        <button class="btn-action reject" onclick="rejectUser(${user.id})" title="Reject">
-                            <i class='bx bx-x'></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Approve user
-        function approveUser(userId) {
-            if (!confirm('Approve this user registration?')) return;
-
-            loadFromLocalStorage();
-            const result = Database.approveUser(userId, currentUser.id);
-
-            if (result.success) {
-                saveToLocalStorage();
-                alert('User approved successfully! They can now login to the platform.');
-                loadPendingApprovals();
-            } else {
-                alert(result.message);
-            }
-        }
-
-        // Reject user
-        function rejectUser(userId) {
-            if (!confirm('Reject this user registration? This will permanently delete their account.')) return;
-
-            loadFromLocalStorage();
-            const result = Database.rejectUser(userId, currentUser.id);
-
-            if (result.success) {
-                saveToLocalStorage();
-                alert('User registration rejected and removed from the system.');
-                loadPendingApprovals();
-            } else {
-                alert(result.message);
-            }
-        }
-
         init();
     </script>
 

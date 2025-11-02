@@ -12,6 +12,14 @@ class AuthService {
         const user = Database.authenticateUser(username, password);
 
         if (user) {
+            // Check if user is approved (admins and assessors are auto-approved)
+            if (!user.approved && user.role === 'user') {
+                return {
+                    success: false,
+                    message: 'Akun Anda masih menunggu persetujuan dari administrator. Silakan coba lagi nanti.'
+                };
+            }
+
             this.currentUser = user;
             this.saveSession();
             return { success: true, user: user };

@@ -230,6 +230,87 @@
         </div>
     </section>
 
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: var(--bg-color); padding: 3rem; border-radius: 1.5rem; max-width: 500px; width: 90%; box-shadow: 0 1rem 3rem rgba(0,0,0,0.3);">
+            <h2 style="font-size: 2.4rem; color: var(--main-color); margin-bottom: 1.5rem;">Lupa Password?</h2>
+
+            <!-- Step 1: Email Input -->
+            <div id="step1" style="display: block;">
+                <p style="font-size: 1.4rem; margin-bottom: 2rem; color: var(--text-color);">
+                    Masukkan email Anda untuk menerima link reset password
+                </p>
+                <div class="form-group">
+                    <label for="resetEmail" style="font-size: 1.5rem; margin-bottom: 0.8rem; display: block;">Email</label>
+                    <input type="email" id="resetEmail" style="width: 100%; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: 0.2rem solid var(--main-color);" placeholder="email@example.com" required>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button onclick="closeResetModal()" style="flex: 1; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: 0.2rem solid var(--main-color); background: transparent; color: var(--main-color); cursor: pointer;">
+                        Batal
+                    </button>
+                    <button onclick="sendResetLink()" style="flex: 1; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: none; background: var(--main-color); color: white; cursor: pointer;">
+                        Kirim Link
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Security Question -->
+            <div id="step2" style="display: none;">
+                <p style="font-size: 1.4rem; margin-bottom: 2rem; color: var(--text-color);">
+                    Untuk keamanan, jawab pertanyaan berikut:
+                </p>
+                <div class="form-group">
+                    <label style="font-size: 1.5rem; margin-bottom: 0.8rem; display: block;" id="securityQuestionLabel">Pertanyaan Keamanan</label>
+                    <input type="text" id="securityAnswer" style="width: 100%; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: 0.2rem solid var(--main-color);" placeholder="Jawaban Anda" required>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button onclick="backToStep1()" style="flex: 1; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: 0.2rem solid var(--main-color); background: transparent; color: var(--main-color); cursor: pointer;">
+                        Kembali
+                    </button>
+                    <button onclick="verifyAnswer()" style="flex: 1; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: none; background: var(--main-color); color: white; cursor: pointer;">
+                        Verifikasi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: New Password -->
+            <div id="step3" style="display: none;">
+                <p style="font-size: 1.4rem; margin-bottom: 2rem; color: var(--text-color);">
+                    Buat password baru untuk akun Anda
+                </p>
+                <div class="form-group">
+                    <label for="newPassword" style="font-size: 1.5rem; margin-bottom: 0.8rem; display: block;">Password Baru</label>
+                    <input type="password" id="newPassword" style="width: 100%; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: 0.2rem solid var(--main-color);" placeholder="Minimal 6 karakter" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword" style="font-size: 1.5rem; margin-bottom: 0.8rem; display: block;">Konfirmasi Password</label>
+                    <input type="password" id="confirmPassword" style="width: 100%; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: 0.2rem solid var(--main-color);" placeholder="Ketik ulang password" required>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button onclick="closeResetModal()" style="flex: 1; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: 0.2rem solid var(--main-color); background: transparent; color: var(--main-color); cursor: pointer;">
+                        Batal
+                    </button>
+                    <button onclick="resetPassword()" style="flex: 1; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: none; background: var(--main-color); color: white; cursor: pointer;">
+                        Reset Password
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Success Message -->
+            <div id="step4" style="display: none; text-align: center;">
+                <div style="font-size: 6rem; color: #10b981; margin-bottom: 1.5rem;">✓</div>
+                <h3 style="font-size: 2rem; color: #10b981; margin-bottom: 1rem;">Password Berhasil Direset!</h3>
+                <p style="font-size: 1.4rem; color: var(--text-color); margin-bottom: 2rem;">
+                    Link reset password telah dikirim ke email Anda.<br>
+                    Silakan cek inbox atau spam folder.
+                </p>
+                <button onclick="closeResetModal()" style="width: 100%; padding: 1.2rem; font-size: 1.5rem; border-radius: 0.8rem; border: none; background: var(--main-color); color: white; cursor: pointer;">
+                    OK, Kembali ke Login
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Load database and auth -->
     <script src="../../data/database.js"></script>
     <script src="../../js/auth.js"></script>
@@ -279,6 +360,183 @@
         if (savedMode === 'enabled') {
             body.classList.add('dark-mode');
         }
+
+        // ==================== FORGOT PASSWORD FUNCTIONALITY ====================
+
+        let currentResetUser = null;
+
+        // Open forgot password modal
+        document.querySelector('.forgot-password').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('forgotPasswordModal').style.display = 'flex';
+            resetModalSteps();
+        });
+
+        // Close modal
+        function closeResetModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+            resetModalSteps();
+            currentResetUser = null;
+        }
+
+        // Reset all steps
+        function resetModalSteps() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step4').style.display = 'none';
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('securityAnswer').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // Step 1: Send reset link (verify email exists)
+        function sendResetLink() {
+            const email = document.getElementById('resetEmail').value.trim();
+
+            if (!email) {
+                alert('Masukkan email Anda!');
+                return;
+            }
+
+            // Find user by email
+            loadFromLocalStorage();
+            const user = Database.users.find(u => u.email === email);
+
+            if (!user) {
+                alert('Email tidak ditemukan dalam sistem!');
+                return;
+            }
+
+            currentResetUser = user;
+
+            // Generate and save reset token (simulating email)
+            const resetToken = generateResetToken();
+            const resetData = {
+                token: resetToken,
+                email: email,
+                userId: user.id,
+                expires: Date.now() + (60 * 60 * 1000), // 1 hour
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('codesmart_reset_token', JSON.stringify(resetData));
+
+            // Show security question (if exists) or go directly to reset
+            if (user.securityQuestion && user.securityAnswer) {
+                document.getElementById('securityQuestionLabel').textContent = user.securityQuestion;
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            } else {
+                // No security question, go directly to password reset
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+            }
+
+            // Log for demo purposes
+            console.log('📧 [SIMULATED EMAIL]');
+            console.log('To:', email);
+            console.log('Subject: Reset Password - CodeSmart');
+            console.log('Token:', resetToken);
+            console.log('Link: http://localhost/reset-password?token=' + resetToken);
+            console.log('Expires in: 1 hour');
+        }
+
+        // Step 2: Verify security answer
+        function verifyAnswer() {
+            const answer = document.getElementById('securityAnswer').value.trim();
+
+            if (!answer) {
+                alert('Masukkan jawaban Anda!');
+                return;
+            }
+
+            if (!currentResetUser) {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+                closeResetModal();
+                return;
+            }
+
+            // Verify answer (case insensitive)
+            if (answer.toLowerCase() !== currentResetUser.securityAnswer.toLowerCase()) {
+                alert('Jawaban salah! Silakan coba lagi.');
+                return;
+            }
+
+            // Answer correct, proceed to password reset
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+        }
+
+        // Back to step 1
+        function backToStep1() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+            currentResetUser = null;
+        }
+
+        // Step 3: Reset password
+        function resetPassword() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!newPassword || !confirmPassword) {
+                alert('Masukkan password baru!');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('Password minimal 6 karakter!');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('Password tidak cocok!');
+                return;
+            }
+
+            if (!currentResetUser) {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+                closeResetModal();
+                return;
+            }
+
+            // Update password
+            loadFromLocalStorage();
+            const userIndex = Database.users.findIndex(u => u.id === currentResetUser.id);
+
+            if (userIndex === -1) {
+                alert('User tidak ditemukan!');
+                return;
+            }
+
+            Database.users[userIndex].password = newPassword;
+            saveToLocalStorage();
+
+            // Clear reset token
+            localStorage.removeItem('codesmart_reset_token');
+
+            // Log password reset
+            console.log('✅ Password reset successful for:', currentResetUser.email);
+            console.log('🔐 New password:', newPassword);
+
+            // Show success message
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step4').style.display = 'block';
+        }
+
+        // Generate random reset token
+        function generateResetToken() {
+            return 'rst_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('forgotPasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeResetModal();
+            }
+        });
     </script>
 
     <!-- PWA js -->

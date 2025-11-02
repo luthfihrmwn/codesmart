@@ -1,0 +1,1086 @@
+/* ===================================
+   LMS (Learning Management System) Styles
+   CodeSmart Professional LMS Design
+   =================================== */
+
+/* LMS Container */
+.lms-container {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+/* Left Sidebar - Class Navigation */
+.lms-sidebar {
+    background: var(--white-color);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.lms-sidebar h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--main-color);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.class-list {
+    list-style: none;
+}
+
+.class-item {
+    padding: 1.2rem;
+    margin-bottom: 0.8rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.class-item:hover {
+    background: #f0f0f0;
+    transform: translateX(5px);
+}
+
+.class-item.active {
+    background: var(--main-color);
+    color: var(--white-color);
+    border-color: var(--main-color);
+}
+
+.class-item.completed {
+    border-color: #10b981;
+}
+
+.class-item .class-number {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(117, 78, 249, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.class-item.active .class-number {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.class-item.completed .class-number {
+    background: #10b981;
+    color: white;
+}
+
+.class-item .class-info {
+    flex: 1;
+}
+
+.class-item .class-title {
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+}
+
+.class-item .class-desc {
+    font-size: 1.1rem;
+    opacity: 0.7;
+}
+
+/* Main Content Area */
+.lms-content {
+    background: var(--white-color);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
+}
+
+.lms-header {
+    margin-bottom: 3rem;
+}
+
+.lms-header h1 {
+    font-size: 3rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.lms-header .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.3rem;
+    color: #666;
+}
+
+.lms-header .breadcrumb a {
+    color: var(--main-color);
+    text-decoration: none;
+}
+
+.lms-header .breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+/* Tabs Navigation */
+.lms-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.lms-tab {
+    padding: 1.2rem 2rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.lms-tab:hover {
+    color: var(--main-color);
+}
+
+.lms-tab.active {
+    color: var(--main-color);
+    border-bottom-color: var(--main-color);
+}
+
+.lms-tab i {
+    font-size: 2rem;
+}
+
+/* Tab Content */
+.lms-tab-content {
+    display: none;
+}
+
+.lms-tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Material Section */
+.material-section {
+    line-height: 1.8;
+}
+
+.material-section h2 {
+    font-size: 2.4rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.material-section h3 {
+    font-size: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 1.2rem;
+    color: var(--main-color);
+}
+
+.material-section p {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.material-section pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 2rem;
+    border-radius: 1rem;
+    overflow-x: auto;
+    margin: 2rem 0;
+    font-size: 1.4rem;
+    line-height: 1.6;
+}
+
+.material-section code {
+    font-family: 'Courier New', monospace;
+    background: #f5f5f5;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.4rem;
+    font-size: 1.3rem;
+}
+
+.material-section pre code {
+    background: transparent;
+    padding: 0;
+}
+
+/* Assignment Card */
+.assignment-card {
+    background: linear-gradient(135deg, #754ef9, #9d7bea);
+    color: white;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0.8rem 2rem rgba(117, 78, 249, 0.3);
+}
+
+.assignment-card h3 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.assignment-card p {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.95;
+}
+
+.assignment-meta {
+    display: flex;
+    gap: 2rem;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+}
+
+.assignment-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Upload Area */
+.upload-area {
+    background: white;
+    color: var(--text-color);
+    padding: 3rem;
+    border-radius: 1rem;
+    text-align: center;
+    border: 3px dashed #754ef9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+}
+
+.upload-area:hover {
+    background: #f9f7ff;
+    border-color: #9d7bea;
+}
+
+.upload-area.dragover {
+    background: #f0ebff;
+    border-color: #754ef9;
+    transform: scale(1.02);
+}
+
+.upload-area i {
+    font-size: 5rem;
+    color: var(--main-color);
+    margin-bottom: 1rem;
+}
+
+.upload-area p {
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.upload-area .file-types {
+    font-size: 1.2rem;
+    color: #999;
+    margin-top: 0.5rem;
+}
+
+.uploaded-file {
+    background: #f0f0f0;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.uploaded-file .file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.uploaded-file .file-info i {
+    font-size: 3rem;
+    color: var(--main-color);
+}
+
+.uploaded-file .file-details {
+    flex: 1;
+}
+
+.uploaded-file .file-name {
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+
+.uploaded-file .file-size {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.uploaded-file .remove-file {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+}
+
+.uploaded-file .remove-file:hover {
+    background: #dc2626;
+}
+
+/* Submission Status */
+.submission-status {
+    background: #f0f0f0;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-top: 2rem;
+}
+
+.submission-status.submitted {
+    background: #d1fae5;
+    border-left: 4px solid #10b981;
+}
+
+.submission-status.graded {
+    background: #dbeafe;
+    border-left: 4px solid #3b82f6;
+}
+
+.submission-status h4 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.submission-status .score {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--main-color);
+    margin: 1.5rem 0;
+}
+
+.submission-status .feedback {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.8rem;
+    font-size: 1.4rem;
+    line-height: 1.6;
+}
+
+/* Right Sidebar - Info Panel */
+.lms-info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.info-card {
+    background: var(--white-color);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
+}
+
+.info-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+/* Progress Card */
+.progress-card .progress-ring {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 1.5rem auto;
+}
+
+.progress-ring svg {
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    fill: none;
+    stroke-width: 10;
+}
+
+.progress-ring .progress-bg {
+    stroke: #e0e0e0;
+}
+
+.progress-ring .progress-bar {
+    stroke: var(--main-color);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-ring .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--main-color);
+}
+
+.progress-details {
+    text-align: center;
+    font-size: 1.3rem;
+    color: #666;
+}
+
+/* Classmates List */
+.classmates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.classmate-item {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+.classmate-item:hover {
+    background: #f5f5f5;
+}
+
+.classmate-avatar {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #754ef9, #9d7bea);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.classmate-info {
+    flex: 1;
+}
+
+.classmate-name {
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: var(--text-color);
+}
+
+.classmate-progress {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 0.3rem;
+}
+
+/* Assignments List */
+.assignments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.assignment-item {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.assignment-item:hover {
+    border-color: var(--main-color);
+    box-shadow: 0 0.5rem 1rem rgba(117, 78, 249, 0.2);
+}
+
+.assignment-item.pending {
+    border-left: 4px solid #fbbf24;
+}
+
+.assignment-item.submitted {
+    border-left: 4px solid #3b82f6;
+}
+
+.assignment-item.graded {
+    border-left: 4px solid #10b981;
+}
+
+.assignment-item h4 {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-color);
+}
+
+.assignment-item p {
+    font-size: 1.3rem;
+    color: #666;
+    margin-bottom: 0.8rem;
+}
+
+.assignment-item .assignment-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2rem;
+    color: #999;
+}
+
+.assignment-item .due-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.assignment-item .status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.submitted {
+    background: #dbeafe;
+    color: #1e3a8a;
+}
+
+.status-badge.graded {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* Assessor View - Grading Section */
+.grading-section {
+    background: #f9f9f9;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    margin-top: 2rem;
+}
+
+.submissions-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 1rem;
+}
+
+.submissions-table thead {
+    background: var(--main-color);
+    color: white;
+}
+
+.submissions-table th {
+    padding: 1.5rem;
+    text-align: left;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.submissions-table th:first-child {
+    border-radius: 1rem 0 0 1rem;
+}
+
+.submissions-table th:last-child {
+    border-radius: 0 1rem 1rem 0;
+}
+
+.submissions-table tbody tr {
+    background: white;
+    box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.submissions-table tbody tr:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.submissions-table td {
+    padding: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.submissions-table td:first-child {
+    border-radius: 1rem 0 0 1rem;
+}
+
+.submissions-table td:last-child {
+    border-radius: 0 1rem 1rem 0;
+}
+
+.submissions-table .download-link {
+    color: var(--main-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.submissions-table .download-link:hover {
+    text-decoration: underline;
+}
+
+.submissions-table .grade-btn {
+    background: var(--main-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+}
+
+.submissions-table .grade-btn:hover {
+    background: #5d39d4;
+}
+
+.submissions-table .score-display {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 1.6rem;
+}
+
+/* Grading Modal */
+.grading-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.grading-modal.active {
+    display: flex;
+}
+
+.grading-modal-content {
+    background: white;
+    padding: 3rem;
+    border-radius: 1.5rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.grading-modal h2 {
+    font-size: 2.4rem;
+    margin-bottom: 2rem;
+    color: var(--text-color);
+}
+
+.grading-modal .form-group {
+    margin-bottom: 2rem;
+}
+
+.grading-modal label {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: var(--text-color);
+}
+
+.grading-modal input,
+.grading-modal textarea {
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.4rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 0.8rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.grading-modal input:focus,
+.grading-modal textarea:focus {
+    outline: none;
+    border-color: var(--main-color);
+}
+
+.grading-modal textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.grading-modal .modal-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.grading-modal .modal-buttons button {
+    flex: 1;
+    padding: 1.2rem;
+    font-size: 1.4rem;
+    border-radius: 0.8rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.grading-modal .btn-save {
+    background: var(--main-color);
+    color: white;
+}
+
+.grading-modal .btn-save:hover {
+    background: #5d39d4;
+}
+
+.grading-modal .btn-cancel {
+    background: #e0e0e0;
+    color: var(--text-color);
+}
+
+.grading-modal .btn-cancel:hover {
+    background: #d0d0d0;
+}
+
+/* Student Progress Tracker (Assessor) */
+.student-progress-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.student-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
+    transition: all 0.3s ease;
+}
+
+.student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.8rem 2rem var(--shadow-color);
+}
+
+.student-card .student-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.student-card .student-avatar {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #754ef9, #9d7bea);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 2.4rem;
+}
+
+.student-card .student-name {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.student-card .student-email {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.student-card .progress-bar-container {
+    margin-top: 1.5rem;
+}
+
+.student-card .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+    color: #666;
+}
+
+.student-card .progress-bar-bg {
+    background: #e0e0e0;
+    height: 1rem;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.student-card .progress-bar-fill {
+    background: linear-gradient(90deg, #754ef9, #9d7bea);
+    height: 100%;
+    border-radius: 1rem;
+    transition: width 0.5s ease;
+}
+
+.student-card .assignments-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.student-card .summary-item {
+    text-align: center;
+}
+
+.student-card .summary-value {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--main-color);
+}
+
+.student-card .summary-label {
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 0.3rem;
+}
+
+/* Buttons */
+.btn-lms {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-radius: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.btn-lms.btn-primary {
+    background: var(--main-color);
+    color: white;
+}
+
+.btn-lms.btn-primary:hover {
+    background: #5d39d4;
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1.5rem rgba(117, 78, 249, 0.4);
+}
+
+.btn-lms.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-lms.btn-success:hover {
+    background: #059669;
+}
+
+.btn-lms.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-lms.btn-secondary:hover {
+    background: #4b5563;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .lms-container {
+        grid-template-columns: 250px 1fr;
+        gap: 1.5rem;
+    }
+
+    .lms-info-panel {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .lms-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+
+    .lms-sidebar {
+        position: static;
+        order: 2;
+    }
+
+    .lms-content {
+        padding: 2rem;
+        order: 1;
+    }
+
+    .lms-info-panel {
+        order: 3;
+    }
+
+    .lms-header h1 {
+        font-size: 2.4rem;
+    }
+
+    .lms-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .lms-tab {
+        font-size: 1.3rem;
+        padding: 1rem 1.5rem;
+        white-space: nowrap;
+    }
+
+    .material-section h2 {
+        font-size: 2rem;
+    }
+
+    .material-section p {
+        font-size: 1.4rem;
+    }
+
+    .submissions-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .student-progress-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark Mode Support */
+.dark-mode .lms-sidebar,
+.dark-mode .lms-content,
+.dark-mode .info-card {
+    background: #1a1a2e;
+}
+
+.dark-mode .class-item:hover {
+    background: #2a2a3e;
+}
+
+.dark-mode .material-section pre {
+    background: #0d0d1a;
+}
+
+.dark-mode .material-section code {
+    background: #2a2a3e;
+    color: #d4d4d4;
+}
+
+.dark-mode .upload-area {
+    background: #1a1a2e;
+    color: var(--text-color);
+}
+
+.dark-mode .upload-area:hover {
+    background: #2a2a3e;
+}
+
+.dark-mode .uploaded-file {
+    background: #2a2a3e;
+}
+
+.dark-mode .submission-status {
+    background: #2a2a3e;
+}
+
+.dark-mode .grading-section {
+    background: #1a1a2e;
+}
+
+.dark-mode .submissions-table tbody tr {
+    background: #2a2a3e;
+}
+
+.dark-mode .grading-modal-content {
+    background: #1a1a2e;
+}
+
+.dark-mode .student-card {
+    background: #1a1a2e;
+}
+
+.dark-mode .btn-lms.btn-secondary {
+    background: #4b5563;
+}
+
+/* Print Styles */
+@media print {
+    .lms-sidebar,
+    .lms-info-panel,
+    .lms-tabs,
+    .upload-area,
+    .btn-lms {
+        display: none;
+    }
+
+    .lms-container {
+        grid-template-columns: 1fr;
+    }
+
+    .lms-content {
+        box-shadow: none;
+    }
+}

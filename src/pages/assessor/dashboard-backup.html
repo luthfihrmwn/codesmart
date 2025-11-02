@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#754ef9">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CodeSmart">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/src/images/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/src/images/icon-192x192.png">
+
+    <title>Assessor LMS - CodeSmart</title>
+
+    <!-- box icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- custom css -->
+    <link rel="stylesheet" href="../../css/index.css">
+    <link rel="stylesheet" href="../../css/pwa.css">
+    <link rel="stylesheet" href="../../css/lms.css">
+
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+
+        .assessor-header {
+            background: linear-gradient(135deg, #754ef9, #9d7bea);
+            color: white;
+            padding: 3rem;
+            border-radius: 1.5rem;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assessor-header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .assessor-header .breadcrumb {
+            font-size: 1.4rem;
+            opacity: 0.9;
+        }
+
+        .assessor-header .breadcrumb a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .assessor-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .module-selector {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .module-card {
+            flex: 1;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.8rem 2rem var(--shadow-color);
+        }
+
+        .module-card.active {
+            border-color: var(--main-color);
+            background: linear-gradient(135deg, rgba(117, 78, 249, 0.1), rgba(157, 123, 234, 0.1));
+        }
+
+        .module-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .module-card .module-level {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .module-card.fundamental .module-level {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .module-card.intermediate .module-level {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .module-card.advance .module-level {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+            font-size: 1.3rem;
+            color: #666;
+        }
+
+        .stats-row span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .manage-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .manage-tab {
+            padding: 2rem;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 0.5rem 1.5rem var(--shadow-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        .manage-tab:hover {
+            transform: translateY(-3px);
+        }
+
+        .manage-tab.active {
+            border-color: var(--main-color);
+            background: linear-gradient(135deg, rgba(117, 78, 249, 0.1), rgba(157, 123, 234, 0.1));
+        }
+
+        .manage-tab i {
+            font-size: 3.5rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .manage-tab .tab-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .manage-tab .tab-count {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- PWA Loading Splash Screen -->
+    <div class="pwa-loading" id="pwaLoading">
+        <div class="pwa-loading-logo">
+            <i class='bx bx-code-alt'></i> CodeSmart
+        </div>
+        <div class="pwa-loading-spinner"></div>
+        <p class="pwa-loading-text">Loading Assessor LMS...</p>
+    </div>
+
+    <div class="assessor-container">
+        <!-- Header -->
+        <div class="assessor-header">
+            <div>
+                <div class="breadcrumb">
+                    <a href="../assessor/dashboard.html"><i class='bx bx-home'></i> Dashboard</a> / LMS Management
+                </div>
+                <h1>Learning Management System</h1>
+                <p style="margin-top: 0.8rem; font-size: 1.5rem;">Kelola semua aspek pembelajaran modul Anda</p>
+            </div>
+            <div>
+                <i class='bx bx-chalkboard' style="font-size: 8rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+
+        <!-- Module Selector -->
+        <div class="module-selector" id="moduleSelector">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Management Tabs -->
+        <div class="manage-tabs">
+            <div class="manage-tab active" data-view="classes">
+                <i class='bx bx-book-open'></i>
+                <div class="tab-title">Kelas</div>
+                <div class="tab-count" id="classesCount">0 kelas</div>
+            </div>
+            <div class="manage-tab" data-view="assignments">
+                <i class='bx bx-task'></i>
+                <div class="tab-title">Tugas</div>
+                <div class="tab-count" id="assignmentsCount">0 tugas</div>
+            </div>
+            <div class="manage-tab" data-view="submissions">
+                <i class='bx bx-file-find'></i>
+                <div class="tab-title">Pengumpulan</div>
+                <div class="tab-count" id="submissionsCount">0 pending</div>
+            </div>
+            <div class="manage-tab" data-view="students">
+                <i class='bx bx-group'></i>
+                <div class="tab-title">Siswa</div>
+                <div class="tab-count" id="studentsCount">0 siswa</div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div style="background: white; padding: 3rem; border-radius: 1.5rem; box-shadow: 0 0.5rem 1.5rem var(--shadow-color);">
+
+            <!-- View: Classes -->
+            <div id="classesView" class="manage-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                    <h2 style="font-size: 2.4rem;"><i class='bx bx-book-open'></i> Kelas dalam Modul</h2>
+                </div>
+                <div id="classesList"></div>
+            </div>
+
+            <!-- View: Assignments -->
+            <div id="assignmentsView" class="manage-view" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                    <h2 style="font-size: 2.4rem;"><i class='bx bx-task'></i> Manajemen Tugas</h2>
+                    <button class="btn-lms btn-primary" onclick="openAddAssignmentModal()">
+                        <i class='bx bx-plus'></i> Tambah Tugas Baru
+                    </button>
+                </div>
+                <div id="assignmentsList"></div>
+            </div>
+
+            <!-- View: Submissions -->
+            <div id="submissionsView" class="manage-view" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                    <h2 style="font-size: 2.4rem;"><i class='bx bx-file-find'></i> Pengumpulan Tugas</h2>
+                    <div style="display: flex; gap: 1rem;">
+                        <select id="filterAssignment" style="padding: 1rem; border-radius: 0.8rem; border: 2px solid #e0e0e0; font-size: 1.4rem;">
+                            <option value="">Semua Tugas</option>
+                        </select>
+                        <select id="filterStatus" style="padding: 1rem; border-radius: 0.8rem; border: 2px solid #e0e0e0; font-size: 1.4rem;">
+                            <option value="">Semua Status</option>
+                            <option value="pending">Belum Dinilai</option>
+                            <option value="graded">Sudah Dinilai</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="submissionsList"></div>
+            </div>
+
+            <!-- View: Students -->
+            <div id="studentsView" class="manage-view" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                    <h2 style="font-size: 2.4rem;"><i class='bx bx-group'></i> Progress Siswa</h2>
+                </div>
+                <div id="studentsList"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Add/Edit Assignment Modal -->
+    <div class="grading-modal" id="assignmentFormModal">
+        <div class="grading-modal-content">
+            <h2 id="assignmentFormTitle">Tambah Tugas Baru</h2>
+            <form id="assignmentForm">
+                <div class="form-group">
+                    <label>Kelas</label>
+                    <select id="assignmentClassId" required style="width: 100%; padding: 1.2rem; font-size: 1.4rem; border: 2px solid #e0e0e0; border-radius: 0.8rem; font-family: 'Poppins', sans-serif;">
+                        <!-- Will be populated -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Judul Tugas</label>
+                    <input type="text" id="assignmentTitle" required placeholder="Contoh: Latihan Variabel JavaScript">
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi</label>
+                    <textarea id="assignmentDescription" required placeholder="Jelaskan detail tugas..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="date" id="assignmentDueDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Nilai Maksimal</label>
+                    <input type="number" id="assignmentMaxScore" required value="100" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 1rem; cursor: pointer;">
+                        <input type="checkbox" id="assignmentFileRequired" checked>
+                        <span>Upload file diperlukan</span>
+                    </label>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-save">
+                        <i class='bx bx-save'></i> Simpan
+                    </button>
+                    <button type="button" class="btn-cancel" onclick="closeAssignmentFormModal()">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Grading Modal -->
+    <div class="grading-modal" id="gradingModal">
+        <div class="grading-modal-content">
+            <h2>Nilai Tugas Siswa</h2>
+
+            <div style="background: #f9f9f9; padding: 2rem; border-radius: 1rem; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">Informasi Pengumpulan</h3>
+                <p style="margin: 0.5rem 0; font-size: 1.4rem;"><strong>Siswa:</strong> <span id="gradingStudentName"></span></p>
+                <p style="margin: 0.5rem 0; font-size: 1.4rem;"><strong>Tugas:</strong> <span id="gradingAssignmentTitle"></span></p>
+                <p style="margin: 0.5rem 0; font-size: 1.4rem;"><strong>File:</strong> <span id="gradingFileName"></span></p>
+                <p style="margin: 0.5rem 0; font-size: 1.4rem;"><strong>Dikumpulkan:</strong> <span id="gradingSubmittedAt"></span></p>
+            </div>
+
+            <form id="gradingForm">
+                <div class="form-group">
+                    <label>Nilai (0-<span id="gradingMaxScore">100</span>)</label>
+                    <input type="number" id="gradingScore" required min="0" max="100" placeholder="Masukkan nilai">
+                </div>
+                <div class="form-group">
+                    <label>Feedback</label>
+                    <textarea id="gradingFeedback" placeholder="Berikan feedback untuk siswa..." rows="5"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-save">
+                        <i class='bx bx-check'></i> Simpan Nilai
+                    </button>
+                    <button type="button" class="btn-cancel" onclick="closeGradingModal()">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../data/database.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="/src/js/pwa.js"></script>
+
+    <script>
+        // Initialize
+        const authService = new AuthService();
+        const currentUser = authService.getCurrentUser();
+        let currentModuleId = 1; // Default to fundamental
+        let currentSubmissionId = null;
+        let editingAssignmentId = null;
+
+        // Check authentication
+        if (!currentUser || currentUser.role !== 'assessor') {
+            window.location.href = '../auth/login.html';
+        }
+
+        // Load modules
+        function loadModules() {
+            const moduleSelector = document.getElementById('moduleSelector');
+            moduleSelector.innerHTML = Database.modules.map(module => {
+                const enrolledCount = Database.enrollments.filter(e => e.moduleId === module.id).length;
+                const assignmentsCount = module.classes.reduce((total, cls) =>
+                    total + Database.getAssignmentsByClassId(cls.id).length, 0);
+
+                return `
+                    <div class="module-card ${module.level} ${module.id === currentModuleId ? 'active' : ''}"
+                         onclick="selectModule(${module.id})">
+                        <span class="module-level">${module.level.toUpperCase()}</span>
+                        <h3>${module.name}</h3>
+                        <div class="stats-row">
+                            <span><i class='bx bx-book'></i> ${module.classes.length} Kelas</span>
+                            <span><i class='bx bx-task'></i> ${assignmentsCount} Tugas</span>
+                            <span><i class='bx bx-group'></i> ${enrolledCount} Siswa</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Select module
+        function selectModule(moduleId) {
+            currentModuleId = moduleId;
+            loadModules();
+            loadCurrentView();
+            updateCounts();
+        }
+
+        // Update counts
+        function updateCounts() {
+            const module = Database.modules.find(m => m.id === currentModuleId);
+            const assignments = module.classes.flatMap(cls => Database.getAssignmentsByClassId(cls.id));
+            const pendingSubmissions = assignments.flatMap(a => Database.getSubmissionsByAssignmentId(a.id))
+                .filter(s => s.score === null);
+            const enrolledStudents = Database.enrollments.filter(e => e.moduleId === currentModuleId);
+
+            document.getElementById('classesCount').textContent = `${module.classes.length} kelas`;
+            document.getElementById('assignmentsCount').textContent = `${assignments.length} tugas`;
+            document.getElementById('submissionsCount').textContent = `${pendingSubmissions.length} pending`;
+            document.getElementById('studentsCount').textContent = `${enrolledStudents.length} siswa`;
+        }
+
+        // Load current view
+        function loadCurrentView() {
+            const activeTab = document.querySelector('.manage-tab.active');
+            const view = activeTab.dataset.view;
+
+            // Hide all views
+            document.querySelectorAll('.manage-view').forEach(v => v.style.display = 'none');
+
+            // Show current view
+            document.getElementById(view + 'View').style.display = 'block';
+
+            // Load data
+            switch(view) {
+                case 'classes':
+                    loadClasses();
+                    break;
+                case 'assignments':
+                    loadAssignments();
+                    break;
+                case 'submissions':
+                    loadSubmissions();
+                    break;
+                case 'students':
+                    loadStudents();
+                    break;
+            }
+        }
+
+        // Load classes view
+        function loadClasses() {
+            const module = Database.modules.find(m => m.id === currentModuleId);
+            const list = document.getElementById('classesList');
+
+            list.innerHTML = `
+                <div style="display: grid; gap: 2rem;">
+                    ${module.classes.map((cls, index) => {
+                        const assignments = Database.getAssignmentsByClassId(cls.id);
+                        return `
+                            <div style="border: 2px solid #e0e0e0; border-radius: 1.5rem; padding: 2.5rem; transition: all 0.3s ease;"
+                                 onmouseover="this.style.borderColor='var(--main-color)'"
+                                 onmouseout="this.style.borderColor='#e0e0e0'">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <div style="display: inline-block; background: var(--main-color); color: white; padding: 0.5rem 1.2rem; border-radius: 2rem; font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem;">
+                                            Kelas ${index + 1}
+                                        </div>
+                                        <h3 style="font-size: 2.2rem; margin-bottom: 0.8rem;">${cls.title}</h3>
+                                        <p style="font-size: 1.4rem; color: #666; line-height: 1.6;">${cls.description}</p>
+                                        <div style="margin-top: 1.5rem; display: flex; gap: 2rem; font-size: 1.3rem; color: #666;">
+                                            <span><i class='bx bx-task'></i> ${assignments.length} Tugas</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // Load assignments view
+        function loadAssignments() {
+            const module = Database.modules.find(m => m.id === currentModuleId);
+            const allAssignments = module.classes.flatMap(cls =>
+                Database.getAssignmentsByClassId(cls.id).map(a => ({...a, className: cls.title}))
+            );
+
+            const list = document.getElementById('assignmentsList');
+
+            if (allAssignments.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; color: #999;">
+                        <i class='bx bx-task-x' style="font-size: 6rem;"></i>
+                        <p style="margin-top: 1.5rem; font-size: 1.6rem;">Belum ada tugas. Klik "Tambah Tugas Baru" untuk membuat tugas.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = `
+                <table class="submissions-table">
+                    <thead>
+                        <tr>
+                            <th>Kelas</th>
+                            <th>Judul Tugas</th>
+                            <th>Deadline</th>
+                            <th>Nilai Maks</th>
+                            <th>Pengumpulan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allAssignments.map(assignment => {
+                            const submissions = Database.getSubmissionsByAssignmentId(assignment.id);
+                            const gradedCount = submissions.filter(s => s.score !== null).length;
+                            return `
+                                <tr>
+                                    <td>${assignment.className}</td>
+                                    <td><strong>${assignment.title}</strong><br>
+                                        <small style="color: #666;">${assignment.description}</small>
+                                    </td>
+                                    <td>${new Date(assignment.dueDate).toLocaleDateString('id-ID')}</td>
+                                    <td style="text-align: center;">${assignment.maxScore}</td>
+                                    <td>${submissions.length} (${gradedCount} dinilai)</td>
+                                    <td>
+                                        <button class="grade-btn" onclick="editAssignment(${assignment.id})" style="margin-right: 0.5rem;">
+                                            <i class='bx bx-edit'></i> Edit
+                                        </button>
+                                        <button class="grade-btn" onclick="deleteAssignment(${assignment.id})" style="background: #ef4444;">
+                                            <i class='bx bx-trash'></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Load submissions view
+        function loadSubmissions() {
+            const module = Database.modules.find(m => m.id === currentModuleId);
+            const allAssignments = module.classes.flatMap(cls => Database.getAssignmentsByClassId(cls.id));
+            const allSubmissions = allAssignments.flatMap(a => {
+                const subs = Database.getSubmissionsByAssignmentId(a.id);
+                return subs.map(s => ({
+                    ...s,
+                    assignmentTitle: a.title,
+                    assignmentMaxScore: a.maxScore,
+                    studentName: Database.findUserById(s.userId)?.name || 'Unknown'
+                }));
+            });
+
+            // Populate filter
+            const filterAssignment = document.getElementById('filterAssignment');
+            filterAssignment.innerHTML = '<option value="">Semua Tugas</option>' +
+                allAssignments.map(a => `<option value="${a.id}">${a.title}</option>`).join('');
+
+            const list = document.getElementById('submissionsList');
+
+            if (allSubmissions.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; color: #999;">
+                        <i class='bx bx-file-blank' style="font-size: 6rem;"></i>
+                        <p style="margin-top: 1.5rem; font-size: 1.6rem;">Belum ada pengumpulan tugas</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = `
+                <table class="submissions-table">
+                    <thead>
+                        <tr>
+                            <th>Siswa</th>
+                            <th>Tugas</th>
+                            <th>File</th>
+                            <th>Dikumpulkan</th>
+                            <th>Nilai</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allSubmissions.map(submission => {
+                            const isGraded = submission.score !== null;
+                            return `
+                                <tr>
+                                    <td><strong>${submission.studentName}</strong></td>
+                                    <td>${submission.assignmentTitle}</td>
+                                    <td>
+                                        <a href="#" class="download-link">
+                                            <i class='bx bx-download'></i> ${submission.fileName}
+                                        </a>
+                                    </td>
+                                    <td>${new Date(submission.submittedAt).toLocaleDateString('id-ID')}</td>
+                                    <td>
+                                        ${isGraded ?
+                                            `<span class="score-display">${submission.score}/${submission.assignmentMaxScore}</span>` :
+                                            '<span style="color: #fbbf24;">Belum Dinilai</span>'
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="grade-btn" onclick="openGrading(${submission.id})">
+                                            <i class='bx ${isGraded ? "bx-edit" : "bx-check-circle"}'></i>
+                                            ${isGraded ? 'Edit Nilai' : 'Beri Nilai'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Load students view
+        function loadStudents() {
+            const enrollments = Database.enrollments.filter(e => e.moduleId === currentModuleId);
+            const list = document.getElementById('studentsList');
+
+            if (enrollments.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; color: #999;">
+                        <i class='bx bx-group' style="font-size: 6rem;"></i>
+                        <p style="margin-top: 1.5rem; font-size: 1.6rem;">Belum ada siswa terdaftar di modul ini</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const studentsData = enrollments.map(e => {
+                const student = Database.findUserById(e.userId);
+                const submissions = Database.getSubmissionsByUserId(e.userId);
+                const avgScore = submissions.length > 0 ?
+                    submissions.filter(s => s.score !== null)
+                        .reduce((sum, s) => sum + s.score, 0) / submissions.filter(s => s.score !== null).length : 0;
+
+                return {
+                    ...student,
+                    progress: e.progress,
+                    completedClasses: e.completedClasses.length,
+                    totalSubmissions: submissions.length,
+                    gradedSubmissions: submissions.filter(s => s.score !== null).length,
+                    avgScore: avgScore.toFixed(1)
+                };
+            });
+
+            list.innerHTML = `
+                <div class="student-progress-grid">
+                    ${studentsData.map(student => {
+                        const initials = student.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                        return `
+                            <div class="student-card">
+                                <div class="student-header">
+                                    <div class="student-avatar">${initials}</div>
+                                    <div>
+                                        <div class="student-name">${student.name}</div>
+                                        <div class="student-email">${student.email}</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-label">
+                                        <span>Progress Kelas</span>
+                                        <span><strong>${student.progress}%</strong></span>
+                                    </div>
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: ${student.progress}%"></div>
+                                    </div>
+                                </div>
+                                <div class="assignments-summary">
+                                    <div class="summary-item">
+                                        <div class="summary-value">${student.completedClasses}</div>
+                                        <div class="summary-label">Kelas Selesai</div>
+                                    </div>
+                                    <div class="summary-item">
+                                        <div class="summary-value">${student.gradedSubmissions}/${student.totalSubmissions}</div>
+                                        <div class="summary-label">Tugas Dinilai</div>
+                                    </div>
+                                    <div class="summary-item">
+                                        <div class="summary-value">${student.avgScore}</div>
+                                        <div class="summary-label">Rata-rata Nilai</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // Open add assignment modal
+        function openAddAssignmentModal() {
+            editingAssignmentId = null;
+            document.getElementById('assignmentFormTitle').textContent = 'Tambah Tugas Baru';
+            document.getElementById('assignmentForm').reset();
+
+            // Populate class dropdown
+            const module = Database.modules.find(m => m.id === currentModuleId);
+            const classSelect = document.getElementById('assignmentClassId');
+            classSelect.innerHTML = module.classes.map(cls =>
+                `<option value="${cls.id}">${cls.title}</option>`
+            ).join('');
+
+            // Set default due date (7 days from now)
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 7);
+            document.getElementById('assignmentDueDate').value = dueDate.toISOString().split('T')[0];
+
+            document.getElementById('assignmentFormModal').classList.add('active');
+        }
+
+        // Close assignment form modal
+        function closeAssignmentFormModal() {
+            document.getElementById('assignmentFormModal').classList.remove('active');
+        }
+
+        // Edit assignment
+        function editAssignment(assignmentId) {
+            editingAssignmentId = assignmentId;
+            const assignment = Database.assignments.find(a => a.id === assignmentId);
+
+            document.getElementById('assignmentFormTitle').textContent = 'Edit Tugas';
+
+            // Populate form
+            const module = Database.modules.find(m => m.id === currentModuleId);
+            const classSelect = document.getElementById('assignmentClassId');
+            classSelect.innerHTML = module.classes.map(cls =>
+                `<option value="${cls.id}" ${cls.id === assignment.classId ? 'selected' : ''}>${cls.title}</option>`
+            ).join('');
+
+            document.getElementById('assignmentTitle').value = assignment.title;
+            document.getElementById('assignmentDescription').value = assignment.description;
+            document.getElementById('assignmentDueDate').value = assignment.dueDate;
+            document.getElementById('assignmentMaxScore').value = assignment.maxScore;
+            document.getElementById('assignmentFileRequired').checked = assignment.fileRequired;
+
+            document.getElementById('assignmentFormModal').classList.add('active');
+        }
+
+        // Delete assignment
+        function deleteAssignment(assignmentId) {
+            if (!confirm('Hapus tugas ini? Semua pengumpulan juga akan dihapus.')) return;
+
+            Database.deleteAssignment(assignmentId);
+            saveToLocalStorage();
+            loadAssignments();
+            updateCounts();
+        }
+
+        // Assignment form submit
+        document.getElementById('assignmentForm').onsubmit = function(e) {
+            e.preventDefault();
+
+            const data = {
+                classId: parseInt(document.getElementById('assignmentClassId').value),
+                title: document.getElementById('assignmentTitle').value,
+                description: document.getElementById('assignmentDescription').value,
+                dueDate: document.getElementById('assignmentDueDate').value,
+                maxScore: parseInt(document.getElementById('assignmentMaxScore').value),
+                fileRequired: document.getElementById('assignmentFileRequired').checked,
+                createdBy: currentUser.id
+            };
+
+            if (editingAssignmentId) {
+                Database.updateAssignment(editingAssignmentId, data);
+            } else {
+                Database.addAssignment(data);
+            }
+
+            saveToLocalStorage();
+            closeAssignmentFormModal();
+            loadAssignments();
+            updateCounts();
+        };
+
+        // Open grading modal
+        function openGrading(submissionId) {
+            currentSubmissionId = submissionId;
+            const submission = Database.submissions.find(s => s.id === submissionId);
+            const assignment = Database.assignments.find(a => a.id === submission.assignmentId);
+            const student = Database.findUserById(submission.userId);
+
+            // Populate modal
+            document.getElementById('gradingStudentName').textContent = student.name;
+            document.getElementById('gradingAssignmentTitle').textContent = assignment.title;
+            document.getElementById('gradingFileName').textContent = submission.fileName;
+            document.getElementById('gradingSubmittedAt').textContent = new Date(submission.submittedAt).toLocaleDateString('id-ID');
+            document.getElementById('gradingMaxScore').textContent = assignment.maxScore;
+            document.getElementById('gradingScore').max = assignment.maxScore;
+
+            // Pre-fill if already graded
+            if (submission.score !== null) {
+                document.getElementById('gradingScore').value = submission.score;
+                document.getElementById('gradingFeedback').value = submission.feedback || '';
+            } else {
+                document.getElementById('gradingScore').value = '';
+                document.getElementById('gradingFeedback').value = '';
+            }
+
+            document.getElementById('gradingModal').classList.add('active');
+        }
+
+        // Close grading modal
+        function closeGradingModal() {
+            document.getElementById('gradingModal').classList.remove('active');
+        }
+
+        // Grading form submit
+        document.getElementById('gradingForm').onsubmit = function(e) {
+            e.preventDefault();
+
+            const score = parseInt(document.getElementById('gradingScore').value);
+            const feedback = document.getElementById('gradingFeedback').value;
+
+            Database.gradeSubmission(currentSubmissionId, score, feedback, currentUser.id);
+            saveToLocalStorage();
+
+            alert('Nilai berhasil disimpan!');
+            closeGradingModal();
+            loadSubmissions();
+            updateCounts();
+        };
+
+        // Tab switching
+        document.querySelectorAll('.manage-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.manage-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                loadCurrentView();
+            });
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.grading-modal').forEach(modal => {
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            };
+        });
+
+        // Initialize on load
+        window.onload = () => {
+            loadModules();
+            loadCurrentView();
+            updateCounts();
+
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('pwaLoading').style.display = 'none';
+            }, 500);
+        };
+    </script>
+</body>
+</html>

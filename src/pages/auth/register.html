@@ -273,11 +273,11 @@
             });
 
             if (result.success) {
-                showAlert('Registrasi berhasil! Silakan login...', 'success');
+                showAlert('Registrasi berhasil! Akun Anda menunggu persetujuan administrator. Anda akan diberitahu setelah disetujui.', 'success');
 
                 setTimeout(() => {
                     window.location.href = 'login.html';
-                }, 2000);
+                }, 3000);
             } else {
                 showAlert(result.message, 'error');
             }

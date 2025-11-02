@@ -24,12 +24,13 @@ CodeSmart adalah platform pembelajaran interaktif yang dirancang untuk membantu 
 - Profile management
 
 ### 4. **Dashboard Admin Profesional**
-- **Sidebar Navigation** - Menu lengkap dengan 7 sections
+- **Sidebar Navigation** - Menu lengkap dengan 8 sections
 - **Dashboard Overview** - Statistik cards, charts, recent activity
 - **User Management** - CRUD User dengan filter & search
 - **Class Management** - Manage semua kelas di 3 modul
 - **Pretest Results** - View & analyze hasil pretest semua user
 - **Reports & Analytics** - Visualisasi data, module popularity, user growth
+- **LMS Management** - Centralized oversight of all LMS activities (NEW!)
 - **Settings** - System settings & admin profile
 - **Charts & Visualizations** - Pie charts, bar charts, progress bars
 
@@ -39,11 +40,41 @@ CodeSmart adalah platform pembelajaran interaktif yang dirancang untuk membantu 
 - Manage konten pembelajaran
 - Update deskripsi dan materi
 
-### 6. **Modul Pembelajaran**
+### 6. **LMS (Learning Management System) Profesional**
+**User Interface:**
+- **Materi Pembelajaran** - Konten terstruktur dengan code examples, video placeholder
+- **Upload Tugas** - Drag & drop file submission (PDF, DOC, PPT, JPG, PNG, ZIP)
+- **Teman Sekelas** - Lihat progress teman sekelas di modul yang sama
+- **Progress Tracking** - Monitor penyelesaian kelas dengan circular progress
+- **Nilai & Feedback** - Lihat hasil penilaian dari assessor
+- **Tab Navigation** - Materi, Tugas, Diskusi (coming soon)
+- **Sidebar Kelas** - Quick navigation antar kelas
+- **Info Panel** - Progress, classmates, assignments summary
+
+**Assessor Interface:**
+- **Kelola Tugas** - Create, edit, delete assignments dengan deadline
+- **Penilaian** - Grade submissions dengan score & feedback
+- **Progress Monitoring** - Track student progress per modul
+- **Multi-Module** - Manage 3 modules (Fundamental, Intermediate, Advance)
+- **Submission Management** - Review & grade all student work
+- **Analytics** - View average scores, completion rates
+- **Student Cards** - Visual progress cards per student
+
+**Admin LMS Management:**
+- **Module Overview** - Monitor all 3 modules (Fundamental, Intermediate, Advance)
+- **Cross-Module Stats** - Total assignments, pending reviews, graded submissions, enrollments
+- **Quick Actions** - View all assignments, check pending grades, monitor progress, export data
+- **Recent Assignments** - Table view of latest assignments across all modules
+- **Recent Submissions** - Pending submissions requiring review
+- **Inline Grading** - Quick grade feature directly from admin dashboard
+- **Data Export** - Export complete LMS data to JSON for analysis
+- **Module Navigation** - Quick access to detailed module management
+
+### 7. **Modul Pembelajaran**
 - 3 Level modul (Fundamental, Intermediate, Advance)
 - 5 Kelas per modul
 - Akses control berdasarkan hasil pretest
-- Konten interaktif
+- Konten interaktif dengan rich material
 
 ## Demo Accounts
 
@@ -63,27 +94,78 @@ CodeSmart adalah platform pembelajaran interaktif yang dirancang untuk membantu 
 4. App akan muncul di home screen seperti native app
 5. Bisa digunakan offline setelah install!
 
+### Alur Aplikasi:
+1. **Landing Page** (`index.html`) - Halaman utama untuk semua pengunjung
+   - Jika sudah login → Auto-redirect ke dashboard sesuai role
+   - Jika belum login → Tampilkan landing page dengan tombol Login
+2. **Login** → Sistem akan redirect otomatis ke:
+   - Admin → Admin Dashboard
+   - Assessor → Assessor Dashboard
+   - User → User Dashboard (atau Pretest jika belum selesai)
+3. Setiap role memiliki dashboard terpisah dan fitur khusus
+
 ### Untuk User Baru:
 1. Buka `index.html` atau launch PWA
 2. Klik tombol "Login" di navbar
 3. Pilih "Daftar Sekarang" untuk registrasi
-4. Setelah login, kerjakan **Pretest** (10 soal)
-5. Sistem akan merekomendasikan modul sesuai skor Anda
-6. Akses modul pembelajaran dari dashboard
+4. Setelah login berhasil, **otomatis dialihkan** ke halaman Pretest
+5. Kerjakan **Pretest** (10 soal)
+6. Sistem akan merekomendasikan modul sesuai skor Anda
+7. Akses modul pembelajaran dari User Dashboard
 
 ### Untuk Admin:
-1. Login dengan akun admin (admin/admin123)
-2. Masuk ke **Admin Dashboard** (Professional Sidebar Layout)
-3. **Dashboard Tab**: View statistik, charts, analytics
-4. **User Management**: CRUD users, filter by role, search
-5. **Class Management**: Manage semua kelas di 3 modul
-6. **Pretest Results**: View semua hasil pretest & analytics
-7. **Reports**: Lihat laporan lengkap, module popularity, user distribution
+1. Buka `index.html` dan klik "Login"
+2. Login dengan akun admin (admin/admin123)
+3. **Otomatis dialihkan** ke **Admin Dashboard** (Professional Sidebar Layout)
+4. **Dashboard Tab**: View statistik, charts, analytics
+5. **User Management**: CRUD users, filter by role, search
+6. **Class Management**: Manage semua kelas di 3 modul
+7. **Pretest Results**: View semua hasil pretest & analytics
+8. **Reports**: Lihat laporan lengkap, module popularity, user distribution
+9. **LMS Management**: Monitor all LMS activities, grade submissions, export data
 
 ### Untuk Assessor:
-1. Login dengan akun assessor (assessor/assessor123)
-2. Masuk ke **Assessor Dashboard**
-3. CRUD Modul dan Kelas (5 kelas per modul)
+1. Buka `index.html` dan klik "Login"
+2. Login dengan akun assessor (assessor/assessor123)
+3. **Otomatis dialihkan** ke **Assessor Dashboard**
+4. Kelola LMS: Tugas, Penilaian, Progress Siswa
+
+### Untuk User - LMS (Belajar):
+1. Login sebagai user (user1/user123 atau user2/user123)
+2. Kerjakan pretest jika belum
+3. Dari dashboard, klik modul yang direkomendasikan
+4. **LMS Interface** akan terbuka dengan:
+   - **Sidebar Kiri**: List 5 kelas, klik untuk navigasi
+   - **Content Tengah**: Materi, Tugas, Diskusi (tabs)
+   - **Info Panel Kanan**: Progress, Teman Sekelas, Ringkasan Tugas
+5. Baca materi di tab "Materi"
+6. Klik "Tandai Selesai" setelah belajar
+7. Buka tab "Tugas" untuk melihat assignments
+8. **Upload Tugas**:
+   - Klik assignment card
+   - Drag & drop file atau klik untuk browse
+   - Klik "Kumpulkan Tugas"
+9. Lihat nilai & feedback setelah assessor menilai
+
+### Untuk Assessor - LMS (Mengajar):
+1. Login sebagai assessor (assessor/assessor123)
+2. Dari dashboard assessor, klik "LMS" atau buka langsung `/src/pages/modules/lms-assessor.html`
+3. **Pilih Module** (Fundamental/Intermediate/Advance)
+4. **Tab Kelas**: Lihat semua kelas di modul
+5. **Tab Tugas**:
+   - Klik "+ Tambah Tugas Baru"
+   - Isi form (kelas, judul, deskripsi, deadline, max score)
+   - Simpan
+   - Edit/Delete tugas yang ada
+6. **Tab Pengumpulan**:
+   - Lihat semua submissions
+   - Filter by assignment atau status
+   - Klik "Beri Nilai" pada submission
+   - Masukkan score (0-100) & feedback
+   - Simpan - siswa langsung bisa lihat nilai
+7. **Tab Siswa**:
+   - Lihat progress semua siswa
+   - Monitor completion rate, assignments graded, average score
 
 ## Teknologi
 
@@ -163,6 +245,65 @@ Lihat panduan lengkap di **[PWA-SETUP.md](PWA-SETUP.md)** untuk:
 
 ---
 
+## 📚 Dokumentasi
+
+Untuk panduan lengkap, lihat file-file berikut:
+
+- **[README.md](README.md)** - Dokumentasi utama (file ini)
+- **[STRUCTURE.md](STRUCTURE.md)** - Struktur project lengkap
+- **[ADMIN-GUIDE.md](ADMIN-GUIDE.md)** - Panduan Admin Dashboard
+- **[PWA-SETUP.md](PWA-SETUP.md)** - Setup & deploy PWA
+- **[LMS-GUIDE.md](LMS-GUIDE.md)** - Panduan lengkap Learning Management System
+
+---
+
+## 🎯 Quick Access Links
+
+### User Pages:
+- **Landing Page**: `/index.html`
+- **Login**: `/src/pages/auth/login.html`
+- **User Dashboard**: `/src/pages/user/dashboard.html`
+- **Pretest**: `/src/pages/user/pretest.html`
+- **LMS User**: `/src/pages/modules/lms-user.html?level=fundamental`
+
+### Assessor Pages:
+- **Assessor Dashboard**: `/src/pages/assessor/dashboard.html`
+- **LMS Assessor**: `/src/pages/modules/lms-assessor.html`
+
+### Admin Pages:
+- **Admin Dashboard**: `/src/pages/admin/dashboard.html`
+
+---
+
+## 🆕 What's New in LMS v2.0
+
+**User Features:**
+- 🎓 Professional learning interface dengan 3-column layout
+- 📝 Assignment submission dengan drag & drop file upload
+- 👥 Classmates view - lihat teman sekelas & progress mereka
+- 📊 Circular progress tracker per module
+- ✅ Mark class as complete functionality
+- 💯 View grades & assessor feedback
+- 📱 Full responsive untuk mobile & tablet
+
+**Assessor Features:**
+- 📋 Assignment management (CRUD)
+- ✏️ Grade submissions dengan score & feedback
+- 👨‍🎓 Student progress cards dengan visual metrics
+- 📈 Analytics: average scores, completion rates
+- 🎯 Filter submissions by assignment atau status
+- 🔄 Multi-module support (manage 3 modules)
+
+**Technical Improvements:**
+- 💾 Extended database schema (assignments, submissions, enrollments)
+- 🎨 New LMS CSS dengan modern design
+- ⚡ Service Worker v2 dengan improved caching
+- 🗂️ File upload support (max 10MB, multiple formats)
+- 📊 Progress calculation algorithms
+- 🔄 Auto-enrollment system
+
+---
+
 **Selamat Belajar JavaScript! 🚀**
 
-CodeSmart © 2024 - Now available as PWA!
+CodeSmart LMS © 2024 - Professional Learning Management System

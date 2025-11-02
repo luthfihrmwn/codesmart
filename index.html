@@ -212,9 +212,9 @@
             <h3>JavaScript</h3>
             <p>Pelajari konsep dasar dan cara kerja JavaScript
                 dalam pengembangan web dengan materi yang mudah dipahami.</p>
-            <a href="src/pages/auth/login.html" class="btn">Learn Module</a>
+            <a href="#" onclick="checkLoginBeforeModule(event)" class="btn">Learn Module</a>
         </div>
-    
+
         <!-- Intermediate JavaScript -->
         <div class="javascript-box">
             <i class='bx bx-code-alt'></i>
@@ -222,9 +222,9 @@
             <h3>JavaScript</h3>
             <p>Dalami konsep lanjutan dan teknik pemrograman
                 yang lebih kompleks untuk meningkatkan keterampilan coding.</p>
-            <a href="src/pages/auth/login.html" class="btn">Learn Module</a>
+            <a href="#" onclick="checkLoginBeforeModule(event)" class="btn">Learn Module</a>
         </div>
-    
+
         <!-- Advance JavaScript -->
         <div class="javascript-box">
             <i class='bx bx-code-alt'></i>
@@ -232,7 +232,7 @@
             <h3>JavaScript</h3>
             <p>Kuasai teknologi dan metode pengembangan modern
                 untuk membangun aplikasi web yang lebih efisien.</p>
-            <a href="src/pages/auth/login.html" class="btn">Learn Module</a>
+            <a href="#" onclick="checkLoginBeforeModule(event)" class="btn">Learn Module</a>
         </div>
     </div>
 </section>
@@ -264,6 +264,26 @@
         </div>
     </footer>
 
+    <!-- Login Required Modal -->
+    <div id="loginRequiredModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 4rem; border-radius: 2rem; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 1rem 3rem rgba(0,0,0,0.5);">
+            <div style="font-size: 8rem; color: #754ef9; margin-bottom: 2rem;">
+                <i class='bx bx-lock-alt'></i>
+            </div>
+            <h2 style="font-size: 2.8rem; color: #333; margin-bottom: 1.5rem;">Anda Belum Login!</h2>
+            <p style="font-size: 1.6rem; color: #666; margin-bottom: 3rem;">
+                Untuk mengakses modul pembelajaran, Anda harus login terlebih dahulu.
+            </p>
+            <div style="display: flex; gap: 1.5rem; justify-content: center;">
+                <button onclick="closeLoginModal()" style="flex: 1; padding: 1.5rem 3rem; font-size: 1.6rem; border-radius: 1rem; border: 0.2rem solid #754ef9; background: transparent; color: #754ef9; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                    Batal
+                </button>
+                <button onclick="goToLogin()" style="flex: 1; padding: 1.5rem 3rem; font-size: 1.6rem; border-radius: 1rem; border: none; background: #754ef9; color: white; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                    Login Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- scroll reveal -->
     <script src="https://unpkg.com/scrollreveal"></script>
@@ -287,6 +307,60 @@
                 }, 500);
             }, 1000);
         });
+
+        // Auto-redirect if already logged in
+        window.addEventListener('DOMContentLoaded', function() {
+            const session = localStorage.getItem('codesmart_session');
+            if (session) {
+                try {
+                    const user = JSON.parse(session);
+                    // Redirect based on role
+                    if (user.role === 'admin') {
+                        window.location.href = '/src/pages/admin/dashboard.html';
+                    } else if (user.role === 'assessor') {
+                        window.location.href = '/src/pages/assessor/dashboard.html';
+                    } else if (user.role === 'user') {
+                        window.location.href = '/src/pages/user/dashboard.html';
+                    }
+                } catch (e) {
+                    // Invalid session, clear it
+                    localStorage.removeItem('codesmart_session');
+                }
+            }
+        });
+
+        // Check login before accessing modules
+        function checkLoginBeforeModule(event) {
+            event.preventDefault();
+            const session = localStorage.getItem('codesmart_session');
+            if (!session) {
+                document.getElementById('loginRequiredModal').style.display = 'flex';
+            } else {
+                try {
+                    const user = JSON.parse(session);
+                    if (user.role === 'admin') {
+                        window.location.href = '/src/pages/admin/dashboard.html';
+                    } else if (user.role === 'assessor') {
+                        window.location.href = '/src/pages/assessor/dashboard.html';
+                    } else if (user.role === 'user') {
+                        window.location.href = '/src/pages/user/dashboard.html';
+                    }
+                } catch (e) {
+                    localStorage.removeItem('codesmart_session');
+                    document.getElementById('loginRequiredModal').style.display = 'flex';
+                }
+            }
+        }
+
+        // Close login modal
+        function closeLoginModal() {
+            document.getElementById('loginRequiredModal').style.display = 'none';
+        }
+
+        // Redirect to login page
+        function goToLogin() {
+            window.location.href = 'src/pages/auth/login.html';
+        }
     </script>
 </body>
 </html>
