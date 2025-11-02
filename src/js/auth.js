@@ -1,4 +1,5 @@
 // Authentication and Session Management
+// Updated to work with Backend API
 
 class AuthService {
     constructor() {
@@ -6,70 +7,109 @@ class AuthService {
         this.loadSession();
     }
 
-    // Login user
-    login(username, password) {
-        loadFromLocalStorage();
-        const user = Database.authenticateUser(username, password);
+    // Login user with backend API
+    async login(username, password) {
+        try {
+            const response = await apiService.login(username, password);
 
-        if (user) {
-            // Check if user is approved (admins and assessors are auto-approved)
-            if (!user.approved && user.role === 'user') {
-                return {
-                    success: false,
-                    message: 'Akun Anda masih menunggu persetujuan dari administrator. Silakan coba lagi nanti.'
-                };
+            if (response.success) {
+                this.currentUser = response.data.user;
+                this.saveSession();
+                return { success: true, user: response.data.user };
             }
 
-            this.currentUser = user;
-            this.saveSession();
-            return { success: true, user: user };
-        }
+            return { success: false, message: response.message || 'Login gagal' };
 
-        return { success: false, message: 'Username atau password salah' };
+        } catch (error) {
+            console.error('Login error:', error);
+            return {
+                success: false,
+                message: error.message || 'Terjadi kesalahan. Silakan coba lagi.'
+            };
+        }
     }
 
     // Logout user
-    logout() {
+    async logout() {
+        try {
+            await apiService.logout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+
         this.currentUser = null;
         localStorage.removeItem('codesmart_session');
         window.location.href = '/index.html';
     }
 
-    // Register new user
-    register(userData) {
-        loadFromLocalStorage();
+    // Register new user with backend API
+    async register(userData) {
+        try {
+            const response = await apiService.register(userData);
 
-        // Check if username already exists
-        if (Database.findUserByUsername(userData.username)) {
-            return { success: false, message: 'Username sudah digunakan' };
+            if (response.success) {
+                return {
+                    success: true,
+                    user: response.data.user,
+                    message: response.message
+                };
+            }
+
+            return {
+                success: false,
+                message: response.message || 'Registrasi gagal'
+            };
+
+        } catch (error) {
+            console.error('Register error:', error);
+
+            // Handle specific error messages
+            if (error.message.includes('email')) {
+                return { success: false, message: 'Email sudah digunakan' };
+            } else if (error.message.includes('username')) {
+                return { success: false, message: 'Username sudah digunakan' };
+            }
+
+            return {
+                success: false,
+                message: error.message || 'Terjadi kesalahan. Silakan coba lagi.'
+            };
         }
-
-        // Check if email already exists
-        const emailExists = Database.users.find(u => u.email === userData.email);
-        if (emailExists) {
-            return { success: false, message: 'Email sudah digunakan' };
-        }
-
-        const newUser = Database.addUser({
-            ...userData,
-            role: 'user' // Default role
-        });
-
-        saveToLocalStorage();
-
-        return { success: true, user: newUser };
     }
 
     // Save session to localStorage
     saveSession() {
-        localStorage.setItem('codesmart_session', JSON.stringify(this.currentUser));
+        if (this.currentUser) {
+            localStorage.setItem('codesmart_session', JSON.stringify(this.currentUser));
+        }
     }
 
     // Load session from localStorage
     loadSession() {
         const session = localStorage.getItem('codesmart_session');
         if (session) {
-            this.currentUser = JSON.parse(session);
+            try {
+                this.currentUser = JSON.parse(session);
+            } catch (error) {
+                console.error('Failed to parse session:', error);
+                localStorage.removeItem('codesmart_session');
+            }
+        }
+    }
+
+    // Refresh current user data from API
+    async refreshUser() {
+        try {
+            const response = await apiService.getMe();
+            if (response.success) {
+                this.currentUser = response.data.user;
+                this.saveSession();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Failed to refresh user:', error);
+            return false;
         }
     }
 
@@ -80,12 +120,12 @@ class AuthService {
 
     // Check if user is logged in
     isLoggedIn() {
-        return this.currentUser !== null;
+        return this.currentUser !== null && apiService.getToken() !== null;
     }
 
     // Check if user has completed pretest
     hasCompletedPretest() {
-        return this.currentUser && this.currentUser.pretestCompleted;
+        return this.currentUser && this.currentUser.pretest_score !== null;
     }
 
     // Check user role
@@ -101,22 +141,95 @@ class AuthService {
         return this.currentUser && this.currentUser.role === 'user';
     }
 
-    // Update current user data
-    updateCurrentUser(updates) {
-        if (this.currentUser) {
-            loadFromLocalStorage();
-            const updatedUser = Database.updateUser(this.currentUser.id, updates);
-            if (updatedUser) {
-                this.currentUser = updatedUser;
+    // Update current user data via API
+    async updateCurrentUser(updates) {
+        try {
+            const response = await apiService.updateProfile(updates);
+
+            if (response.success) {
+                // Merge updates with current user
+                this.currentUser = {
+                    ...this.currentUser,
+                    ...response.data.user
+                };
                 this.saveSession();
-                saveToLocalStorage();
-                return { success: true, user: updatedUser };
+                return { success: true, user: this.currentUser };
             }
+
+            return { success: false, message: response.message || 'Gagal mengupdate profile' };
+
+        } catch (error) {
+            console.error('Update user error:', error);
+            return {
+                success: false,
+                message: error.message || 'Terjadi kesalahan saat mengupdate profile'
+            };
         }
-        return { success: false, message: 'Gagal mengupdate user' };
     }
 
-    // Check access to module based on pretest score
+    // Update password
+    async updatePassword(currentPassword, newPassword) {
+        try {
+            const response = await apiService.updatePassword(currentPassword, newPassword);
+
+            if (response.success) {
+                return { success: true, message: response.message };
+            }
+
+            return { success: false, message: response.message || 'Gagal mengupdate password' };
+
+        } catch (error) {
+            console.error('Update password error:', error);
+            return {
+                success: false,
+                message: error.message || 'Terjadi kesalahan saat mengupdate password'
+            };
+        }
+    }
+
+    // Forgot password
+    async forgotPassword(email) {
+        try {
+            const response = await apiService.forgotPassword(email);
+            return response;
+        } catch (error) {
+            console.error('Forgot password error:', error);
+            return {
+                success: false,
+                message: error.message || 'Terjadi kesalahan'
+            };
+        }
+    }
+
+    // Verify security answer
+    async verifySecurityAnswer(email, answer) {
+        try {
+            const response = await apiService.verifySecurityAnswer(email, answer);
+            return response;
+        } catch (error) {
+            console.error('Verify security answer error:', error);
+            return {
+                success: false,
+                message: error.message || 'Jawaban salah'
+            };
+        }
+    }
+
+    // Reset password
+    async resetPassword(email, newPassword, resetToken) {
+        try {
+            const response = await apiService.resetPassword(email, newPassword, resetToken);
+            return response;
+        } catch (error) {
+            console.error('Reset password error:', error);
+            return {
+                success: false,
+                message: error.message || 'Gagal reset password'
+            };
+        }
+    }
+
+    // Check access to module based on pretest score and level
     canAccessModule(moduleLevel) {
         if (!this.currentUser) return false;
 
@@ -126,18 +239,28 @@ class AuthService {
         // User must complete pretest first
         if (!this.hasCompletedPretest()) return false;
 
-        const score = this.currentUser.pretestScore;
+        // Get current level from user data
+        const currentLevel = this.currentUser.current_level || 'fundamental';
 
-        switch (moduleLevel) {
-            case 'fundamental':
-                return score >= 0 && score <= 45;
-            case 'intermediate':
-                return score >= 46 && score <= 65;
-            case 'advance':
-                return score >= 66 && score <= 100;
-            default:
-                return false;
-        }
+        // Level hierarchy: fundamental < intermediate < advance
+        const levelOrder = {
+            'fundamental': 1,
+            'intermediate': 2,
+            'advance': 3
+        };
+
+        // User can access modules up to their current level
+        return levelOrder[moduleLevel] <= levelOrder[currentLevel];
+    }
+
+    // Get pretest score
+    getPretestScore() {
+        return this.currentUser ? this.currentUser.pretest_score : null;
+    }
+
+    // Get current level
+    getCurrentLevel() {
+        return this.currentUser ? this.currentUser.current_level : 'fundamental';
     }
 
     // Redirect based on role
@@ -164,7 +287,7 @@ class AuthService {
     // Require authentication (call this on protected pages)
     requireAuth() {
         if (!this.isLoggedIn()) {
-            window.location.href = '/index.html';
+            window.location.href = '/src/pages/auth/login.html';
             return false;
         }
         return true;
@@ -179,6 +302,22 @@ class AuthService {
             return false;
         }
         return true;
+    }
+
+    // Check if token is valid (not expired)
+    async validateSession() {
+        if (!this.isLoggedIn()) return false;
+
+        try {
+            // Try to get current user from API
+            await this.refreshUser();
+            return true;
+        } catch (error) {
+            // Token is invalid or expired
+            console.error('Session validation failed:', error);
+            this.logout();
+            return false;
+        }
     }
 }
 
