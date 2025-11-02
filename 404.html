@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>404 - Page Not Found | CodeSmart</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#754ef9">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/src/images/icon-192x192.png">
+
+    <!-- Box Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#754ef9',
+                        'primary-dark': '#5d3dc7',
+                        'primary-light': '#9d7bea',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        .error-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #754ef9, #9d7bea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 font-poppins min-h-screen flex items-center justify-center p-8">
+
+    <div class="max-w-4xl w-full text-center">
+        <!-- Error Icon -->
+        <div class="error-animation mb-12">
+            <i class='bx bx-error-circle text-[20rem] text-primary opacity-80'></i>
+        </div>
+
+        <!-- Error Code -->
+        <h1 class="text-9xl font-bold gradient-text mb-6">404</h1>
+
+        <!-- Error Message -->
+        <h2 class="text-4xl font-bold text-gray-800 mb-6">
+            Oops! Halaman Tidak Ditemukan
+        </h2>
+
+        <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+            Halaman yang Anda cari mungkin telah dipindahkan, dihapus, atau tidak pernah ada.
+            Jangan khawatir, mari kembali ke jalur yang benar!
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-6 justify-center mb-16">
+            <a href="/index.html" class="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-br from-primary to-primary-light text-white text-lg font-semibold rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                <i class='bx bx-home-alt text-2xl'></i>
+                Kembali ke Beranda
+            </a>
+
+            <button onclick="history.back()" class="inline-flex items-center gap-3 px-10 py-5 bg-white text-primary text-lg font-semibold rounded-2xl shadow-lg border-2 border-primary transition-all duration-300 hover:bg-primary hover:text-white hover:-translate-y-1">
+                <i class='bx bx-arrow-back text-2xl'></i>
+                Halaman Sebelumnya
+            </button>
+        </div>
+
+        <!-- Helpful Links -->
+        <div class="bg-white rounded-3xl shadow-xl p-10 max-w-3xl mx-auto">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                Mungkin Anda Mencari:
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Login -->
+                <a href="/src/pages/auth/login.html" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-primary hover:text-white transition-all duration-300 group">
+                    <div class="w-14 h-14 flex items-center justify-center bg-primary group-hover:bg-white rounded-xl transition-all duration-300">
+                        <i class='bx bx-log-in text-3xl text-white group-hover:text-primary'></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-semibold text-lg">Login</div>
+                        <div class="text-sm opacity-75">Masuk ke akun Anda</div>
+                    </div>
+                </a>
+
+                <!-- Register -->
+                <a href="/src/pages/auth/register.html" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-primary hover:text-white transition-all duration-300 group">
+                    <div class="w-14 h-14 flex items-center justify-center bg-primary group-hover:bg-white rounded-xl transition-all duration-300">
+                        <i class='bx bx-user-plus text-3xl text-white group-hover:text-primary'></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-semibold text-lg">Register</div>
+                        <div class="text-sm opacity-75">Buat akun baru</div>
+                    </div>
+                </a>
+
+                <!-- User Dashboard -->
+                <a href="/src/pages/user/dashboard.html" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-primary hover:text-white transition-all duration-300 group">
+                    <div class="w-14 h-14 flex items-center justify-center bg-primary group-hover:bg-white rounded-xl transition-all duration-300">
+                        <i class='bx bx-grid-alt text-3xl text-white group-hover:text-primary'></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-semibold text-lg">Dashboard</div>
+                        <div class="text-sm opacity-75">Halaman utama user</div>
+                    </div>
+                </a>
+
+                <!-- LMS -->
+                <a href="/src/pages/modules/lms-user.html" class="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-primary hover:text-white transition-all duration-300 group">
+                    <div class="w-14 h-14 flex items-center justify-center bg-primary group-hover:bg-white rounded-xl transition-all duration-300">
+                        <i class='bx bx-book-open text-3xl text-white group-hover:text-primary'></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-semibold text-lg">LMS</div>
+                        <div class="text-sm opacity-75">Materi pembelajaran</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 text-gray-500 text-sm">
+            <p>Jika masalah berlanjut, silakan hubungi administrator.</p>
+            <p class="mt-2">CodeSmart &copy; 2024 - Educational Platform</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-check if user is logged in and redirect accordingly
+        window.addEventListener('DOMContentLoaded', function() {
+            const session = localStorage.getItem('codesmart_session');
+            if (session) {
+                try {
+                    const user = JSON.parse(session);
+                    // Update dashboard link based on role
+                    const dashboardLink = document.querySelector('a[href="/src/pages/user/dashboard.html"]');
+                    if (dashboardLink && user.role) {
+                        if (user.role === 'admin') {
+                            dashboardLink.href = '/src/pages/admin/dashboard.html';
+                            dashboardLink.querySelector('.font-semibold').textContent = 'Admin Dashboard';
+                        } else if (user.role === 'assessor') {
+                            dashboardLink.href = '/src/pages/assessor/dashboard.html';
+                            dashboardLink.querySelector('.font-semibold').textContent = 'Assessor Dashboard';
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing session:', e);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

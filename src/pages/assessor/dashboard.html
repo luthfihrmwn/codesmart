@@ -976,22 +976,23 @@
     <!-- Scripts -->
     <script src="../../data/database.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/utils.js"></script>
     <script src="../../js/export-import.js"></script>
     <script src="/src/js/pwa.js"></script>
 
     <script>
-        // Initialize
-        const authService = new AuthService();
+        // Check authentication
         const currentUser = authService.getCurrentUser();
+
+        if (!currentUser || currentUser.role !== 'assessor') {
+            alert('Akses ditolak! Halaman ini hanya untuk Assessor.');
+            window.location.href = '/index.html';
+            throw new Error('Unauthorized access'); // Stop script execution
+        }
+
         let currentModuleId = 1; // Default to fundamental
         let currentSubmissionId = null;
         let editingAssignmentId = null;
-
-        // Check authentication
-        if (!currentUser || currentUser.role !== 'assessor') {
-            alert('Akses ditolak! Halaman ini hanya untuk Assessor.');
-            window.location.href = '../auth/login.html';
-        }
 
         // Logout function
         function logout() {
@@ -1435,27 +1436,8 @@
         };
 
         function openGrading(submissionId) {
-            currentSubmissionId = submissionId;
-            const submission = Database.submissions.find(s => s.id === submissionId);
-            const assignment = Database.assignments.find(a => a.id === submission.assignmentId);
-            const student = Database.findUserById(submission.userId);
-
-            document.getElementById('gradingStudentName').textContent = student.name;
-            document.getElementById('gradingAssignmentTitle').textContent = assignment.title;
-            document.getElementById('gradingFileName').textContent = submission.fileName;
-            document.getElementById('gradingSubmittedAt').textContent = new Date(submission.submittedAt).toLocaleDateString('id-ID');
-            document.getElementById('gradingMaxScore').textContent = assignment.maxScore;
-            document.getElementById('gradingScore').max = assignment.maxScore;
-
-            if (submission.score !== null) {
-                document.getElementById('gradingScore').value = submission.score;
-                document.getElementById('gradingFeedback').value = submission.feedback || '';
-            } else {
-                document.getElementById('gradingScore').value = '';
-                document.getElementById('gradingFeedback').value = '';
-            }
-
-            document.getElementById('gradingModal').classList.add('active');
+            // Redirect to enhanced grading interface
+            window.location.href = `grading-enhanced.html?id=${submissionId}`;
         }
 
         function closeGradingModal() {
@@ -1873,8 +1855,22 @@
             if (user) {
                 document.getElementById('userName').textContent = user.name;
                 document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
-                document.getElementById('profileName').value = user.name;
-                document.getElementById('profileEmail').value = user.email;
+                document.getElementById('profileName').value = user.name || '';
+                document.getElementById('profileEmail').value = user.email || '';
+                document.getElementById('profilePhone').value = user.phone || '';
+                document.getElementById('profileUsername').value = user.username || '';
+                document.getElementById('profileRole').value = user.role || '';
+
+                // Load profile photo
+                const photoPreview = document.getElementById('profilePhotoPreview');
+                if (user.photoUrl) {
+                    photoPreview.src = user.photoUrl;
+                } else {
+                    photoPreview.src = generateAvatarUrl(user.name);
+                }
+
+                // Check profile completion
+                initProfileCompletionIndicator(user);
             }
         }
 
@@ -1882,18 +1878,96 @@
         function updateProfile(event) {
             event.preventDefault();
 
+            const name = document.getElementById('profileName').value.trim();
+            const email = document.getElementById('profileEmail').value.trim();
+            const phone = document.getElementById('profilePhone').value.trim();
+
+            // Validate name
+            const nameValidation = validateName(name);
+            if (!nameValidation.valid) {
+                alert(nameValidation.message);
+                return;
+            }
+
+            // Validate email
+            const emailValidation = validateEmail(email);
+            if (!emailValidation.valid) {
+                alert(emailValidation.message);
+                return;
+            }
+
+            // Validate phone if provided
+            if (phone) {
+                const phoneValidation = validatePhoneNumber(phone);
+                if (!phoneValidation.valid) {
+                    const phoneError = document.getElementById('phoneError');
+                    phoneError.textContent = phoneValidation.message;
+                    phoneError.style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('phoneError').style.display = 'none';
+                }
+            }
+
             const updates = {
-                name: document.getElementById('profileName').value,
-                email: document.getElementById('profileEmail').value
+                name: name,
+                email: email,
+                phone: phone,
+                photoUrl: currentUser.photoUrl || ''
             };
 
             const result = authService.updateCurrentUser(updates);
             if (result.success) {
                 alert('Profile updated successfully!');
                 document.getElementById('userName').textContent = updates.name;
-                document.getElementById('userAvatar').textContent = updates.name.charAt(0).toUpperCase();
+
+                // Update avatar in header
+                const headerAvatar = document.getElementById('userAvatar');
+                if (updates.photoUrl) {
+                    headerAvatar.innerHTML = `<img src="${updates.photoUrl}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                } else {
+                    headerAvatar.textContent = updates.name.charAt(0).toUpperCase();
+                }
+
+                // Refresh profile completion indicator
+                currentUser = result.user;
+                initProfileCompletionIndicator(currentUser);
             } else {
-                alert('Failed to update profile');
+                alert('Failed to update profile: ' + result.message);
+            }
+        }
+
+        // Handle Profile Photo Upload
+        async function handleProfilePhotoUpload(input) {
+            const preview = document.getElementById('profilePhotoPreview');
+
+            try {
+                const photoUrl = await handlePhotoUpload(input, preview);
+
+                if (photoUrl) {
+                    // Store in current user object temporarily
+                    currentUser.photoUrl = photoUrl;
+
+                    // Auto-save to database
+                    const result = authService.updateCurrentUser({ photoUrl: photoUrl });
+                    if (result.success) {
+                        // Update header avatar
+                        const headerAvatar = document.getElementById('userAvatar');
+                        headerAvatar.innerHTML = `<img src="${photoUrl}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+
+                        alert('Profile photo uploaded successfully!');
+
+                        // Refresh profile completion indicator
+                        currentUser = result.user;
+                        initProfileCompletionIndicator(currentUser);
+                    } else {
+                        alert('Failed to save photo. Please try again.');
+                        preview.src = currentUser.photoUrl || generateAvatarUrl(currentUser.name);
+                    }
+                }
+            } catch (error) {
+                console.error('Photo upload error:', error);
+                alert('Failed to upload photo. Please try again.');
             }
         }
 

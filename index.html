@@ -44,56 +44,67 @@
     <meta name="twitter:description" content="Platform pembelajaran interaktif JavaScript dengan sistem pretest berbasis SVM">
     <meta name="twitter:image" content="/src/images/icon-512x512.png">
 
-    <!-- swiper css -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-
-    <!-- box icons -->
+    <!-- Box Icons -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-    <!-- custom css -->
-    <link rel="stylesheet" href="src/css/index.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#754ef9',
+                        'primary-dark': '#5d3dc7',
+                        'primary-light': '#9d7bea',
+                        'secondary': '#b399ff',
+                        'accent-green': '#00d25b',
+                        'accent-blue': '#0ea5e9',
+                        'accent-orange': '#f39c12',
+                        'accent-red': '#e74c3c',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 13s linear infinite',
+                        'pulse-slow': 'pulse 1.5s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- PWA CSS (Keep for specific PWA styles) -->
     <link rel="stylesheet" href="src/css/pwa.css">
 
     <style>
-        /* PWA Splash Screen Loading */
-        .pwa-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #754ef9, #9d7bea);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            opacity: 1;
-            transition: opacity 0.5s ease;
+        /* Custom animations and specific styles */
+        html {
+            scroll-behavior: smooth;
         }
 
-        .pwa-loading.hide {
-            opacity: 0;
-            pointer-events: none;
+        .profession-rotate {
+            animation: professionRotate 13s ease-out infinite;
         }
 
-        .pwa-loading-logo {
-            font-size: 6rem;
-            color: white;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            animation: pulse 1.5s ease infinite;
+        @keyframes professionRotate {
+            0%, 20% { transform: rotate(0deg); }
+            25%, 45% { transform: rotate(-90deg); }
+            50%, 70% { transform: rotate(-180deg); }
+            75%, 95% { transform: rotate(-270deg); }
+            100% { transform: rotate(-360deg); }
         }
 
-        .pwa-loading-spinner {
-            width: 5rem;
-            height: 5rem;
-            border: .5rem solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .profession-item {
+            transform: rotate(calc(360deg / 4 * var(--i)));
+            transform-origin: 384px;
         }
 
+        /* PWA Loading Animation */
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -105,207 +116,248 @@
     </style>
 </head>
 
-<body>
+<body class="bg-white text-gray-800 font-poppins overflow-x-hidden">
     <!-- PWA Loading Splash Screen -->
-    <div class="pwa-loading" id="pwaLoading">
-        <div class="pwa-loading-logo">CodeSmart</div>
-        <div class="pwa-loading-spinner"></div>
+    <div id="pwaLoading" class="fixed inset-0 bg-gradient-to-br from-primary to-primary-light flex flex-col items-center justify-center z-[99999] transition-opacity duration-500">
+        <div class="text-white text-6xl font-bold mb-8 animate-pulse-slow">CodeSmart</div>
+        <div class="w-20 h-20 border-8 border-white/30 border-t-white rounded-full animate-spin"></div>
     </div>
 
-    <!-- header design -->
-    <header class="header">
-        <a href="#" class="logo">CodeSmart</a>
-        <nav class="navbar">
-            <a href="#home" class="active">Home</a>
-            <a href="#about">About</a>
-            <a href="#javascript">Module</a>
-            <a href="#contact">Contact</a>
-            <a href="src/pages/auth/login.html">Login</a>
+    <!-- Header -->
+    <header id="header" class="fixed top-0 left-0 w-full px-[7%] py-8 bg-transparent flex items-center z-50 transition-all duration-500">
+        <a href="#" class="text-3xl text-primary font-semibold mr-auto">CodeSmart</a>
+        <nav id="navbar" class="navbar">
+            <a href="#home" class="relative text-white font-medium text-lg mr-14 transition-all duration-300 hover:text-primary-light active">Home</a>
+            <a href="#about" class="relative text-white font-medium text-lg mr-14 transition-all duration-300 hover:text-primary-light">About</a>
+            <a href="#javascript" class="relative text-white font-medium text-lg mr-14 transition-all duration-300 hover:text-primary-light">Module</a>
+            <a href="#contact" class="relative text-white font-medium text-lg mr-14 transition-all duration-300 hover:text-primary-light">Contact</a>
+            <a href="src/pages/auth/login.html" class="relative text-white font-medium text-lg mr-0 transition-all duration-300 hover:text-primary-light">Login</a>
         </nav>
-        <div class="bx bx-moon" id="darkMode-icon"></div>
-        <div class="bx bx-menu" id="menu-icon"></div>
+        <div id="darkMode-icon" class="bx bx-moon text-3xl text-white cursor-pointer transition-all duration-300 hover:text-primary-light"></div>
+        <div id="menu-icon" class="bx bx-menu text-4xl text-gray-800 hidden cursor-pointer ml-4"></div>
     </header>
 
-    <!-- home section design -->
-    <section class="home" id="home">
-        <div class="home-content">
-            <h3>Wellcome</h3>
-            <h1>CodeSmart</h1><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-            <p>
-                CodeSmart adalah platform pembelajaran interaktif yang 
+    <!-- Home Section -->
+    <section id="home" class="min-h-screen pt-40 px-[7%] pb-8 flex items-center relative">
+        <div class="max-w-2xl z-10">
+            <h3 class="text-4xl font-bold text-gray-800 mb-2">Welcome</h3>
+            <h1 class="text-7xl font-bold text-primary mb-4">CodeSmart</h1>
+            <p class="text-lg text-gray-700 mb-8 leading-relaxed text-justify">
+                CodeSmart adalah platform pembelajaran interaktif yang
                 dirancang untuk membantu siapa saja menguasai JavaScript dengan cara yang menarik
             </p>
-            <div class="social-media">
-                <a href="#"><i class='bx bxl-facebook'></i></a>
-                <a href="#"><i class='bx bxl-twitter'></i></a>
-                <a href="#"><i class='bx bxl-instagram-alt'></i></a>
-                <a href="#"><i class='bx bxl-linkedin'></i></a>
+            <div class="flex gap-4 mb-8">
+                <a href="#" class="inline-flex items-center justify-center w-16 h-16 bg-transparent border-2 border-primary rounded-full text-2xl text-primary shadow-md transition-all duration-500 hover:bg-primary hover:text-white hover:shadow-xl">
+                    <i class='bx bxl-facebook'></i>
+                </a>
+                <a href="#" class="inline-flex items-center justify-center w-16 h-16 bg-transparent border-2 border-primary rounded-full text-2xl text-primary shadow-md transition-all duration-500 hover:bg-primary hover:text-white hover:shadow-xl">
+                    <i class='bx bxl-twitter'></i>
+                </a>
+                <a href="#" class="inline-flex items-center justify-center w-16 h-16 bg-transparent border-2 border-primary rounded-full text-2xl text-primary shadow-md transition-all duration-500 hover:bg-primary hover:text-white hover:shadow-xl">
+                    <i class='bx bxl-instagram-alt'></i>
+                </a>
+                <a href="#" class="inline-flex items-center justify-center w-16 h-16 bg-transparent border-2 border-primary rounded-full text-2xl text-primary shadow-md transition-all duration-500 hover:bg-primary hover:text-white hover:shadow-xl">
+                    <i class='bx bxl-linkedin'></i>
+                </a>
             </div>
         </div>
 
-        <div class="profession-container">
-            <div class="profession-box">
-                <div class="profession" style="--i:0;">
-                    <i class='bx bx-code-alt'></i>
-                    <h3>JavaScript</h3>
-                    <h3>Level:</h3>
+        <!-- Profession Container - Keep original complex animation -->
+        <div class="absolute top-1/2 right-0 -translate-y-1/2 w-screen h-screen overflow-hidden pointer-events-none">
+            <div class="profession-rotate absolute top-0 right-0 w-[768px] h-screen flex items-center justify-center">
+                <div class="profession-item absolute left-0 flex items-center flex-col text-primary bg-white py-4" style="--i:0;">
+                    <i class='bx bx-code-alt text-5xl'></i>
+                    <h3 class="text-3xl leading-none font-normal">JavaScript</h3>
+                    <h3 class="text-3xl leading-none font-normal">Level:</h3>
                 </div>
-                <div class="profession" style="--i:1;">
-                    <i class='bx bx-code-alt'></i>
-                    <h3>Fundamental</h3>
-                    <h3>JavaScript</h3>
+                <div class="profession-item absolute left-0 flex items-center flex-col text-primary bg-white py-4 pb-8" style="--i:1;">
+                    <i class='bx bx-code-alt text-5xl'></i>
+                    <h3 class="text-3xl leading-none font-normal">Fundamental</h3>
+                    <h3 class="text-3xl leading-none font-normal">JavaScript</h3>
                 </div>
-                <div class="profession" style="--i:2;">
-                    <i class='bx bx-code-alt'></i>
-                    <h3>Intermediate</h3>
-                    <h3>JavaScript</h3>
+                <div class="profession-item absolute left-0 flex items-center flex-col text-primary bg-white py-4" style="--i:2;">
+                    <i class='bx bx-code-alt text-5xl'></i>
+                    <h3 class="text-3xl leading-none font-normal">Intermediate</h3>
+                    <h3 class="text-3xl leading-none font-normal">JavaScript</h3>
                 </div>
-                <div class="profession" style="--i:3;">
-                    <i class='bx bx-code-alt'></i>
-                    <h3>Advance</h3>
-                    <h3>JavaScript</h3>
-                </div>  
-                <div class="circle"></div>
+                <div class="profession-item absolute left-0 flex items-center flex-col text-primary bg-white py-4 pb-8" style="--i:3;">
+                    <i class='bx bx-code-alt text-5xl'></i>
+                    <h3 class="text-3xl leading-none font-normal">Advance</h3>
+                    <h3 class="text-3xl leading-none font-normal">JavaScript</h3>
+                </div>
+                <div class="w-[600px] h-[600px] border-4 border-primary rounded-full -z-10"></div>
             </div>
-            <div class="overlay"></div>
+            <div class="absolute top-0 right-0 w-0 h-0 border-t-[50vh] border-t-primary border-r-[384px] border-r-primary border-b-[50vh] border-b-primary border-l-[384px] border-l-transparent"></div>
         </div>
-        <div class="home-img">
-            <img src="src/images/JS-LOGO.png" alt="">
-        </div>
+
+        <!-- Home Image -->
+        <img src="src/images/JS-LOGO.png" alt="JavaScript Logo" class="absolute bottom-0 right-10 max-w-[480px] max-h-screen pointer-events-none rounded-3xl">
     </section>
 
-    <!-- about section design -->
-    <section class="about" id="about">
-        <div class="about-img">
-            <img src="src/images/JS-LOGO.png" alt="">
+    <!-- About Section -->
+    <section id="about" class="min-h-screen pt-40 px-[7%] pb-8 flex items-center justify-center gap-16">
+        <div class="w-2/5">
+            <img src="src/images/JS-LOGO.png" alt="JavaScript Logo" class="w-full rounded-3xl">
         </div>
-        <div class="about-content">
-            <h2 class="heading">About <span>JavaScript</span></h2>
-            <h3>
-                Selamat datang di CodeSmart 
+        <div class="flex-1">
+            <h2 class="text-5xl font-bold text-center text-gray-800 mb-8">About <span class="text-primary">JavaScript</span></h2>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+                Selamat datang di CodeSmart
             </h3>
-            <p>
-                platform belajar interaktif 
-                yang dirancang untuk membantu Anda menguasai JavaScript 
+            <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                platform belajar interaktif
+                yang dirancang untuk membantu Anda menguasai JavaScript
                 dengan cara yang mudah dan menyenangkan!
             </p>
-            <p>
-                Di CodeSmart, kami percaya bahwa belajar pemrograman bukan hanya tentang menulis kode, 
-                 juga tentang memahami konsep dan menerapkannya dalam proyek nyata. 
-                 Dengan berbagai modul pembelajaran, tutorial interaktif, dan latihan langsung, 
+            <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                Di CodeSmart, kami percaya bahwa belajar pemrograman bukan hanya tentang menulis kode,
+                 juga tentang memahami konsep dan menerapkannya dalam proyek nyata.
+                 Dengan berbagai modul pembelajaran, tutorial interaktif, dan latihan langsung,
                  kami siap membimbing Anda menjadi seorang developer handal.
 
                 Jelajahi dunia JavaScript bersama kami dan mulai perjalanan coding Anda sekarang!
             </p>
-            <a href="#javascript" class="btn">Let's Start Begin!</a>
+            <a href="#javascript" class="inline-block px-11 py-5 bg-gradient-to-br from-primary to-primary-light rounded-xl shadow-lg text-white text-lg font-semibold border-2 border-transparent transition-all duration-500 hover:bg-none hover:text-primary hover:border-primary hover:-translate-y-1">
+                Let's Start Begin!
+            </a>
         </div>
     </section>
 
-<!-- javascript section design -->
-<section class="javascript" id="javascript">
-    <h2 class="heading">Module <span>JavaScript</span></h2>
-    <div class="javascript-container">
-        <!-- Fundamental JavaScript -->
-        <div class="javascript-box">
-            <i class='bx bx-code-alt'></i>
-            <h3>Fundamental</h3>
-            <h3>JavaScript</h3>
-            <p>Pelajari konsep dasar dan cara kerja JavaScript
-                dalam pengembangan web dengan materi yang mudah dipahami.</p>
-            <a href="#" onclick="checkLoginBeforeModule(event)" class="btn">Learn Module</a>
-        </div>
-
-        <!-- Intermediate JavaScript -->
-        <div class="javascript-box">
-            <i class='bx bx-code-alt'></i>
-            <h3>Intermediate</h3>
-            <h3>JavaScript</h3>
-            <p>Dalami konsep lanjutan dan teknik pemrograman
-                yang lebih kompleks untuk meningkatkan keterampilan coding.</p>
-            <a href="#" onclick="checkLoginBeforeModule(event)" class="btn">Learn Module</a>
-        </div>
-
-        <!-- Advance JavaScript -->
-        <div class="javascript-box">
-            <i class='bx bx-code-alt'></i>
-            <h3>Advance</h3>
-            <h3>JavaScript</h3>
-            <p>Kuasai teknologi dan metode pengembangan modern
-                untuk membangun aplikasi web yang lebih efisien.</p>
-            <a href="#" onclick="checkLoginBeforeModule(event)" class="btn">Learn Module</a>
-        </div>
-    </div>
-</section>
-
-    <!-- contact section design -->
-    <section class="contact" id="contact">
-        <h2 class="heading">Contact <span>Me!</span></h2>
-        <form action="#">
-            <div class="input-box">
-                <input type="text" placeholder="Full Name">
-                <input type="email" placeholder="Email Address">
+    <!-- JavaScript Module Section -->
+    <section id="javascript" class="min-h-auto pt-40 px-[7%] pb-40">
+        <h2 class="text-5xl font-bold text-center text-gray-800 mb-20">Module <span class="text-primary">JavaScript</span></h2>
+        <div class="flex flex-wrap justify-center items-center gap-8">
+            <!-- Fundamental JavaScript -->
+            <div class="flex-1 basis-[30rem] bg-white p-12 rounded-3xl shadow-md text-center border-t-8 border-b-8 border-primary transition-all duration-500 hover:shadow-xl hover:scale-105">
+                <i class='bx bx-code-alt text-8xl text-primary mb-4'></i>
+                <h3 class="text-3xl font-semibold text-gray-800 mb-2 transition-all duration-500 hover:text-primary">Fundamental</h3>
+                <h3 class="text-3xl font-semibold text-gray-800 mb-4 transition-all duration-500 hover:text-primary">JavaScript</h3>
+                <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                    Pelajari konsep dasar dan cara kerja JavaScript dalam pengembangan web dengan materi yang mudah dipahami.
+                </p>
+                <a href="#" onclick="checkLoginBeforeModule(event)" class="inline-block px-11 py-5 bg-gradient-to-br from-primary to-primary-light rounded-xl shadow-lg text-white text-lg font-semibold border-2 border-transparent transition-all duration-500 hover:bg-none hover:text-primary hover:border-primary hover:-translate-y-1">
+                    Learn Module
+                </a>
             </div>
-            <div class="input-box">
-                <input type="number" placeholder="Mobile Number">
-                <input type="text" placeholder="Email Subject">
+
+            <!-- Intermediate JavaScript -->
+            <div class="flex-1 basis-[30rem] bg-white p-12 rounded-3xl shadow-md text-center border-t-8 border-b-8 border-primary transition-all duration-500 hover:shadow-xl hover:scale-105">
+                <i class='bx bx-code-alt text-8xl text-primary mb-4'></i>
+                <h3 class="text-3xl font-semibold text-gray-800 mb-2 transition-all duration-500 hover:text-primary">Intermediate</h3>
+                <h3 class="text-3xl font-semibold text-gray-800 mb-4 transition-all duration-500 hover:text-primary">JavaScript</h3>
+                <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                    Dalami konsep lanjutan dan teknik pemrograman yang lebih kompleks untuk meningkatkan keterampilan coding.
+                </p>
+                <a href="#" onclick="checkLoginBeforeModule(event)" class="inline-block px-11 py-5 bg-gradient-to-br from-primary to-primary-light rounded-xl shadow-lg text-white text-lg font-semibold border-2 border-transparent transition-all duration-500 hover:bg-none hover:text-primary hover:border-primary hover:-translate-y-1">
+                    Learn Module
+                </a>
             </div>
-            <textarea name="" id="" cols="30" rows="10" placeholder="Your Message"></textarea>
-            <input type="submit" value="Send Message" class="btn">
+
+            <!-- Advance JavaScript -->
+            <div class="flex-1 basis-[30rem] bg-white p-12 rounded-3xl shadow-md text-center border-t-8 border-b-8 border-primary transition-all duration-500 hover:shadow-xl hover:scale-105">
+                <i class='bx bx-code-alt text-8xl text-primary mb-4'></i>
+                <h3 class="text-3xl font-semibold text-gray-800 mb-2 transition-all duration-500 hover:text-primary">Advance</h3>
+                <h3 class="text-3xl font-semibold text-gray-800 mb-4 transition-all duration-500 hover:text-primary">JavaScript</h3>
+                <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                    Kuasai teknologi dan metode pengembangan modern untuk membangun aplikasi web yang lebih efisien.
+                </p>
+                <a href="#" onclick="checkLoginBeforeModule(event)" class="inline-block px-11 py-5 bg-gradient-to-br from-primary to-primary-light rounded-xl shadow-lg text-white text-lg font-semibold border-2 border-transparent transition-all duration-500 hover:bg-none hover:text-primary hover:border-primary hover:-translate-y-1">
+                    Learn Module
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="min-h-auto pt-40 px-[7%] pb-28">
+        <h2 class="text-5xl font-bold text-center text-gray-800 mb-12">Contact <span class="text-primary">Me!</span></h2>
+        <form action="#" class="max-w-3xl mx-auto mb-12">
+            <div class="flex justify-between flex-wrap mb-3">
+                <input type="text" placeholder="Full Name" class="w-[49%] px-6 py-6 text-lg text-gray-800 bg-white rounded-2xl shadow-md border-2 border-gray-200 focus:outline-none focus:border-primary transition-all duration-300">
+                <input type="email" placeholder="Email Address" class="w-[49%] px-6 py-6 text-lg text-gray-800 bg-white rounded-2xl shadow-md border-2 border-gray-200 focus:outline-none focus:border-primary transition-all duration-300">
+            </div>
+            <div class="flex justify-between flex-wrap mb-3">
+                <input type="number" placeholder="Mobile Number" class="w-[49%] px-6 py-6 text-lg text-gray-800 bg-white rounded-2xl shadow-md border-2 border-gray-200 focus:outline-none focus:border-primary transition-all duration-300">
+                <input type="text" placeholder="Email Subject" class="w-[49%] px-6 py-6 text-lg text-gray-800 bg-white rounded-2xl shadow-md border-2 border-gray-200 focus:outline-none focus:border-primary transition-all duration-300">
+            </div>
+            <textarea cols="30" rows="10" placeholder="Your Message" class="w-full px-6 py-6 text-lg text-gray-800 bg-white rounded-2xl shadow-md border-2 border-gray-200 resize-none mb-3 focus:outline-none focus:border-primary transition-all duration-300"></textarea>
+            <button type="submit" class="inline-block px-11 py-5 bg-gradient-to-br from-primary to-primary-light rounded-xl shadow-lg text-white text-lg font-semibold border-2 border-transparent transition-all duration-500 hover:bg-none hover:text-primary hover:border-primary hover:-translate-y-1 cursor-pointer">
+                Send Message
+            </button>
         </form>
     </section>
 
-    <!-- footer design -->
-    <footer class="footer">
-        <div class="footer-text">
-            <p>Copyright &copy; 2023 | All Rights Reserved.</p>
+    <!-- Footer -->
+    <footer class="flex justify-between items-center flex-wrap px-[7%] py-8 bg-primary">
+        <div>
+            <p class="text-lg text-white">Copyright &copy; 2023 | All Rights Reserved.</p>
         </div>
-        <div class="footer-iconTop">
-            <a href="#home"><i class='bx bx-up-arrow-alt'></i></a>
+        <div>
+            <a href="#home" class="inline-flex items-center justify-center p-3 bg-white rounded-xl border-2 border-primary shadow-md transition-all duration-500 hover:shadow-xl">
+                <i class='bx bx-up-arrow-alt text-3xl text-gray-800'></i>
+            </a>
         </div>
     </footer>
 
     <!-- Login Required Modal -->
-    <div id="loginRequiredModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 4rem; border-radius: 2rem; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 1rem 3rem rgba(0,0,0,0.5);">
-            <div style="font-size: 8rem; color: #754ef9; margin-bottom: 2rem;">
+    <div id="loginRequiredModal" class="fixed inset-0 bg-black/70 z-[10000] hidden items-center justify-center">
+        <div class="bg-white p-16 rounded-3xl max-w-2xl w-[90%] text-center shadow-2xl">
+            <div class="text-9xl text-primary mb-8">
                 <i class='bx bx-lock-alt'></i>
             </div>
-            <h2 style="font-size: 2.8rem; color: #333; margin-bottom: 1.5rem;">Anda Belum Login!</h2>
-            <p style="font-size: 1.6rem; color: #666; margin-bottom: 3rem;">
+            <h2 class="text-4xl text-gray-800 font-bold mb-6">Anda Belum Login!</h2>
+            <p class="text-lg text-gray-600 mb-12">
                 Untuk mengakses modul pembelajaran, Anda harus login terlebih dahulu.
             </p>
-            <div style="display: flex; gap: 1.5rem; justify-content: center;">
-                <button onclick="closeLoginModal()" style="flex: 1; padding: 1.5rem 3rem; font-size: 1.6rem; border-radius: 1rem; border: 0.2rem solid #754ef9; background: transparent; color: #754ef9; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+            <div class="flex gap-6 justify-center">
+                <button onclick="closeLoginModal()" class="flex-1 px-12 py-6 text-lg rounded-xl border-2 border-primary bg-transparent text-primary cursor-pointer font-semibold transition-all duration-300 hover:bg-primary hover:text-white">
                     Batal
                 </button>
-                <button onclick="goToLogin()" style="flex: 1; padding: 1.5rem 3rem; font-size: 1.6rem; border-radius: 1rem; border: none; background: #754ef9; color: white; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                <button onclick="goToLogin()" class="flex-1 px-12 py-6 text-lg rounded-xl border-none bg-primary text-white cursor-pointer font-semibold transition-all duration-300 hover:bg-primary-dark">
                     Login Sekarang
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- scroll reveal -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/scrollreveal"></script>
-
-    <!-- swiper js -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-
-    <!-- PWA js -->
     <script src="src/js/pwa.js"></script>
-
-    <!-- custom js -->
     <script src="src/js/index.js"></script>
 
     <script>
         // Hide loading screen after page loads
         window.addEventListener('load', function() {
             setTimeout(() => {
-                document.getElementById('pwaLoading').classList.add('hide');
-                setTimeout(() => {
-                    document.getElementById('pwaLoading').remove();
-                }, 500);
+                const loading = document.getElementById('pwaLoading');
+                loading.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => loading.remove(), 500);
             }, 1000);
+        });
+
+        // Header sticky effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('bg-white', 'shadow-lg');
+                header.querySelectorAll('a').forEach(a => {
+                    if (!a.classList.contains('active')) {
+                        a.classList.remove('text-white');
+                        a.classList.add('text-gray-800');
+                    }
+                });
+                header.querySelector('.active').classList.add('text-primary');
+                header.querySelector('#darkMode-icon').classList.remove('text-white');
+                header.querySelector('#darkMode-icon').classList.add('text-gray-800');
+            } else {
+                header.classList.remove('bg-white', 'shadow-lg');
+                header.querySelectorAll('a').forEach(a => {
+                    a.classList.remove('text-gray-800', 'text-primary');
+                    a.classList.add('text-white');
+                });
+                header.querySelector('#darkMode-icon').classList.remove('text-gray-800');
+                header.querySelector('#darkMode-icon').classList.add('text-white');
+            }
         });
 
         // Auto-redirect if already logged in
@@ -314,7 +366,6 @@
             if (session) {
                 try {
                     const user = JSON.parse(session);
-                    // Redirect based on role
                     if (user.role === 'admin') {
                         window.location.href = '/src/pages/admin/dashboard.html';
                     } else if (user.role === 'assessor') {
@@ -323,7 +374,6 @@
                         window.location.href = '/src/pages/user/dashboard.html';
                     }
                 } catch (e) {
-                    // Invalid session, clear it
                     localStorage.removeItem('codesmart_session');
                 }
             }

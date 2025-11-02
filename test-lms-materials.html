@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test LMS Materials Integration - CodeSmart</title>
+
+    <!-- Prism.js for Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --main-color: #754ef9;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            background: #f5f5f5;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--main-color);
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .test-section {
+            background: #f9f9f9;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 1rem;
+            border-left: 4px solid var(--main-color);
+        }
+
+        .test-section h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        select {
+            padding: 1rem;
+            font-size: 1.6rem;
+            border: 2px solid #ddd;
+            border-radius: 0.8rem;
+            margin-right: 1rem;
+            min-width: 250px;
+        }
+
+        button {
+            background: var(--main-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.6rem;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #5d3dc7;
+        }
+
+        #materialOutput {
+            background: white;
+            padding: 3rem;
+            margin-top: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Material Body Styling */
+        .material-body {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .material-body h2 {
+            color: var(--main-color);
+            font-size: 2.4rem;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #754ef9;
+            padding-bottom: 1rem;
+        }
+
+        .material-body h3 {
+            color: #5d3dc7;
+            font-size: 2rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .material-body p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .material-body ul,
+        .material-body ol {
+            margin-left: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .material-body li {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .material-body pre {
+            background: #2d2d2d;
+            border-radius: 1rem;
+            padding: 2rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .material-body code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .material-body pre code {
+            color: #f8f8f2;
+        }
+
+        /* Inline code */
+        .material-body p code,
+        .material-body li code {
+            background: #f5f5f5;
+            color: #e74c3c;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.4rem;
+            font-size: 1.4rem;
+        }
+
+        .material-body .example {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 2rem;
+            border-radius: 0.8rem;
+            margin: 2rem 0;
+        }
+
+        .material-body .exercise {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 2rem;
+            border-radius: 0.8rem;
+            margin: 2rem 0;
+        }
+
+        .status {
+            padding: 1rem 2rem;
+            border-radius: 0.8rem;
+            margin-top: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test LMS Materials Integration</h1>
+
+        <div class="test-section">
+            <h2>Test Learning Materials Display</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 1.5rem;">
+                Pilih class untuk melihat materi pembelajaran lengkap dengan syntax highlighting:
+            </p>
+
+            <div>
+                <select id="classSelect">
+                    <option value="1">Class 1: Pengenalan JavaScript</option>
+                    <option value="2">Class 2: Variabel dan Tipe Data</option>
+                    <option value="3">Class 3: Operator dan Ekspresi</option>
+                    <option value="4">Class 4: Kontrol Alur Program</option>
+                    <option value="5">Class 5: Fungsi Dasar</option>
+                    <option value="6">Class 6: Array dan Object</option>
+                    <option value="7">Class 7: DOM Manipulation</option>
+                    <option value="8">Class 8: Event Handling</option>
+                    <option value="9">Class 9: Asynchronous JavaScript</option>
+                    <option value="10">Class 10: API dan Fetch</option>
+                    <option value="11">Class 11: ES6+ Features</option>
+                    <option value="12">Class 12: Design Patterns</option>
+                    <option value="13">Class 13: Module Systems</option>
+                    <option value="14">Class 14: Performance Optimization</option>
+                    <option value="15">Class 15: Testing dan Debugging</option>
+                </select>
+                <button onclick="loadMaterial()">Load Material</button>
+            </div>
+
+            <div id="statusMessage"></div>
+        </div>
+
+        <div id="materialOutput" class="material-body">
+            <p style="color: #999; text-align: center; padding: 4rem; font-size: 1.6rem;">
+                Pilih class dan klik "Load Material" untuk melihat konten...
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/src/data/learning-materials.js"></script>
+    <script>
+        function loadMaterial() {
+            const classId = parseInt(document.getElementById('classSelect').value);
+            const output = document.getElementById('materialOutput');
+            const statusMessage = document.getElementById('statusMessage');
+
+            try {
+                // Check if LearningMaterials is available
+                if (typeof LearningMaterials === 'undefined') {
+                    throw new Error('LearningMaterials module not loaded!');
+                }
+
+                // Get content
+                const content = LearningMaterials.getContent(classId);
+
+                // Check if content is valid
+                if (!content || content === 'Materi belum tersedia.') {
+                    throw new Error('Material not available for this class');
+                }
+
+                // Display content
+                output.innerHTML = content;
+
+                // Trigger syntax highlighting
+                if (typeof Prism !== 'undefined') {
+                    setTimeout(() => {
+                        Prism.highlightAll();
+                    }, 100);
+                }
+
+                // Show success message
+                statusMessage.innerHTML = `
+                    <div class="status success">
+                        ✅ Material loaded successfully! Class ID: ${classId}
+                    </div>
+                `;
+
+                // Scroll to content
+                output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            } catch (error) {
+                console.error('Error loading material:', error);
+                statusMessage.innerHTML = `
+                    <div class="status error">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+                output.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; color: #e74c3c;">
+                        <h2>Error Loading Material</h2>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-load first class on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Test page loaded');
+            console.log('LearningMaterials available:', typeof LearningMaterials !== 'undefined');
+            console.log('Prism available:', typeof Prism !== 'undefined');
+        });
+    </script>
+</body>
+</html>

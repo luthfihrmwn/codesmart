@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Grading - CodeSmart</title>
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#754ef9">
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="../../css/design-system.css">
+
+    <!-- Prism.js for Code Preview -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --main-color: #754ef9;
+            --secondary-color: #e8e1fc;
+            --text-dark: #2d2d2d;
+            --text-light: #666;
+            --border-color: #e0e0e0;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --bg-light: #f9f9f9;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            background: #f5f5f5;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem 3rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--main-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--main-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #5d3dc7;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 3rem auto;
+            padding: 0 3rem;
+        }
+
+        /* Grading Grid Layout */
+        .grading-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 3rem;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+        }
+
+        .card-title {
+            font-size: 2.2rem;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        .card-title i {
+            color: var(--main-color);
+            font-size: 2.5rem;
+        }
+
+        /* Submission Info */
+        .submission-info {
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.5rem;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        /* Assignment Requirements */
+        .requirements-section {
+            margin-bottom: 3rem;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 0.8rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .requirement-item i {
+            color: var(--main-color);
+            font-size: 2rem;
+            margin-top: 0.2rem;
+        }
+
+        /* File Preview */
+        .file-preview {
+            background: var(--bg-light);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .file-name {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .download-btn {
+            background: var(--main-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #5d3dc7;
+        }
+
+        .code-preview {
+            background: #2d2d2d;
+            border-radius: 0.8rem;
+            padding: 2rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .code-preview pre {
+            margin: 0;
+        }
+
+        .code-preview code {
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .no-preview {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-light);
+            font-size: 1.5rem;
+        }
+
+        /* Rubric Grading */
+        .rubric-section {
+            margin-bottom: 3rem;
+        }
+
+        .rubric-item {
+            background: var(--bg-light);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .rubric-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .rubric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .rubric-name {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .rubric-max {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            background: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+        }
+
+        .rubric-input-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .rubric-input {
+            flex: 1;
+            padding: 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.8rem;
+            font-size: 1.6rem;
+            transition: 0.3s;
+        }
+
+        .rubric-input:focus {
+            outline: none;
+            border-color: var(--main-color);
+        }
+
+        .rubric-slider {
+            flex: 2;
+            height: 0.8rem;
+            border-radius: 1rem;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .rubric-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--main-color);
+            cursor: pointer;
+        }
+
+        .rubric-slider::-moz-range-thumb {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--main-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Total Score Display */
+        .total-score-display {
+            background: linear-gradient(135deg, var(--main-color), #9d7bea);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .total-score-label {
+            font-size: 1.6rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .total-score-value {
+            font-size: 4.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-score-max {
+            font-size: 1.8rem;
+            opacity: 0.8;
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            margin-bottom: 3rem;
+        }
+
+        .feedback-label {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 1rem;
+            font-size: 1.5rem;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+            transition: 0.3s;
+        }
+
+        .feedback-textarea:focus {
+            outline: none;
+            border-color: var(--main-color);
+        }
+
+        .feedback-templates {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .template-btn {
+            background: white;
+            border: 2px solid var(--border-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .template-btn:hover {
+            border-color: var(--main-color);
+            color: var(--main-color);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1.5rem 3rem;
+            border: none;
+            border-radius: 1rem;
+            font-size: 1.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            transition: 0.3s;
+        }
+
+        .btn i {
+            font-size: 2rem;
+        }
+
+        .btn-submit {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #45a049;
+        }
+
+        .btn-draft {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn-draft:hover {
+            background: #e68900;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .grading-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            .card {
+                padding: 2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class='bx bx-code-alt'></i>
+                CodeSmart
+            </div>
+            <div class="header-actions">
+                <button class="back-btn" onclick="goBack()">
+                    <i class='bx bx-arrow-back'></i>
+                    Kembali ke Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="grading-grid">
+            <!-- Left Column: Submission Preview -->
+            <div>
+                <!-- Submission Info Card -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class='bx bx-file'></i>
+                        Informasi Pengumpulan
+                    </h2>
+
+                    <div class="submission-info">
+                        <div class="info-row">
+                            <span class="info-label">Siswa</span>
+                            <span class="info-value" id="studentName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Tugas</span>
+                            <span class="info-value" id="assignmentTitle">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Modul</span>
+                            <span class="info-value" id="moduleName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Dikumpulkan</span>
+                            <span class="info-value" id="submittedAt">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value" id="submissionStatus">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Requirements -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class='bx bx-list-check'></i>
+                        Kriteria Penilaian
+                    </h2>
+
+                    <div class="requirements-section" id="requirementsList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- File Preview -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class='bx bx-code-block'></i>
+                        Preview File
+                    </h2>
+
+                    <div class="file-preview">
+                        <div class="file-header">
+                            <span class="file-name" id="fileName">-</span>
+                            <button class="download-btn" onclick="downloadSubmission()">
+                                <i class='bx bx-download'></i>
+                                Download
+                            </button>
+                        </div>
+
+                        <div id="filePreviewContent">
+                            <div class="no-preview">
+                                <i class='bx bx-file' style="font-size: 6rem; display: block; margin-bottom: 1rem;"></i>
+                                <p>Preview tidak tersedia untuk file ini</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Grading Form -->
+            <div>
+                <!-- Total Score Display -->
+                <div class="total-score-display">
+                    <div class="total-score-label">Total Nilai</div>
+                    <div class="total-score-value" id="totalScoreDisplay">0</div>
+                    <div class="total-score-max">dari <span id="maxScoreDisplay">100</span> poin</div>
+                </div>
+
+                <!-- Rubric Grading Card -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class='bx bx-spreadsheet'></i>
+                        Penilaian Berdasarkan Rubrik
+                    </h2>
+
+                    <div class="rubric-section" id="rubricList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Feedback Card -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class='bx bx-comment-detail'></i>
+                        Feedback untuk Siswa
+                    </h2>
+
+                    <div class="feedback-section">
+                        <label class="feedback-label">Berikan komentar dan saran</label>
+                        <textarea
+                            class="feedback-textarea"
+                            id="feedbackText"
+                            placeholder="Tulis feedback yang konstruktif untuk membantu siswa belajar...&#10;&#10;Contoh:&#10;- Jelaskan apa yang sudah baik&#10;- Berikan saran untuk perbaikan&#10;- Tunjukkan area yang perlu ditingkatkan"></textarea>
+
+                        <div class="feedback-templates">
+                            <button class="template-btn" onclick="addTemplate('excellent')">💯 Sempurna</button>
+                            <button class="template-btn" onclick="addTemplate('good')">👍 Baik</button>
+                            <button class="template-btn" onclick="addTemplate('needsImprovement')">📝 Perlu Perbaikan</button>
+                            <button class="template-btn" onclick="addTemplate('incomplete')">⚠️ Belum Lengkap</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-draft" onclick="saveDraft()">
+                        <i class='bx bx-save'></i>
+                        Simpan Draft
+                    </button>
+                    <button class="btn btn-submit" onclick="submitGrade()">
+                        <i class='bx bx-check-circle'></i>
+                        Submit Nilai
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../data/database.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="/src/js/pwa.js"></script>
+
+    <script>
+        // Check authentication
+        const currentUser = authService.getCurrentUser();
+
+        if (!currentUser || currentUser.role !== 'assessor') {
+            alert('Akses ditolak! Halaman ini hanya untuk Assessor.');
+            window.location.href = '/index.html';
+        }
+
+        // Get submission ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const submissionId = parseInt(urlParams.get('id'));
+
+        let currentSubmission = null;
+        let currentAssignment = null;
+        let currentStudent = null;
+        let rubricScores = {};
+
+        // Feedback templates
+        const feedbackTemplates = {
+            excellent: "Kerja yang sangat baik! Kode Anda bersih, terstruktur dengan baik, dan memenuhi semua kriteria. Teruskan!",
+            good: "Pekerjaan yang baik secara keseluruhan. Ada beberapa area kecil yang bisa ditingkatkan, tetapi Anda sudah pada jalur yang benar.",
+            needsImprovement: "Ada beberapa area yang memerlukan perbaikan. Silakan review feedback dan coba tingkatkan pada tugas berikutnya.",
+            incomplete: "Tugas belum lengkap. Pastikan semua kriteria terpenuhi sebelum mengumpulkan."
+        };
+
+        // Initialize page
+        function init() {
+            if (!submissionId) {
+                alert('Submission ID tidak ditemukan!');
+                goBack();
+                return;
+            }
+
+            loadSubmissionData();
+        }
+
+        // Load submission data
+        function loadSubmissionData() {
+            currentSubmission = Database.submissions.find(s => s.id === submissionId);
+
+            if (!currentSubmission) {
+                alert('Submission tidak ditemukan!');
+                goBack();
+                return;
+            }
+
+            currentAssignment = Database.assignments.find(a => a.id === currentSubmission.assignmentId);
+            currentStudent = Database.users.find(u => u.id === currentSubmission.userId);
+
+            if (!currentAssignment || !currentStudent) {
+                alert('Data tidak lengkap!');
+                goBack();
+                return;
+            }
+
+            // Populate basic info
+            document.getElementById('studentName').textContent = currentStudent.name;
+            document.getElementById('assignmentTitle').textContent = currentAssignment.title;
+
+            const module = Database.modules.find(m => m.id === currentAssignment.moduleId);
+            document.getElementById('moduleName').textContent = module ? module.name : '-';
+
+            document.getElementById('submittedAt').textContent = new Date(currentSubmission.submittedAt).toLocaleString('id-ID');
+            document.getElementById('fileName').textContent = currentSubmission.fileName;
+
+            const status = currentSubmission.score !== null ? 'Sudah Dinilai' : 'Menunggu Penilaian';
+            document.getElementById('submissionStatus').textContent = status;
+
+            // Load requirements
+            loadRequirements();
+
+            // Load rubric
+            loadRubric();
+
+            // Load existing grade if any
+            if (currentSubmission.score !== null) {
+                document.getElementById('feedbackText').value = currentSubmission.feedback || '';
+            }
+
+            // Simulate file preview (in real app, this would load actual file)
+            loadFilePreview();
+        }
+
+        // Load requirements
+        function loadRequirements() {
+            const requirementsList = document.getElementById('requirementsList');
+
+            if (currentAssignment.requirements && currentAssignment.requirements.length > 0) {
+                requirementsList.innerHTML = currentAssignment.requirements.map(req => `
+                    <div class="requirement-item">
+                        <i class='bx bx-check-circle'></i>
+                        <span>${req}</span>
+                    </div>
+                `).join('');
+            } else {
+                requirementsList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #999; font-size: 1.5rem;">
+                        Tidak ada kriteria khusus
+                    </div>
+                `;
+            }
+        }
+
+        // Load rubric
+        function loadRubric() {
+            const rubricList = document.getElementById('rubricList');
+            const maxScoreDisplay = document.getElementById('maxScoreDisplay');
+
+            maxScoreDisplay.textContent = currentAssignment.maxScore;
+
+            if (currentAssignment.rubric && Object.keys(currentAssignment.rubric).length > 0) {
+                rubricList.innerHTML = Object.entries(currentAssignment.rubric).map(([name, maxPoints]) => {
+                    const currentScore = rubricScores[name] || 0;
+
+                    return `
+                        <div class="rubric-item">
+                            <div class="rubric-header">
+                                <span class="rubric-name">${name}</span>
+                                <span class="rubric-max">Maks: ${maxPoints} poin</span>
+                            </div>
+                            <div class="rubric-input-group">
+                                <input
+                                    type="number"
+                                    class="rubric-input"
+                                    id="rubric-${name}"
+                                    min="0"
+                                    max="${maxPoints}"
+                                    value="${currentScore}"
+                                    placeholder="0"
+                                    onchange="updateRubricScore('${name}', this.value, ${maxPoints})">
+                                <input
+                                    type="range"
+                                    class="rubric-slider"
+                                    min="0"
+                                    max="${maxPoints}"
+                                    value="${currentScore}"
+                                    oninput="updateRubricFromSlider('${name}', this.value, ${maxPoints})">
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                rubricList.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #999; font-size: 1.5rem;">
+                        <i class='bx bx-info-circle' style="font-size: 5rem; display: block; margin-bottom: 1rem;"></i>
+                        <p>Tugas ini tidak menggunakan rubrik.<br>Berikan nilai langsung dari 0-${currentAssignment.maxScore}.</p>
+                    </div>
+                    <div class="rubric-item">
+                        <div class="rubric-header">
+                            <span class="rubric-name">Nilai Total</span>
+                            <span class="rubric-max">Maks: ${currentAssignment.maxScore} poin</span>
+                        </div>
+                        <div class="rubric-input-group">
+                            <input
+                                type="number"
+                                class="rubric-input"
+                                id="rubric-total"
+                                min="0"
+                                max="${currentAssignment.maxScore}"
+                                value="0"
+                                placeholder="0"
+                                onchange="updateRubricScore('total', this.value, ${currentAssignment.maxScore})">
+                            <input
+                                type="range"
+                                class="rubric-slider"
+                                min="0"
+                                max="${currentAssignment.maxScore}"
+                                value="0"
+                                oninput="updateRubricFromSlider('total', this.value, ${currentAssignment.maxScore})">
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateTotalScore();
+        }
+
+        // Update rubric score from input
+        function updateRubricScore(name, value, max) {
+            let score = parseInt(value) || 0;
+            if (score > max) score = max;
+            if (score < 0) score = 0;
+
+            rubricScores[name] = score;
+
+            // Update slider
+            const slider = document.querySelector(`#rubric-${name}`).nextElementSibling;
+            if (slider) slider.value = score;
+
+            updateTotalScore();
+        }
+
+        // Update rubric from slider
+        function updateRubricFromSlider(name, value, max) {
+            const score = parseInt(value);
+            rubricScores[name] = score;
+
+            // Update input
+            const input = document.getElementById(`rubric-${name}`);
+            if (input) input.value = score;
+
+            updateTotalScore();
+        }
+
+        // Update total score
+        function updateTotalScore() {
+            const total = Object.values(rubricScores).reduce((sum, score) => sum + score, 0);
+            document.getElementById('totalScoreDisplay').textContent = total;
+        }
+
+        // Add feedback template
+        function addTemplate(type) {
+            const feedbackText = document.getElementById('feedbackText');
+            const template = feedbackTemplates[type];
+
+            if (feedbackText.value.trim()) {
+                feedbackText.value += '\n\n' + template;
+            } else {
+                feedbackText.value = template;
+            }
+        }
+
+        // Load file preview
+        function loadFilePreview() {
+            const previewContent = document.getElementById('filePreviewContent');
+
+            // Simulate code preview (in real app, this would fetch actual file content)
+            const sampleCode = `// Sample submission code
+function calculateSum(a, b) {
+    return a + b;
+}
+
+function main() {
+    const result = calculateSum(5, 10);
+    console.log('Result:', result);
+}
+
+main();`;
+
+            previewContent.innerHTML = `
+                <div class="code-preview">
+                    <pre><code class="language-javascript">${sampleCode}</code></pre>
+                </div>
+            `;
+
+            // Trigger syntax highlighting
+            if (typeof Prism !== 'undefined') {
+                setTimeout(() => Prism.highlightAll(), 100);
+            }
+        }
+
+        // Download submission
+        function downloadSubmission() {
+            alert('Download feature akan diimplementasikan dengan file storage backend');
+        }
+
+        // Save draft
+        function saveDraft() {
+            const totalScore = Object.values(rubricScores).reduce((sum, score) => sum + score, 0);
+            const feedback = document.getElementById('feedbackText').value;
+
+            if (confirm('Simpan draft penilaian ini?')) {
+                // In real app, this would save to database
+                alert('Draft berhasil disimpan!');
+            }
+        }
+
+        // Submit grade
+        function submitGrade() {
+            const totalScore = Object.values(rubricScores).reduce((sum, score) => sum + score, 0);
+            const feedback = document.getElementById('feedbackText').value.trim();
+
+            // Validation
+            if (currentAssignment.rubric && Object.keys(currentAssignment.rubric).length > 0) {
+                const rubricKeys = Object.keys(currentAssignment.rubric);
+                const scoredKeys = Object.keys(rubricScores);
+
+                if (scoredKeys.length < rubricKeys.length) {
+                    alert('Mohon lengkapi penilaian untuk semua kriteria rubrik!');
+                    return;
+                }
+            } else {
+                if (totalScore === 0) {
+                    if (!confirm('Nilai masih 0. Yakin ingin melanjutkan?')) {
+                        return;
+                    }
+                }
+            }
+
+            if (!feedback) {
+                alert('Mohon berikan feedback untuk siswa!');
+                return;
+            }
+
+            if (confirm(`Submit nilai ${totalScore}/${currentAssignment.maxScore} untuk ${currentStudent.name}?`)) {
+                // Update submission
+                currentSubmission.score = totalScore;
+                currentSubmission.feedback = feedback;
+                currentSubmission.gradedBy = currentUser.id;
+                currentSubmission.gradedAt = new Date().toISOString();
+                currentSubmission.rubricScores = rubricScores;
+
+                // Save to database
+                Database.save();
+
+                alert('✅ Nilai berhasil disimpan!');
+
+                // Go back to dashboard
+                setTimeout(() => {
+                    goBack();
+                }, 500);
+            }
+        }
+
+        // Go back to dashboard
+        function goBack() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

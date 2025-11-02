@@ -280,7 +280,7 @@
     <section class="profile-content">
         <div class="profile-container">
             <div class="profile-header">
-                <div class="profile-avatar-large" id="profileAvatar">U</div>
+                <img id="profileAvatar" src="" alt="Profile Avatar" style="width: 15rem; height: 15rem; border-radius: 50%; object-fit: cover; border: 0.5rem solid var(--main-color); margin: 0 auto 2rem; box-shadow: 0 0.5rem 2rem var(--shadow-color);">
                 <h1 id="profileName">User Name</h1>
                 <p style="font-size: 1.6rem; color: var(--text-color);" id="profileRole">User</p>
             </div>
@@ -312,6 +312,10 @@
                             <p id="viewEmail">-</p>
                         </div>
                         <div class="info-item">
+                            <label>Phone Number</label>
+                            <p id="viewPhone">-</p>
+                        </div>
+                        <div class="info-item">
                             <label>Role</label>
                             <p id="viewRole">-</p>
                         </div>
@@ -321,13 +325,38 @@
                 <!-- Edit Mode -->
                 <div id="editMode" class="edit-form">
                     <form id="profileForm">
+                        <!-- Profile Photo Upload -->
+                        <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
+                            <label style="display: block; margin-bottom: 1rem; font-weight: 600;">Profile Photo</label>
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+                                <img id="editPhotoPreview"
+                                     src=""
+                                     alt="Profile Photo"
+                                     style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 0.4rem solid var(--main-color); box-shadow: 0 0.5rem 1.5rem var(--shadow-color);">
+                                <label for="editPhotoInput" class="btn-action btn-primary" style="cursor: pointer; display: inline-block;">
+                                    <i class='bx bx-upload'></i> Upload Photo
+                                </label>
+                                <input type="file"
+                                       id="editPhotoInput"
+                                       accept="image/*"
+                                       style="display: none;"
+                                       onchange="handleProfilePhotoUpload(this)">
+                                <small style="color: #666; font-size: 1.2rem;">Max 2MB (JPG, PNG, GIF, WEBP)</small>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label for="editName">Nama Lengkap</label>
+                            <label for="editName">Nama Lengkap *</label>
                             <input type="text" id="editName" required>
                         </div>
                         <div class="form-group">
-                            <label for="editEmail">Email</label>
+                            <label for="editEmail">Email *</label>
                             <input type="email" id="editEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPhone">Phone Number</label>
+                            <input type="tel" id="editPhone" placeholder="08123456789 or +628123456789">
+                            <small id="phoneError" style="color: #e74c3c; display: none; font-size: 1.2rem; margin-top: 0.5rem;"></small>
                         </div>
                         <div class="form-group">
                             <label for="editPassword">Password Baru (Kosongkan jika tidak ingin mengubah)</label>
@@ -367,6 +396,7 @@
     <!-- Load database and auth -->
     <script src="../../data/database.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/utils.js"></script>
 
     <script>
         // Check authentication
@@ -379,7 +409,15 @@
         function initProfile() {
             // Set avatar and name
             document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('profileAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+
+            // Set profile avatar with photo or default
+            const profileAvatar = document.getElementById('profileAvatar');
+            if (currentUser.photoUrl) {
+                profileAvatar.src = currentUser.photoUrl;
+            } else {
+                profileAvatar.src = generateAvatarUrl(currentUser.name);
+            }
+
             document.getElementById('profileName').textContent = currentUser.name;
             document.getElementById('profileRole').textContent = currentUser.role.toUpperCase();
 
@@ -387,11 +425,24 @@
             document.getElementById('viewName').textContent = currentUser.name;
             document.getElementById('viewUsername').textContent = currentUser.username;
             document.getElementById('viewEmail').textContent = currentUser.email;
+            document.getElementById('viewPhone').textContent = currentUser.phone || '-';
             document.getElementById('viewRole').textContent = currentUser.role.toUpperCase();
 
             // Set edit mode data
             document.getElementById('editName').value = currentUser.name;
             document.getElementById('editEmail').value = currentUser.email;
+            document.getElementById('editPhone').value = currentUser.phone || '';
+
+            // Set edit photo preview
+            const editPhotoPreview = document.getElementById('editPhotoPreview');
+            if (currentUser.photoUrl) {
+                editPhotoPreview.src = currentUser.photoUrl;
+            } else {
+                editPhotoPreview.src = generateAvatarUrl(currentUser.name);
+            }
+
+            // Check profile completion
+            initProfileCompletionIndicator(currentUser);
 
             // Set pretest results
             document.getElementById('pretestScore').textContent = currentUser.pretestScore || 0;
@@ -450,16 +501,78 @@
             }, 5000);
         }
 
+        // Handle Profile Photo Upload
+        async function handleProfilePhotoUpload(input) {
+            const preview = document.getElementById('editPhotoPreview');
+
+            try {
+                const photoUrl = await handlePhotoUpload(input, preview);
+
+                if (photoUrl) {
+                    // Store in current user object temporarily
+                    currentUser.photoUrl = photoUrl;
+
+                    // Auto-save to database
+                    const result = authService.updateCurrentUser({ photoUrl: photoUrl });
+                    if (result.success) {
+                        // Update main avatar
+                        document.getElementById('profileAvatar').src = photoUrl;
+
+                        showAlert('Foto profil berhasil diupload!', 'success');
+
+                        // Refresh profile completion indicator
+                        initProfileCompletionIndicator(result.user);
+                    } else {
+                        showAlert('Gagal menyimpan foto. Silakan coba lagi.', 'error');
+                        preview.src = currentUser.photoUrl || generateAvatarUrl(currentUser.name);
+                    }
+                }
+            } catch (error) {
+                console.error('Photo upload error:', error);
+                showAlert('Gagal mengupload foto. Silakan coba lagi.', 'error');
+            }
+        }
+
         document.getElementById('profileForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const name = document.getElementById('editName').value;
-            const email = document.getElementById('editEmail').value;
+            const name = document.getElementById('editName').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
             const password = document.getElementById('editPassword').value;
+
+            // Validate name
+            const nameValidation = validateName(name);
+            if (!nameValidation.valid) {
+                showAlert(nameValidation.message, 'error');
+                return;
+            }
+
+            // Validate email
+            const emailValidation = validateEmail(email);
+            if (!emailValidation.valid) {
+                showAlert(emailValidation.message, 'error');
+                return;
+            }
+
+            // Validate phone if provided
+            if (phone) {
+                const phoneValidation = validatePhoneNumber(phone);
+                if (!phoneValidation.valid) {
+                    const phoneError = document.getElementById('phoneError');
+                    phoneError.textContent = phoneValidation.message;
+                    phoneError.style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('phoneError').style.display = 'none';
+                }
+            }
 
             const updates = {
                 name: name,
-                email: email
+                email: email,
+                phone: phone,
+                photoUrl: currentUser.photoUrl || ''
             };
 
             if (password) {
@@ -470,6 +583,10 @@
 
             if (result.success) {
                 showAlert('Profile berhasil diupdate!', 'success');
+
+                // Update currentUser reference
+                Object.assign(currentUser, result.user);
+
                 initProfile();
                 cancelEdit();
             } else {

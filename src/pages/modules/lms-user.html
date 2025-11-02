@@ -29,9 +29,131 @@
     <link rel="stylesheet" href="../../css/pwa.css">
     <link rel="stylesheet" href="../../css/lms.css">
 
+    <!-- Prism.js for Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
     <style>
         body {
             background: #f5f5f5;
+        }
+
+        /* Material Body Styling */
+        .material-body {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .material-body h2 {
+            color: var(--main-color);
+            font-size: 2.4rem;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #754ef9;
+            padding-bottom: 1rem;
+        }
+
+        .material-body h3 {
+            color: #5d3dc7;
+            font-size: 2rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .material-body p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .material-body ul,
+        .material-body ol {
+            margin-left: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .material-body li {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .material-body pre {
+            background: #2d2d2d;
+            border-radius: 1rem;
+            padding: 2rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .material-body code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        .material-body pre code {
+            color: #f8f8f2;
+        }
+
+        /* Inline code */
+        .material-body p code,
+        .material-body li code {
+            background: #f5f5f5;
+            color: #e74c3c;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.4rem;
+            font-size: 1.4rem;
+        }
+
+        /* Example boxes */
+        .material-body .example {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 2rem;
+            border-radius: 0.8rem;
+            margin: 2rem 0;
+        }
+
+        .material-body .exercise {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 2rem;
+            border-radius: 0.8rem;
+            margin: 2rem 0;
+        }
+
+        /* Responsive code blocks */
+        @media screen and (max-width: 768px) {
+            .material-body pre {
+                padding: 1.5rem;
+            }
+
+            .material-body code {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Prism.js customization */
+        .token.comment {
+            color: #6a9955 !important;
+        }
+
+        .token.string {
+            color: #ce9178 !important;
+        }
+
+        .token.keyword {
+            color: #569cd6 !important;
+        }
+
+        .token.function {
+            color: #dcdcaa !important;
+        }
+
+        .token.number {
+            color: #b5cea8 !important;
         }
     </style>
 </head>
@@ -209,6 +331,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../../data/learning-materials.js"></script>
     <script src="../../data/database.js"></script>
     <script src="../../js/auth.js"></script>
     <script src="/src/js/pwa.js"></script>
@@ -286,6 +409,9 @@
             const cls = currentModule.classes.find(c => c.id === classId);
             if (!cls) return;
 
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             // Update header
             document.getElementById('className').textContent = cls.title;
             document.getElementById('classTitle').textContent = cls.title;
@@ -304,81 +430,60 @@
 
             // Update assignments summary
             updateAssignmentsSummary();
+
+            // Switch to material tab
+            document.querySelectorAll('.lms-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.lms-tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector('[data-tab="material"]').classList.add('active');
+            document.getElementById('material').classList.add('active');
         }
 
         // Load material content
         function loadMaterial(cls) {
             const materialContent = document.getElementById('materialContent');
 
-            // Generate rich content based on class
-            let content = `
-                <h2>${cls.title}</h2>
-                <p>${cls.description}</p>
+            // Get comprehensive content from LearningMaterials
+            let mainContent = '';
 
-                <h3>Tujuan Pembelajaran</h3>
-                <p>Setelah menyelesaikan kelas ini, Anda akan mampu:</p>
-                <ul style="font-size: 1.5rem; line-height: 2; margin-left: 2rem;">
-                    <li>Memahami konsep dasar ${cls.title.toLowerCase()}</li>
-                    <li>Mengimplementasikan ${cls.title.toLowerCase()} dalam project</li>
-                    <li>Menyelesaikan masalah menggunakan ${cls.title.toLowerCase()}</li>
-                </ul>
-
-                <h3>Materi Pembelajaran</h3>
-                <p>${cls.content}</p>
-            `;
-
-            // Add code examples
-            if (cls.order === 1) {
-                content += `
-                    <h3>Contoh Kode</h3>
-                    <pre><code>// Contoh ${cls.title}
-console.log("Hello, JavaScript!");
-
-// Menampilkan pesan
-alert("Selamat belajar di CodeSmart!");
-
-// Variabel
-let nama = "John Doe";
-console.log("Nama saya: " + nama);</code></pre>
-                `;
-            } else if (cls.order === 2) {
-                content += `
-                    <h3>Contoh Kode</h3>
-                    <pre><code>// Deklarasi variabel
-let nama = "Jane";
-const umur = 25;
-var kota = "Jakarta";
-
-// Tipe data
-let angka = 100;          // Number
-let teks = "Hello";       // String
-let benar = true;         // Boolean
-let kosong = null;        // Null
-let tidakTerdefinisi;     // Undefined
-
-console.log(typeof angka);  // "number"
-console.log(typeof teks);   // "string"</code></pre>
-                `;
+            // Try to get content from LearningMaterials
+            if (typeof LearningMaterials !== 'undefined') {
+                mainContent = LearningMaterials.getContent(cls.id);
+            } else {
+                mainContent = `<p>${cls.content}</p>`;
             }
 
-            // Add video placeholder
-            content += `
-                <h3>Video Pembelajaran</h3>
-                <div style="background: #f0f0f0; padding: 8rem 2rem; text-align: center; border-radius: 1.5rem; margin: 2rem 0;">
-                    <i class='bx bx-play-circle' style="font-size: 6rem; color: var(--main-color);"></i>
-                    <p style="margin-top: 1.5rem; font-size: 1.6rem; color: #666;">Video pembelajaran akan segera tersedia</p>
+            // Build complete material display
+            let content = `
+                <div class="material-header" style="margin-bottom: 3rem;">
+                    <h2 style="color: var(--main-color); margin-bottom: 1rem;">${cls.title}</h2>
+                    <p style="font-size: 1.6rem; color: #666; line-height: 1.8;">${cls.description}</p>
                 </div>
-            `;
 
-            // Add quiz/exercise
-            content += `
-                <h3>Latihan</h3>
-                <div style="background: #f9f7ff; border-left: 4px solid var(--main-color); padding: 2rem; border-radius: 1rem; margin: 2rem 0;">
-                    <p style="margin: 0; font-size: 1.5rem;"><strong>Tugas:</strong> Buat program sederhana yang menerapkan konsep ${cls.title.toLowerCase()}. Lihat detail di tab Tugas.</p>
+                <div class="material-body">
+                    ${mainContent}
+                </div>
+
+                <div class="material-footer" style="margin-top: 4rem; padding-top: 3rem; border-top: 2px solid #e0e0e0;">
+                    <h3 style="color: var(--main-color); margin-bottom: 2rem;">
+                        <i class='bx bx-task'></i> Selanjutnya
+                    </h3>
+                    <div style="background: #f9f7ff; border-left: 4px solid var(--main-color); padding: 2rem; border-radius: 1rem;">
+                        <p style="margin: 0; font-size: 1.6rem; line-height: 1.8;">
+                            <strong>Tugas Praktik:</strong> Setelah mempelajari materi ini, kerjakan tugas yang tersedia di tab <strong>Tugas</strong> untuk menguji pemahaman Anda.
+                        </p>
+                    </div>
                 </div>
             `;
 
             materialContent.innerHTML = content;
+
+            // Trigger syntax highlighting for code blocks
+            if (typeof Prism !== 'undefined') {
+                // Wait for DOM to update
+                setTimeout(() => {
+                    Prism.highlightAll();
+                }, 100);
+            }
         }
 
         // Load assignments
