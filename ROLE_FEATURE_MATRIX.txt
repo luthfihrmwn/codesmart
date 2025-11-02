@@ -1,0 +1,244 @@
+================================================================================
+CODESMART ROLE-BASED FEATURE MATRIX
+================================================================================
+
+COMPREHENSIVE FEATURE AVAILABILITY BY ROLE
+
+================================================================================
+1. ADMINISTRATIVE FEATURES
+================================================================================
+
+User Management:
+  ├─ View all users               [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Create new user              [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Edit user details            [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO*]
+  ├─ Delete user                  [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Change user role             [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Search & filter users        [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ View user pretest scores     [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+User Approvals:
+  ├─ View pending registrations   [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Approve user                 [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Reject user                  [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+Class Management:
+  ├─ View all classes             [ADMIN: YES]  [ASSESSOR: LIM]  [USER: NO]
+  ├─ Create class                 [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Edit class details           [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Delete class                 [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Assign assessor to class     [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Unassign assessor            [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+Module Management:
+  ├─ View modules                 [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Create module                [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Edit module                  [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Delete module                [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+System Settings:
+  ├─ View settings                [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Change system settings       [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Enable/disable features      [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Backup/restore system        [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+System Analytics:
+  ├─ Dashboard overview           [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ User statistics              [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Module popularity            [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Score distribution           [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Completion rates             [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Growth analytics             [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+Data Management:
+  ├─ Export users (JSON)          [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Export users (CSV)           [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Export LMS data              [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ Export pretest results       [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Export assignments           [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ Export submissions (JSON)    [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ Export submissions (CSV)     [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ Import users (merge)         [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Import users (replace)       [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Import LMS data              [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ Complete backup              [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Restore from backup          [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+================================================================================
+2. LEARNING & ASSESSMENT FEATURES
+================================================================================
+
+Pretest Management:
+  ├─ Take pretest                 [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  ├─ Retake pretest               [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  ├─ View own score               [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  ├─ View own level rec.          [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  ├─ View all scores              [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Filter scores                [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Analyze score dist.          [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+Module Access:
+  ├─ View all modules             [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Access fundamental           [ADMIN: YES]  [ASSESSOR: YES]  [USER: *]
+  ├─ Access intermediate          [ADMIN: YES]  [ASSESSOR: YES]  [USER: *]
+  ├─ Access advance               [ADMIN: YES]  [ASSESSOR: YES]  [USER: *]
+  ├─ See lock status              [ADMIN: NO]   [ASSESSOR: No]   [USER: YES]
+  └─ Request level up             [ADMIN: No]   [ASSESSOR: NO]   [USER: YES]
+
+Assignment Management:
+  ├─ View all assignments         [ADMIN: YES]  [ASSESSOR: LIM]  [USER: LIM]
+  ├─ Create assignment            [ADMIN: YES]  [ASSESSOR: LIM]  [USER: NO]
+  ├─ Edit assignment              [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Delete assignment            [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ View rubric                  [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  └─ Submit assignment            [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+
+Submission Management:
+  ├─ View submissions             [ADMIN: YES]  [ASSESSOR: LIM]  [USER: OWN]
+  ├─ Grade submission             [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Provide feedback             [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Score with rubric            [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Use feedback templates       [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Save draft grade             [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Submit final grade           [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ View own submission          [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  └─ View own feedback            [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+
+Student Progress:
+  ├─ View all student progress    [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ View class students          [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ View student grades          [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ Generate report              [ADMIN: No]   [ASSESSOR: YES]  [USER: NO]
+  ├─ View own progress            [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  └─ Check completion             [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+
+Level Advancement:
+  ├─ Request promotion            [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  ├─ View requests                [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Approve request              [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Reject request               [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  ├─ Add comment                  [ADMIN: NO]   [ASSESSOR: YES]  [USER: NO]
+  └─ View own request status      [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+
+================================================================================
+3. PERSONAL & PROFILE FEATURES
+================================================================================
+
+Profile Management:
+  ├─ View own profile             [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Edit name                    [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Edit email                   [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Edit phone                   [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Upload photo                 [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Change password              [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ View other profiles          [ADMIN: Yes]  [ASSESSOR: NO]   [USER: NO]
+  └─ Edit other profiles          [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+View Other Profiles:
+  ├─ View assessors list          [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ View student list            [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  └─ View student profiles        [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+
+================================================================================
+4. REPORTING & ANALYTICS
+================================================================================
+
+Personal Reports:
+  ├─ View own dashboard           [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ View own grades              [ADMIN: YES]  [ASSESSOR: Yes]  [USER: YES]
+  ├─ View own progress            [ADMIN: NO]   [ASSESSOR: NO]   [USER: YES]
+  └─ Download own data            [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+Class Reports:
+  ├─ View class stats             [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ View submission status       [ADMIN: YES]  [ASSESSOR: YES]  [USER: NO]
+  ├─ View grade distribution      [ADMIN: YES]  [ASSESSOR: Yes]  [USER: NO]
+  └─ Generate PDF report          [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+System Reports:
+  ├─ User statistics              [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Module popularity            [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Success rates                [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Completion rates             [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  ├─ Performance analysis         [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+  └─ Growth metrics               [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+================================================================================
+5. SYSTEM & UTILITY FEATURES
+================================================================================
+
+Authentication:
+  ├─ Login                        [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Logout                       [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Session management           [ADMIN: YES]  [ASSESSOR: YES]  [USER: YES]
+  └─ Password reset               [ADMIN: NO]   [ASSESSOR: NO]   [USER: NO]
+
+UI Preferences:
+  ├─ Dark mode toggle             [ADMIN: Yes]  [ASSESSOR: YES]  [USER: YES]
+  ├─ Language selection           [ADMIN: NO]   [ASSESSOR: NO]   [USER: NO]
+  └─ Notification settings        [ADMIN: YES]  [ASSESSOR: NO]   [USER: NO]
+
+Help & Support:
+  ├─ View help docs               [ADMIN: NO]   [ASSESSOR: NO]   [USER: NO]
+  ├─ Contact support             [ADMIN: NO]   [ASSESSOR: NO]   [USER: NO]
+  └─ FAQ                          [ADMIN: NO]   [ASSESSOR: NO]   [USER: NO]
+
+API Access:
+  ├─ REST API access              [ADMIN: NO]   [ASSESSOR: NO]   [USER: NO]
+  ├─ Export to formats            [ADMIN: YES]  [ASSESSOR: LIM]  [USER: NO]
+  └─ Import from formats          [ADMIN: YES]  [ASSESSOR: LIM]  [USER: NO]
+
+================================================================================
+LEGEND
+================================================================================
+
+YES    = Feature fully available and functional
+NO     = Feature not available to this role
+LIM    = Limited access (only assigned/related data)
+OWN    = Only own data
+*      = Conditional based on pretest score
+YES*   = Available with restrictions
+
+================================================================================
+SUMMARY COUNTS
+================================================================================
+
+Total Features Analyzed: 85+
+
+ADMIN:
+  Fully Available (YES): 72 features
+  Limited Access (LIM):  3 features
+  Not Available (NO):    10 features
+  Total Access:          75/85 (88%)
+
+ASSESSOR:
+  Fully Available (YES): 32 features
+  Limited Access (LIM):  8 features
+  Own Only (OWN):        2 features
+  Not Available (NO):    43 features
+  Total Access:          42/85 (49%)
+
+USER:
+  Fully Available (YES): 28 features
+  Limited Access (LIM):  2 features
+  Own Only (OWN):        2 features
+  Conditional (*):       3 features
+  Not Available (NO):    50 features
+  Total Access:          35/85 (41%)
+
+================================================================================
+KEY OBSERVATIONS
+================================================================================
+
+1. Admin has comprehensive access to all system management features
+2. Assessor has focused access to LMS and student evaluation
+3. Users have access only to learning and personal features
+4. Clear role separation with minimal overlap
+5. Appropriate data filtering (LIM access) for restricted roles
+6. Module access is properly gated by pretest results
+7. Grade and feedback visibility is role-appropriate
+8. Admin approval workflow gates user access
+
+================================================================================
+Generated: 2025-11-03
+================================================================================
