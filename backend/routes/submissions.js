@@ -3,6 +3,7 @@ const router = express.Router();
 const { verifyToken } = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const submissionController = require('../controllers/submissionController');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -30,24 +31,20 @@ const upload = multer({
     }
 });
 
-// Submit assignment
-router.post('/', verifyToken, upload.single('file'), (req, res) => {
-    res.json({ success: true, message: 'Submit assignment - TODO: Implement', file: req.file });
-});
+// Get user's submissions (must be before /:id to avoid conflict)
+router.get('/my-submissions', verifyToken, submissionController.getMySubmissions);
 
-// Get user's submissions
-router.get('/my-submissions', verifyToken, (req, res) => {
-    res.json({ success: true, message: 'Get user submissions - TODO: Implement' });
-});
+// Submit assignment
+router.post('/', verifyToken, upload.single('file'), submissionController.submitAssignment);
 
 // Get specific submission
-router.get('/:id', verifyToken, (req, res) => {
-    res.json({ success: true, message: 'Get submission details - TODO: Implement' });
-});
+router.get('/:id/download', verifyToken, submissionController.downloadSubmission);
+router.get('/:id', verifyToken, submissionController.getSubmission);
 
 // Update submission (resubmit)
-router.put('/:id', verifyToken, upload.single('file'), (req, res) => {
-    res.json({ success: true, message: 'Update submission - TODO: Implement' });
-});
+router.put('/:id', verifyToken, upload.single('file'), submissionController.resubmitAssignment);
+
+// Delete submission
+router.delete('/:id', verifyToken, submissionController.deleteSubmission);
 
 module.exports = router;

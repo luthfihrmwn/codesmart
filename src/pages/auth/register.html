@@ -107,8 +107,8 @@
         </div>
     </section>
 
-    <!-- Load database and auth -->
-    <script src="../../data/database.js"></script>
+    <!-- Load API service and auth -->
+    <script src="../../js/api-service.js"></script>
     <script src="../../js/auth.js"></script>
 
     <script>
@@ -122,27 +122,26 @@
 
         function showAlert(message, type = 'error') {
             alertBox.textContent = message;
-            alertBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'border-red-300', 'bg-green-100', 'text-green-800', 'border-green-300');
+            alertBox.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'border-red-300', 'bg-green-100', 'text-green-800', 'border-green-300', 'bg-blue-100', 'text-blue-800', 'border-blue-300');
 
             if (type === 'error') {
                 alertBox.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-300');
+            } else if (type === 'info') {
+                alertBox.classList.add('bg-blue-100', 'text-blue-800', 'border', 'border-blue-300');
             } else {
                 alertBox.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
             }
-
-            setTimeout(() => {
-                alertBox.classList.add('hidden');
-            }, 5000);
         }
 
-        registerForm.addEventListener('submit', function (e) {
+        registerForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const username = document.getElementById('username').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const submitButton = e.target.querySelector('button[type="submit"]');
 
             // Validate password match
             if (password !== confirmPassword) {
@@ -162,21 +161,34 @@
                 return;
             }
 
-            const result = authService.register({
-                name: name,
-                email: email,
-                username: username,
-                password: password
-            });
+            // Disable button during registration
+            submitButton.disabled = true;
+            submitButton.textContent = 'Mendaftar...';
 
-            if (result.success) {
-                showAlert('Registrasi berhasil! Akun Anda menunggu persetujuan administrator. Anda akan diberitahu setelah disetujui.', 'success');
+            try {
+                const result = await authService.register({
+                    name: name,
+                    email: email,
+                    username: username,
+                    password: password
+                });
 
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 3000);
-            } else {
-                showAlert(result.message, 'error');
+                if (result.success) {
+                    showAlert('Registrasi berhasil! Akun Anda menunggu persetujuan administrator. Anda akan diberitahu melalui email setelah disetujui.', 'info');
+
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 4000);
+                } else {
+                    showAlert(result.message, 'error');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Daftar';
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('Terjadi kesalahan. Pastikan backend server berjalan.', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Daftar';
             }
         });
     </script>

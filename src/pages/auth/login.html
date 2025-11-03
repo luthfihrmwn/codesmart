@@ -185,8 +185,8 @@
         </div>
     </div>
 
-    <!-- Load database and auth -->
-    <script src="../../data/database.js"></script>
+    <!-- Load API service and auth -->
+    <script src="../../js/api-service.js"></script>
     <script src="../../js/auth.js"></script>
 
     <script>
@@ -213,28 +213,43 @@
             }, 5000);
         }
 
-        loginForm.addEventListener('submit', function (e) {
+        loginForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
+            const submitButton = e.target.querySelector('button[type="submit"]');
 
-            const result = authService.login(username, password);
+            // Disable button during login
+            submitButton.disabled = true;
+            submitButton.textContent = 'Logging in...';
 
-            if (result.success) {
-                showAlert('Login berhasil! Mengalihkan...', 'success');
+            try {
+                const result = await authService.login(username, password);
 
-                setTimeout(() => {
-                    authService.redirectToDashboard();
-                }, 1000);
-            } else {
-                showAlert(result.message, 'error');
+                if (result.success) {
+                    showAlert('Login berhasil! Mengalihkan...', 'success');
+
+                    setTimeout(() => {
+                        authService.redirectToDashboard();
+                    }, 1000);
+                } else {
+                    showAlert(result.message, 'error');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Login';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Terjadi kesalahan. Pastikan backend server berjalan.', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
             }
         });
 
         // ==================== FORGOT PASSWORD FUNCTIONALITY ====================
 
-        let currentResetUser = null;
+        let currentResetEmail = null;
+        let resetToken = null;
 
         // Open forgot password modal
         document.querySelector('.forgot-password').addEventListener('click', function(e) {
@@ -247,7 +262,8 @@
         function closeResetModal() {
             document.getElementById('forgotPasswordModal').style.display = 'none';
             resetModalSteps();
-            currentResetUser = null;
+            currentResetEmail = null;
+            resetToken = null;
         }
 
         // Reset all steps
@@ -262,8 +278,8 @@
             document.getElementById('confirmPassword').value = '';
         }
 
-        // Step 1: Send reset link
-        function sendResetLink() {
+        // Step 1: Send reset link (Request security question)
+        async function sendResetLink() {
             const email = document.getElementById('resetEmail').value.trim();
 
             if (!email) {
@@ -271,45 +287,32 @@
                 return;
             }
 
-            loadFromLocalStorage();
-            const user = Database.users.find(u => u.email === email);
+            try {
+                const result = await authService.forgotPassword(email);
 
-            if (!user) {
-                alert('Email tidak ditemukan dalam sistem!');
-                return;
+                if (result.success) {
+                    currentResetEmail = email;
+
+                    // Show security question
+                    if (result.data && result.data.securityQuestion) {
+                        document.getElementById('securityQuestionLabel').textContent = result.data.securityQuestion;
+                        document.getElementById('step1').classList.add('hidden');
+                        document.getElementById('step2').classList.remove('hidden');
+                    } else {
+                        alert('Link reset telah dikirim ke email Anda (fitur email akan diaktifkan di production)');
+                        closeResetModal();
+                    }
+                } else {
+                    alert(result.message || 'Email tidak ditemukan dalam sistem!');
+                }
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
             }
-
-            currentResetUser = user;
-
-            const resetToken = generateResetToken();
-            const resetData = {
-                token: resetToken,
-                email: email,
-                userId: user.id,
-                expires: Date.now() + (60 * 60 * 1000),
-                timestamp: new Date().toISOString()
-            };
-
-            localStorage.setItem('codesmart_reset_token', JSON.stringify(resetData));
-
-            if (user.securityQuestion && user.securityAnswer) {
-                document.getElementById('securityQuestionLabel').textContent = user.securityQuestion;
-                document.getElementById('step1').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-            } else {
-                document.getElementById('step1').classList.add('hidden');
-                document.getElementById('step3').classList.remove('hidden');
-            }
-
-            console.log('📧 [SIMULATED EMAIL]');
-            console.log('To:', email);
-            console.log('Subject: Reset Password - CodeSmart');
-            console.log('Token:', resetToken);
-            console.log('Link: http://localhost/reset-password?token=' + resetToken);
         }
 
         // Step 2: Verify security answer
-        function verifyAnswer() {
+        async function verifyAnswer() {
             const answer = document.getElementById('securityAnswer').value.trim();
 
             if (!answer) {
@@ -317,30 +320,38 @@
                 return;
             }
 
-            if (!currentResetUser) {
+            if (!currentResetEmail) {
                 alert('Terjadi kesalahan. Silakan coba lagi.');
                 closeResetModal();
                 return;
             }
 
-            if (answer.toLowerCase() !== currentResetUser.securityAnswer.toLowerCase()) {
-                alert('Jawaban salah! Silakan coba lagi.');
-                return;
-            }
+            try {
+                const result = await authService.verifySecurityAnswer(currentResetEmail, answer);
 
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.remove('hidden');
+                if (result.success) {
+                    resetToken = result.data.resetToken;
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                } else {
+                    alert(result.message || 'Jawaban salah! Silakan coba lagi.');
+                }
+            } catch (error) {
+                console.error('Verify answer error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            }
         }
 
         // Back to step 1
         function backToStep1() {
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step1').classList.remove('hidden');
-            currentResetUser = null;
+            currentResetEmail = null;
+            resetToken = null;
         }
 
         // Step 3: Reset password
-        function resetPassword() {
+        async function resetPassword() {
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
@@ -359,35 +370,25 @@
                 return;
             }
 
-            if (!currentResetUser) {
+            if (!currentResetEmail || !resetToken) {
                 alert('Terjadi kesalahan. Silakan coba lagi.');
                 closeResetModal();
                 return;
             }
 
-            loadFromLocalStorage();
-            const userIndex = Database.users.findIndex(u => u.id === currentResetUser.id);
+            try {
+                const result = await authService.resetPassword(currentResetEmail, newPassword, resetToken);
 
-            if (userIndex === -1) {
-                alert('User tidak ditemukan!');
-                return;
+                if (result.success) {
+                    document.getElementById('step3').classList.add('hidden');
+                    document.getElementById('step4').classList.remove('hidden');
+                } else {
+                    alert(result.message || 'Gagal reset password. Silakan coba lagi.');
+                }
+            } catch (error) {
+                console.error('Reset password error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
             }
-
-            Database.users[userIndex].password = newPassword;
-            saveToLocalStorage();
-
-            localStorage.removeItem('codesmart_reset_token');
-
-            console.log('✅ Password reset successful for:', currentResetUser.email);
-            console.log('🔐 New password:', newPassword);
-
-            document.getElementById('step3').classList.add('hidden');
-            document.getElementById('step4').classList.remove('hidden');
-        }
-
-        // Generate random reset token
-        function generateResetToken() {
-            return 'rst_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
         }
 
         // Close modal when clicking outside
