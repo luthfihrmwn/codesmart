@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/index.css">
+
+    <style>
+        .admin-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 7%;
+            background: var(--bg-color);
+            box-shadow: 0 .1rem 1rem var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .admin-header .logo {
+            font-size: 2.5rem;
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .admin-nav a {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: .3s ease;
+        }
+
+        .admin-nav a:hover,
+        .admin-nav a.active {
+            color: var(--main-color);
+        }
+
+        .admin-container {
+            padding: 12rem 7% 4rem;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            opacity: .8;
+            margin-bottom: 4rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .stat-card {
+            background: var(--bg-color);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            border-top: .5rem solid var(--main-color);
+            transition: transform .3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 3.5rem;
+            color: var(--main-color);
+            margin-bottom: .5rem;
+        }
+
+        .stat-card p {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            opacity: .8;
+        }
+
+        .stat-card i {
+            font-size: 3rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .card {
+            background: var(--bg-color);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+        }
+
+        .card h3 {
+            font-size: 2.2rem;
+            color: var(--main-color);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: .2rem solid rgba(117, 78, 249, 0.2);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .action-btn {
+            padding: 1.5rem;
+            background: var(--main-color);
+            color: white;
+            border-radius: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: .3s ease;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .8rem;
+        }
+
+        .action-btn:hover {
+            background: transparent;
+            color: var(--main-color);
+            border: .2rem solid var(--main-color);
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <a href="dashboard-new.html" class="logo">CodeSmart Admin</a>
+
+        <nav class="admin-nav">
+            <a href="dashboard-new.html" class="active">Dashboard</a>
+            <a href="users-new.html">Users</a>
+            <a href="modules-new.html">Modules</a>
+            <a href="#" id="darkModeToggle"><i class='bx bx-moon'></i></a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <span id="adminName" style="font-size: 1.6rem; color: var(--text-color);"></span>
+            <a href="#" onclick="authService.logout()" style="font-size: 2rem; color: var(--main-color);">
+                <i class='bx bx-log-out'></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Admin Content -->
+    <section class="admin-container">
+        <h1 class="page-title">Admin Dashboard</h1>
+        <p class="page-subtitle">Welcome to CodeSmart LMS Administration Panel</p>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="navigateToUsers()">
+                <i class='bx bx-user'></i>
+                <h3 id="totalUsers">0</h3>
+                <p>Total Users</p>
+            </div>
+
+            <div class="stat-card" onclick="navigateToModules()">
+                <i class='bx bx-book'></i>
+                <h3 id="totalModules">0</h3>
+                <p>Total Modules</p>
+            </div>
+
+            <div class="stat-card" onclick="navigateToAssignments()">
+                <i class='bx bx-file'></i>
+                <h3 id="totalAssignments">0</h3>
+                <p>Total Assignments</p>
+            </div>
+
+            <div class="stat-card">
+                <i class='bx bx-time'></i>
+                <h3 id="pendingSubmissions">0</h3>
+                <p>Pending Submissions</p>
+            </div>
+
+            <div class="stat-card">
+                <i class='bx bx-user-check'></i>
+                <h3 id="activeEnrollments">0</h3>
+                <p>Active Enrollments</p>
+            </div>
+
+            <div class="stat-card">
+                <i class='bx bx-trending-up'></i>
+                <h3 id="completionRate">0%</h3>
+                <p>Completion Rate</p>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Recent Activities -->
+            <div class="card">
+                <h3><i class='bx bx-history'></i> Recent Activities</h3>
+                <div id="recentActivities">
+                    <!-- Activities will be loaded here -->
+                </div>
+            </div>
+
+            <!-- User Growth Chart -->
+            <div class="card">
+                <div id="userGrowthChart">
+                    <!-- Chart will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Statistics -->
+        <div class="card" style="margin-bottom: 4rem;">
+            <div id="moduleStatsChart">
+                <!-- Module stats will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <h3><i class='bx bx-bolt'></i> Quick Actions</h3>
+            <div class="quick-actions">
+                <button class="action-btn" onclick="navigateToUsers()">
+                    <i class='bx bx-user-plus'></i> Manage Users
+                </button>
+                <button class="action-btn" onclick="navigateToModules()">
+                    <i class='bx bx-book-add'></i> Manage Modules
+                </button>
+                <button class="action-btn" onclick="navigateToAssignments()">
+                    <i class='bx bx-file-plus'></i> Manage Assignments
+                </button>
+                <button class="action-btn" onclick="navigateToReports()">
+                    <i class='bx bx-bar-chart'></i> View Reports
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Spinner -->
+    <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 3rem; border-radius: 1rem; text-align: center;">
+            <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--main-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+            <p style="font-size: 1.6rem;">Loading...</p>
+        </div>
+    </div>
+
+    <style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    </style>
+
+    <!-- API Integration -->
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/admin-dashboard.js"></script>
+</body>
+</html>

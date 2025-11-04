@@ -422,6 +422,19 @@ class APIService {
         return this.delete(`/admin/modules/${id}`);
     }
 
+    // Learning Materials (Classes) Management
+    async createLearningMaterial(materialData) {
+        return this.post('/admin/materials', materialData);
+    }
+
+    async updateLearningMaterial(id, materialData) {
+        return this.put(`/admin/materials/${id}`, materialData);
+    }
+
+    async deleteLearningMaterial(id) {
+        return this.delete(`/admin/materials/${id}`);
+    }
+
     async getAdminStatistics() {
         return this.get('/admin/statistics');
     }

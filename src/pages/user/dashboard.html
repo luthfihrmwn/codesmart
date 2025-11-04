@@ -464,18 +464,17 @@
     <script src="../../js/auth.js"></script>
     <script src="../../js/svm.js"></script>
 
+    <!-- Auth Service -->
+    <script src="/src/js/auth.js"></script>
+
+    <!-- API Service -->
+    <script src="/src/js/api-service.js"></script>
+
+    <!-- User Dashboard Integration -->
+    <script src="/src/js/user-dashboard.js"></script>
+
     <script>
-        // Check authentication
-        if (!authService.requireAuth()) {
-            window.location.href = '/index.html';
-        }
-
-        const currentUser = authService.getCurrentUser();
-
-        // Redirect to pretest if not completed
-        if (!currentUser.pretestCompleted) {
-            window.location.href = 'pretest.html';
-        }
+        // Additional dashboard-specific functions (if needed)
 
         // Initialize dashboard
         function initDashboard() {

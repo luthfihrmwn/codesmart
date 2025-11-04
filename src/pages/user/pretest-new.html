@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretest - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/index.css">
+
+    <style>
+        .pretest-container {
+            min-height: 100vh;
+            padding: 10rem 7% 2rem;
+        }
+
+        .pretest-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .pretest-header h1 {
+            font-size: 4rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .pretest-header p {
+            font-size: 1.6rem;
+            color: var(--text-color);
+        }
+
+        .pretest-info {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            margin-bottom: 3rem;
+            border-left: .6rem solid var(--main-color);
+        }
+
+        .pretest-info h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--main-color);
+        }
+
+        .pretest-info ul {
+            list-style: none;
+            font-size: 1.6rem;
+        }
+
+        .pretest-info li {
+            padding: .8rem 0;
+            padding-left: 3rem;
+            position: relative;
+        }
+
+        .pretest-info li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--main-color);
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .question-container {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            margin-bottom: 3rem;
+            border-top: .6rem solid var(--main-color);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .question-number {
+            font-size: 1.8rem;
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+        .question-progress {
+            font-size: 1.4rem;
+            color: var(--text-color);
+        }
+
+        .question-text {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .option {
+            padding: 1.5rem 2rem;
+            border: .2rem solid var(--main-color);
+            border-radius: 1rem;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: .3s ease;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .option:hover {
+            background: var(--main-color);
+            color: var(--white-color);
+            transform: translateX(1rem);
+        }
+
+        .option.selected {
+            background: var(--main-color);
+            color: var(--white-color);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            gap: 2rem;
+        }
+
+        .btn-nav {
+            padding: 1.5rem 3rem;
+            font-size: 1.6rem;
+            border-radius: .8rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .5s ease;
+        }
+
+        .btn-prev {
+            background: transparent;
+            color: var(--main-color);
+            border: .2rem solid var(--main-color);
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background: var(--main-color);
+            color: var(--white-color);
+        }
+
+        .btn-next,
+        .btn-finish {
+            background: var(--main-color);
+            color: var(--white-color);
+            border: .2rem solid var(--main-color);
+        }
+
+        .btn-next:hover,
+        .btn-finish:hover {
+            background: transparent;
+            color: var(--main-color);
+        }
+
+        .btn-nav:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .btn-start {
+            display: inline-block;
+            padding: 1.5rem 4rem;
+            background: var(--main-color);
+            border-radius: .8rem;
+            font-size: 1.8rem;
+            color: var(--white-color);
+            font-weight: 600;
+            border: .2rem solid transparent;
+            transition: .5s ease;
+            cursor: pointer;
+            margin-top: 2rem;
+        }
+
+        .btn-start:hover {
+            background: transparent;
+            color: var(--main-color);
+            border-color: var(--main-color);
+        }
+
+        .results-container {
+            display: none;
+            background: var(--bg-color);
+            padding: 4rem;
+            border-radius: 2rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            text-align: center;
+            border-top: .6rem solid var(--main-color);
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .score-display {
+            font-size: 6rem;
+            color: var(--main-color);
+            font-weight: 700;
+            margin: 2rem 0;
+        }
+
+        .recommendation {
+            background: rgba(117, 78, 249, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+
+        .recommendation h3 {
+            font-size: 2.4rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .recommendation p {
+            font-size: 1.6rem;
+            color: var(--text-color);
+        }
+
+        .analysis {
+            text-align: left;
+            margin: 3rem 0;
+        }
+
+        .analysis h4 {
+            font-size: 2rem;
+            color: var(--main-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .analysis-item {
+            padding: 1rem 0;
+            font-size: 1.6rem;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 2rem;
+            right: 7%;
+            font-size: 1.6rem;
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--main-color);
+            border: .2rem solid var(--main-color);
+            border-radius: .8rem;
+            cursor: pointer;
+            transition: .3s ease;
+            z-index: 999;
+        }
+
+        .logout-btn:hover {
+            background: var(--main-color);
+            color: var(--white-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Logo Header -->
+    <div style="position: fixed; top: 2rem; left: 3rem; z-index: 999; display: flex; align-items: center; gap: 1rem;">
+        <i class='bx bx-code-alt' style="font-size: 3.5rem; color: var(--main-color);"></i>
+        <span style="font-size: 2.5rem; font-weight: 700; color: var(--main-color);">CodeSmart</span>
+    </div>
+
+    <button class="logout-btn" onclick="authService.logout()">
+        <i class='bx bx-log-out'></i> Logout
+    </button>
+
+    <section class="pretest-container">
+        <!-- Welcome Info -->
+        <div id="welcomeSection">
+            <div class="pretest-header">
+                <h1>Selamat Datang di Pretest</h1>
+                <p>Tentukan Level Pembelajaran JavaScript Anda</p>
+            </div>
+
+            <div class="pretest-info">
+                <h3>Informasi Pretest</h3>
+                <ul>
+                    <li>Total pertanyaan: <strong>10 soal</strong></li>
+                    <li>Durasi: <strong>Tidak dibatasi</strong></li>
+                    <li>Sistem penilaian berdasarkan jawaban benar</li>
+                    <li>Hasil akan menentukan modul rekomendasi Anda</li>
+                </ul>
+
+                <h3 style="margin-top: 2rem;">Level Modul Berdasarkan Score:</h3>
+                <ul>
+                    <li><strong>0-45:</strong> Fundamental JavaScript</li>
+                    <li><strong>46-65:</strong> Intermediate JavaScript</li>
+                    <li><strong>66-100:</strong> Advance JavaScript</li>
+                </ul>
+
+                <div style="text-align: center;">
+                    <button class="btn-start" onclick="startPretest()">Mulai Pretest</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Section -->
+        <div id="questionSection" style="display: none;">
+            <div class="pretest-header">
+                <h1>Pretest JavaScript</h1>
+                <p id="userGreeting"></p>
+            </div>
+
+            <div id="questionsContainer"></div>
+
+            <div class="navigation-buttons">
+                <button class="btn-nav btn-prev" onclick="previousQuestion()" id="btnPrev" disabled>
+                    <i class='bx bx-chevron-left'></i> Sebelumnya
+                </button>
+                <button class="btn-nav btn-next" onclick="nextQuestion()" id="btnNext">
+                    Selanjutnya <i class='bx bx-chevron-right'></i>
+                </button>
+                <button class="btn-nav btn-finish" onclick="finishPretest()" id="btnFinish" style="display: none;">
+                    Selesai <i class='bx bx-check'></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-container">
+            <h2 style="font-size: 3rem; color: var(--main-color);">Hasil Pretest Anda</h2>
+            <div class="score-display" id="scoreDisplay">0</div>
+            <p style="font-size: 1.8rem;">dari 100</p>
+
+            <div class="recommendation">
+                <h3 id="recommendationTitle">Modul Rekomendasi</h3>
+                <p id="recommendationMessage"></p>
+            </div>
+
+            <div class="analysis">
+                <h4>Detail Hasil:</h4>
+                <div id="analysisDetails"></div>
+            </div>
+
+            <button class="btn-start" onclick="goToDashboard()">
+                Lanjut ke Dashboard <i class='bx bx-arrow-right'></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Loading Spinner -->
+    <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 3rem; border-radius: 1rem; text-align: center;">
+            <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--main-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+            <p style="font-size: 1.6rem;">Loading...</p>
+        </div>
+    </div>
+
+    <style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    </style>
+
+    <!-- API Integration -->
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/user-pretest.js"></script>
+</body>
+</html>

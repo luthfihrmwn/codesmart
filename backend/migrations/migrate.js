@@ -9,6 +9,10 @@ const pool = new Pool({
     database: process.env.DB_NAME || 'codesmart_db',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD,
+    // SSL for Supabase and cloud databases
+    ssl: process.env.DB_HOST && (process.env.DB_HOST.includes('supabase') || process.env.DB_HOST.includes('pooler'))
+        ? { rejectUnauthorized: false }
+        : false,
 });
 
 async function runMigrations() {

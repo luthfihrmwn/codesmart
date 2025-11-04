@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/index.css">
+
+    <style>
+        .dashboard-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 7%;
+            background: var(--bg-color);
+            box-shadow: 0 .1rem 1rem var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .dashboard-header .logo {
+            font-size: 2.5rem;
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .dashboard-nav a {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: .3s ease;
+        }
+
+        .dashboard-nav a:hover,
+        .dashboard-nav a.active {
+            color: var(--main-color);
+        }
+
+        .assignments-container {
+            padding: 12rem 7% 4rem;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-header h1 {
+            font-size: 4rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .assignment-card {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            margin-bottom: 3rem;
+            border-top: .5rem solid var(--main-color);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: .2rem solid rgba(117, 78, 249, 0.1);
+        }
+
+        .assignment-header h3 {
+            font-size: 2.4rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .assignment-meta {
+            display: flex;
+            gap: 2rem;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            opacity: .8;
+        }
+
+        .assignment-meta span {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .assignment-status {
+            flex-shrink: 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .8rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .assignment-description {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+        }
+
+        .submission-info {
+            background: rgba(117, 78, 249, 0.05);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .submission-info h4 {
+            font-size: 1.8rem;
+            color: var(--main-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .submission-info p {
+            font-size: 1.5rem;
+            margin-bottom: .8rem;
+            color: var(--text-color);
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1.2rem 2.5rem;
+            font-size: 1.5rem;
+            border-radius: .8rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .3s ease;
+            border: .2rem solid var(--main-color);
+            display: inline-flex;
+            align-items: center;
+            gap: .8rem;
+        }
+
+        .btn-primary {
+            background: var(--main-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--main-color);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--main-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--main-color);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-color);
+            border-color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: .2rem solid rgba(117, 78, 249, 0.2);
+        }
+
+        .modal-header h2 {
+            font-size: 2.4rem;
+            color: var(--main-color);
+        }
+
+        .close-btn {
+            font-size: 3rem;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: .3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--main-color);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.6rem;
+            margin-bottom: .8rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.5rem;
+            border: .2rem solid var(--main-color);
+            border-radius: .8rem;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .file-info {
+            font-size: 1.3rem;
+            color: var(--text-color);
+            opacity: .7;
+            margin-top: .5rem;
+        }
+
+        @media (max-width: 768px) {
+            .assignment-header {
+                flex-direction: column;
+            }
+
+            .assignment-status {
+                margin-top: 1rem;
+            }
+
+            .assignment-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <a href="dashboard-new.html" class="logo">CodeSmart</a>
+
+        <nav class="dashboard-nav">
+            <a href="dashboard-new.html">Dashboard</a>
+            <a href="profile-new.html">Profile</a>
+            <a href="modules-new.html">Modules</a>
+            <a href="assignment-new.html" class="active">Assignments</a>
+            <a href="#" id="darkModeToggle"><i class='bx bx-moon'></i></a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <span id="userName" style="font-size: 1.6rem; color: var(--text-color);"></span>
+            <a href="#" onclick="authService.logout()" style="font-size: 2rem; color: var(--main-color);">
+                <i class='bx bx-log-out'></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Assignments Content -->
+    <section class="assignments-container">
+        <div class="page-header">
+            <h1>My Assignments</h1>
+            <p style="font-size: 1.6rem; color: var(--text-color);">Submit and track your assignment submissions</p>
+        </div>
+
+        <div id="assignmentsContainer">
+            <!-- Assignments will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Submit Modal -->
+    <div id="submitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Submit Assignment</h2>
+                <span class="close-btn" onclick="closeSubmitModal()">&times;</span>
+            </div>
+
+            <form id="submitForm">
+                <div class="form-group">
+                    <label for="assignmentFile">Select File *</label>
+                    <input type="file" id="assignmentFile" required>
+                    <p class="file-info">Allowed: PDF, DOC, DOCX, ZIP, JS, HTML, CSS, TXT (Max 5MB)</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="submissionNotes">Notes (Optional)</label>
+                    <textarea id="submissionNotes" placeholder="Add any notes for your submission..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        <i class="bx bx-upload"></i> Submit
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeSubmitModal()">
+                        <i class="bx bx-x"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 3rem; border-radius: 1rem; text-align: center;">
+            <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--main-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+            <p style="font-size: 1.6rem;">Loading...</p>
+        </div>
+    </div>
+
+    <style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    </style>
+
+    <!-- API Integration -->
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/user-assignment.js"></script>
+</body>
+</html>

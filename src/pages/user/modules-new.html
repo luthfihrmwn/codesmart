@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modules - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/index.css">
+
+    <style>
+        .dashboard-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 7%;
+            background: var(--bg-color);
+            box-shadow: 0 .1rem 1rem var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .dashboard-header .logo {
+            font-size: 2.5rem;
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .dashboard-nav a {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: .3s ease;
+        }
+
+        .dashboard-nav a:hover,
+        .dashboard-nav a.active {
+            color: var(--main-color);
+        }
+
+        .modules-container {
+            padding: 12rem 7% 4rem;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-header h1 {
+            font-size: 4rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.6rem;
+            color: var(--text-color);
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: .5rem 1.5rem;
+            background: var(--main-color);
+            color: white;
+            border-radius: 2rem;
+            font-size: 1.4rem;
+            margin-top: 1rem;
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 1rem 2rem;
+            font-size: 1.6rem;
+            border: .2rem solid var(--main-color);
+            background: transparent;
+            color: var(--main-color);
+            border-radius: .8rem;
+            cursor: pointer;
+            transition: .3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--main-color);
+            color: white;
+        }
+
+        .level-section {
+            margin-bottom: 5rem;
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: .3rem solid var(--main-color);
+        }
+
+        .level-header h2 {
+            font-size: 2.8rem;
+            color: var(--main-color);
+        }
+
+        .locked-badge {
+            font-size: 1.6rem;
+            color: #dc3545;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 3rem;
+        }
+
+        .module-card {
+            background: var(--bg-color);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 .5rem 2rem var(--shadow-color);
+            transition: transform .3s ease;
+            border-top: .5rem solid var(--main-color);
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .module-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .module-card.locked:hover {
+            transform: none;
+        }
+
+        .module-icon {
+            width: 6rem;
+            height: 6rem;
+            background: linear-gradient(135deg, var(--main-color), #9d7bea);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .module-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .module-card h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .module-description {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            opacity: .8;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .module-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            font-size: 1.4rem;
+            color: var(--text-color);
+        }
+
+        .module-meta span {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 1rem;
+            background: #f0f0f0;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: .5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--main-color);
+            transition: width .3s ease;
+        }
+
+        .progress-text {
+            font-size: 1.4rem;
+            color: var(--main-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .module-actions {
+            display: flex;
+            gap: 1rem;
+            flex-direction: column;
+        }
+
+        .btn {
+            padding: 1.2rem 2rem;
+            font-size: 1.5rem;
+            border-radius: .8rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .3s ease;
+            border: .2rem solid var(--main-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+        }
+
+        .btn-primary {
+            background: var(--main-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--main-color);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--main-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--main-color);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-color);
+            border-color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        .btn-disabled {
+            background: #ccc;
+            color: #666;
+            border-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .locked-text {
+            font-size: 1.3rem;
+            color: #dc3545;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <a href="dashboard-new.html" class="logo">CodeSmart</a>
+
+        <nav class="dashboard-nav">
+            <a href="dashboard-new.html">Dashboard</a>
+            <a href="profile-new.html">Profile</a>
+            <a href="modules-new.html" class="active">Modules</a>
+            <a href="#" id="darkModeToggle"><i class='bx bx-moon'></i></a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <span id="userName" style="font-size: 1.6rem; color: var(--text-color);"></span>
+            <a href="#" onclick="authService.logout()" style="font-size: 2rem; color: var(--main-color);">
+                <i class='bx bx-log-out'></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Modules Content -->
+    <section class="modules-container">
+        <div class="page-header">
+            <h1>Learning Modules</h1>
+            <p>Pilih modul pembelajaran JavaScript sesuai level Anda</p>
+            <span class="level-badge">Your Level: <span id="currentLevel">FUNDAMENTAL</span></span>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <button class="filter-btn active" data-level="all" onclick="filterByLevel('all')">
+                All Levels
+            </button>
+            <button class="filter-btn" data-level="fundamental" onclick="filterByLevel('fundamental')">
+                Fundamental
+            </button>
+            <button class="filter-btn" data-level="intermediate" onclick="filterByLevel('intermediate')">
+                Intermediate
+            </button>
+            <button class="filter-btn" data-level="advance" onclick="filterByLevel('advance')">
+                Advance
+            </button>
+        </div>
+
+        <!-- Modules Container -->
+        <div id="modulesContainer">
+            <!-- Modules will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Loading Spinner -->
+    <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 3rem; border-radius: 1rem; text-align: center;">
+            <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--main-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+            <p style="font-size: 1.6rem;">Loading...</p>
+        </div>
+    </div>
+
+    <style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    </style>
+
+    <!-- API Integration -->
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/user-modules.js"></script>
+</body>
+</html>

@@ -10,7 +10,15 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     max: 20, // Maximum number of clients in pool
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000, // Increased timeout for cloud DB
+    // SSL configuration for Supabase and other cloud PostgreSQL
+    ssl: process.env.DB_HOST && process.env.DB_HOST.includes('supabase')
+        ? { rejectUnauthorized: false }
+        : false,
+    // Force IPv4 for Supabase connection
+    ...(process.env.DB_HOST && process.env.DB_HOST.includes('supabase') && {
+        host: process.env.DB_HOST,
+    }),
 });
 
 // Test database connection
