@@ -137,12 +137,15 @@ exports.getUserById = async (req, res, next) => {
 // @access  Admin
 exports.createUser = async (req, res, next) => {
     try {
-        const { username, email, password, name, phone, role, status } = req.body;
+        const { username, email, password, name, phone, role, status, pretest_score, current_level } = req.body;
+
+        // Generate username from email if not provided
+        const finalUsername = username || email.split('@')[0];
 
         // Check if user already exists
         const existingUser = await query(
             'SELECT id FROM users WHERE username = $1 OR email = $2',
-            [username, email]
+            [finalUsername, email]
         );
 
         if (existingUser.rows.length > 0) {
@@ -158,10 +161,10 @@ exports.createUser = async (req, res, next) => {
 
         // Create user
         const result = await query(
-            `INSERT INTO users (username, email, password, name, phone, role, status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
-             RETURNING id, username, email, name, phone, role, status, created_at`,
-            [username, email, hashedPassword, name, phone || null, role || 'user', status || 'active']
+            `INSERT INTO users (username, email, password, name, phone, role, status, pretest_score, current_level)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+             RETURNING id, username, email, name, phone, role, status, pretest_score, current_level, created_at`,
+            [finalUsername, email, hashedPassword, name, phone || null, role || 'user', status || 'active', pretest_score || null, current_level || null]
         );
 
         res.status(201).json({

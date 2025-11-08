@@ -1,5 +1,34 @@
 const { query, getClient } = require('../config/database');
 
+// @desc    Get all assignments (Admin only)
+// @route   GET /api/v1/admin/assignments
+// @access  Admin
+exports.getAllAssignments = async (req, res, next) => {
+    try {
+        const result = await query(
+            `SELECT a.id, a.title, a.description, a.max_score, a.due_date, a.is_active,
+                    a.requirements, a.rubric, a.class_number, a.created_at, a.updated_at,
+                    m.id as module_id, m.name as module_name, m.slug as module_slug,
+                    COUNT(DISTINCT s.id) as submission_count
+             FROM assignments a
+             INNER JOIN modules m ON a.module_id = m.id
+             LEFT JOIN submissions s ON a.id = s.assignment_id
+             GROUP BY a.id, m.id, m.name, m.slug
+             ORDER BY a.created_at DESC`
+        );
+
+        res.json({
+            success: true,
+            data: {
+                assignments: result.rows
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 // @desc    Get module assignments
 // @route   GET /api/v1/assignments/module/:moduleSlug
 // @access  Private

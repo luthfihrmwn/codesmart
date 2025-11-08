@@ -32,6 +32,7 @@ router.put('/materials/:id', moduleController.updateLearningMaterial);
 router.delete('/materials/:id', moduleController.deleteLearningMaterial);
 
 // Assignment Management
+router.get('/assignments', assignmentController.getAllAssignments);
 router.post('/assignments', assignmentController.createAssignment);
 router.put('/assignments/:id', assignmentController.updateAssignment);
 router.delete('/assignments/:id', assignmentController.deleteAssignment);

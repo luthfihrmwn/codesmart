@@ -7,11 +7,11 @@ exports.getModules = async (req, res, next) => {
     try {
         const { level } = req.query;
 
-        let whereClause = 'WHERE is_active = true';
+        let whereClause = 'WHERE m.is_active = true';
         let params = [];
 
         if (level) {
-            whereClause += ' AND level = $1';
+            whereClause += ' AND m.level = $1';
             params.push(level);
         }
 
@@ -20,7 +20,7 @@ exports.getModules = async (req, res, next) => {
                     COUNT(DISTINCT lm.id) as total_classes,
                     COUNT(DISTINCT a.id) as total_assignments
              FROM modules m
-             LEFT JOIN learning_materials lm ON m.id = lm.module_id
+             LEFT JOIN learning_materials lm ON m.id = lm.module_id AND lm.is_published = true
              LEFT JOIN assignments a ON m.id = a.module_id AND a.is_active = true
              ${whereClause}
              GROUP BY m.id

@@ -271,15 +271,15 @@ class AuthService {
         }
 
         if (this.isAdmin()) {
-            window.location.href = '/src/pages/admin/dashboard.html';
+            window.location.href = '/src/pages/admin/dashboard-sidebar.html';
         } else if (this.isAssessor()) {
-            window.location.href = '/src/pages/assessor/dashboard.html';
+            window.location.href = '/src/pages/assessor/dashboard-new.html';
         } else {
             // Check if user needs to take pretest
             if (!this.hasCompletedPretest()) {
-                window.location.href = '/src/pages/user/pretest.html';
+                window.location.href = '/src/pages/user/pretest-new.html';
             } else {
-                window.location.href = '/src/pages/user/dashboard.html';
+                window.location.href = '/src/pages/user/dashboard-new.html';
             }
         }
     }

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                    <span class="nav-badge" id="pendingUsersBadge">0</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item active">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Reports & Analytics</h1>
+            </div>
+            <div class="header-right">
+                <div class="header-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge"></span>
+                </div>
+                <div class="user-menu" onclick="toggleUserMenu()">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Overview Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-user'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-user-check'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeUsers">0</h3>
+                        <p>Active Users</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-book'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalModules">0</h3>
+                        <p>Total Modules</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-task'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalAssignments">0</h3>
+                        <p>Total Assignments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Statistics by Level -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Users by Level</h2>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <i class='bx bx-trophy'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="fundamentalUsers">0</h3>
+                                <p>Fundamental</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon warning">
+                                <i class='bx bx-trophy'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="intermediateUsers">0</h3>
+                                <p>Intermediate</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon danger">
+                                <i class='bx bx-trophy'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="advanceUsers">0</h3>
+                                <p>Advance</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon secondary">
+                                <i class='bx bx-question-mark'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="noLevelUsers">0</h3>
+                                <p>No Level</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Enrollment Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Module Enrollments</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    <th>Level</th>
+                                    <th>Total Enrollments</th>
+                                    <th>Active Users</th>
+                                    <th>Classes</th>
+                                    <th>Assignments</th>
+                                </tr>
+                            </thead>
+                            <tbody id="moduleStatsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment Submission Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Assignment Submissions</h2>
+                    <select id="moduleFilterAssignments" class="form-input" style="max-width: 250px;">
+                        <option value="">All Modules</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Assignment</th>
+                                    <th>Module</th>
+                                    <th>Total Submissions</th>
+                                    <th>Graded</th>
+                                    <th>Pending</th>
+                                    <th>Average Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentStatsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Activity Log -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent User Activity</h2>
+                    <button onclick="exportUserData()" class="btn btn-outline btn-sm">
+                        <i class='bx bx-export'></i> Export Data
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Level</th>
+                                    <th>Pretest Score</th>
+                                    <th>Enrollments</th>
+                                    <th>Last Active</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userActivityTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allUsers = [];
+        let allModules = [];
+        let allAssignments = [];
+        let moduleEnrollments = {};
+        let assignmentSubmissions = {};
+
+        // Load all data
+        async function loadAllData() {
+            try {
+                await Promise.all([
+                    loadStatistics(),
+                    loadUsers(),
+                    loadModules(),
+                    loadAssignments()
+                ]);
+                renderAllReports();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await apiService.getAdminStatistics();
+                if (response.success) {
+                    const stats = response.data;
+                    document.getElementById('totalUsers').textContent = stats.total_users || 0;
+                    document.getElementById('activeUsers').textContent = stats.active_users || 0;
+                    document.getElementById('totalModules').textContent = stats.total_modules || 0;
+                    document.getElementById('totalAssignments').textContent = stats.total_assignments || 0;
+                    document.getElementById('pendingUsersBadge').textContent = stats.pending_users || 0;
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const response = await apiService.getAllUsers();
+                if (response.success) {
+                    allUsers = response.data;
+                    calculateUserLevels();
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        // Calculate user level statistics
+        function calculateUserLevels() {
+            const levels = {
+                fundamental: 0,
+                intermediate: 0,
+                advance: 0,
+                none: 0
+            };
+
+            allUsers.forEach(user => {
+                if (user.level) {
+                    levels[user.level] = (levels[user.level] || 0) + 1;
+                } else {
+                    levels.none++;
+                }
+            });
+
+            document.getElementById('fundamentalUsers').textContent = levels.fundamental;
+            document.getElementById('intermediateUsers').textContent = levels.intermediate;
+            document.getElementById('advanceUsers').textContent = levels.advance;
+            document.getElementById('noLevelUsers').textContent = levels.none;
+        }
+
+        // Load modules
+        async function loadModules() {
+            try {
+                const response = await apiService.getAllModules();
+                if (response.success) {
+                    allModules = response.data;
+                    populateModuleFilter();
+                    await loadModuleEnrollments();
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+            }
+        }
+
+        // Populate module filter
+        function populateModuleFilter() {
+            const select = document.getElementById('moduleFilterAssignments');
+            const options = allModules.map(m =>
+                `<option value="${m.slug}">${m.name}</option>`
+            ).join('');
+            select.innerHTML = '<option value="">All Modules</option>' + options;
+        }
+
+        // Load module enrollments
+        async function loadModuleEnrollments() {
+            for (const module of allModules) {
+                try {
+                    const response = await apiService.getModuleEnrollments(module.slug);
+                    if (response.success) {
+                        moduleEnrollments[module.slug] = response.data;
+                    }
+                } catch (error) {
+                    console.error(`Error loading enrollments for ${module.slug}:`, error);
+                }
+            }
+        }
+
+        // Load assignments
+        async function loadAssignments() {
+            try {
+                allAssignments = [];
+                for (const module of allModules) {
+                    const response = await apiService.getModuleAssignments(module.slug);
+                    if (response.success && response.data.length > 0) {
+                        response.data.forEach(a => {
+                            a.module_name = module.name;
+                            a.module_slug = module.slug;
+                        });
+                        allAssignments.push(...response.data);
+                    }
+                }
+                await loadAssignmentSubmissions();
+            } catch (error) {
+                console.error('Error loading assignments:', error);
+            }
+        }
+
+        // Load assignment submissions
+        async function loadAssignmentSubmissions() {
+            for (const assignment of allAssignments) {
+                try {
+                    const response = await apiService.getAssignmentSubmissions(assignment.id);
+                    if (response.success) {
+                        assignmentSubmissions[assignment.id] = response.data;
+                    }
+                } catch (error) {
+                    console.error(`Error loading submissions for assignment ${assignment.id}:`, error);
+                }
+            }
+        }
+
+        // Render all reports
+        function renderAllReports() {
+            renderModuleStats();
+            renderAssignmentStats();
+            renderUserActivity();
+        }
+
+        // Render module statistics
+        function renderModuleStats() {
+            const tbody = document.getElementById('moduleStatsTable');
+
+            if (allModules.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">No modules found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = allModules.map(module => {
+                const enrollments = moduleEnrollments[module.slug] || [];
+                const activeEnrollments = enrollments.filter(e => e.is_active).length;
+
+                return `
+                    <tr>
+                        <td><strong>${module.name}</strong></td>
+                        <td><span class="badge badge-${getLevelColor(module.level)}">${module.level}</span></td>
+                        <td>${enrollments.length}</td>
+                        <td>${activeEnrollments}</td>
+                        <td>${module.class_count || 0}</td>
+                        <td>${module.assignment_count || 0}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render assignment statistics
+        function renderAssignmentStats(moduleFilter = '') {
+            const tbody = document.getElementById('assignmentStatsTable');
+            const filtered = moduleFilter ?
+                allAssignments.filter(a => a.module_slug === moduleFilter) :
+                allAssignments;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">No assignments found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(assignment => {
+                const submissions = assignmentSubmissions[assignment.id] || [];
+                const graded = submissions.filter(s => s.status === 'graded').length;
+                const pending = submissions.filter(s => s.status === 'pending' || s.status === 'submitted').length;
+
+                const scores = submissions.filter(s => s.score !== null).map(s => s.score);
+                const avgScore = scores.length > 0 ?
+                    (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) :
+                    '-';
+
+                return `
+                    <tr>
+                        <td><strong>${assignment.title}</strong></td>
+                        <td>${assignment.module_name}</td>
+                        <td>${submissions.length}</td>
+                        <td><span class="badge badge-success">${graded}</span></td>
+                        <td><span class="badge badge-warning">${pending}</span></td>
+                        <td>${avgScore !== '-' ? avgScore + '/' + assignment.max_score : '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render user activity
+        function renderUserActivity() {
+            const tbody = document.getElementById('userActivityTable');
+
+            if (allUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">No users found</td></tr>';
+                return;
+            }
+
+            // Sort by created_at (most recent first)
+            const sortedUsers = [...allUsers].sort((a, b) =>
+                new Date(b.created_at) - new Date(a.created_at)
+            );
+
+            tbody.innerHTML = sortedUsers.map(user => {
+                // Count enrollments for this user
+                let enrollmentCount = 0;
+                Object.values(moduleEnrollments).forEach(enrollments => {
+                    enrollmentCount += enrollments.filter(e => e.user_id === user.id).length;
+                });
+
+                return `
+                    <tr>
+                        <td><strong>${user.name || 'N/A'}</strong></td>
+                        <td>${user.email}</td>
+                        <td><span class="badge badge-info">${user.role}</span></td>
+                        <td>${user.level ? `<span class="badge badge-${getLevelColor(user.level)}">${user.level}</span>` : '-'}</td>
+                        <td>${user.pretest_score !== null ? user.pretest_score : '-'}</td>
+                        <td>${enrollmentCount}</td>
+                        <td>${new Date(user.created_at).toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Export user data to CSV
+        function exportUserData() {
+            const headers = ['Name', 'Email', 'Role', 'Level', 'Pretest Score', 'Status', 'Registered'];
+            const rows = allUsers.map(user => [
+                user.name || 'N/A',
+                user.email,
+                user.role,
+                user.level || '-',
+                user.pretest_score !== null ? user.pretest_score : '-',
+                user.status,
+                new Date(user.created_at).toLocaleDateString()
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            csv += rows.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `codesmart-users-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Helper functions
+        function getLevelColor(level) {
+            switch (level) {
+                case 'fundamental': return 'success';
+                case 'intermediate': return 'warning';
+                case 'advance': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authService.logout();
+            }
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Admin';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Event listener for module filter
+        document.getElementById('moduleFilterAssignments').addEventListener('change', function() {
+            renderAssignmentStats(this.value);
+        });
+
+        // Initialize
+        loadAllData();
+    </script>
+</body>
+</html>

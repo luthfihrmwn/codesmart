@@ -342,6 +342,10 @@ class APIService {
         return this.get(`/assignments/module/${moduleSlug}`);
     }
 
+    async getAllAssignments() {
+        return this.get('/admin/assignments');
+    }
+
     async getAssignment(id) {
         return this.get(`/assignments/${id}`);
     }
@@ -433,6 +437,66 @@ class APIService {
 
     async deleteLearningMaterial(id) {
         return this.delete(`/admin/materials/${id}`);
+    }
+
+    // Alias methods for Classes (same as Learning Materials)
+    async createClass(moduleSlug, classData) {
+        return this.createLearningMaterial({ ...classData, module_slug: moduleSlug });
+    }
+
+    async updateClass(moduleSlug, classId, classData) {
+        return this.updateLearningMaterial(classId, classData);
+    }
+
+    async deleteClass(moduleSlug, classId) {
+        return this.deleteLearningMaterial(classId);
+    }
+
+    async getModuleClasses(moduleSlug) {
+        return this.get(`/modules/${moduleSlug}/materials`);
+    }
+
+    // Assignment Management
+    async createAssignment(moduleSlugOrData, assignmentData) {
+        // Support both patterns:
+        // createAssignment(assignmentData) - old pattern
+        // createAssignment(moduleSlug, assignmentData) - new pattern
+        if (typeof moduleSlugOrData === 'string') {
+            // Get module ID from slug
+            const module = await this.getModuleBySlug(moduleSlugOrData);
+            if (!module.success) {
+                return module;
+            }
+            assignmentData.module_id = module.data.id;
+            return this.post('/admin/assignments', assignmentData);
+        } else {
+            // Old pattern - data is in first parameter
+            return this.post('/admin/assignments', moduleSlugOrData);
+        }
+    }
+
+    async updateAssignment(moduleSlugOrId, idOrData, assignmentData) {
+        // Support both patterns:
+        // updateAssignment(id, assignmentData) - old pattern
+        // updateAssignment(moduleSlug, id, assignmentData) - new pattern
+        if (assignmentData) {
+            // New pattern with 3 parameters
+            return this.put(`/admin/assignments/${idOrData}`, assignmentData);
+        } else {
+            // Old pattern with 2 parameters
+            return this.put(`/admin/assignments/${moduleSlugOrId}`, idOrData);
+        }
+    }
+
+    async deleteAssignment(moduleSlugOrId, id) {
+        // Support both patterns
+        if (id) {
+            // New pattern: deleteAssignment(moduleSlug, id)
+            return this.delete(`/admin/assignments/${id}`);
+        } else {
+            // Old pattern: deleteAssignment(id)
+            return this.delete(`/admin/assignments/${moduleSlugOrId}`);
+        }
     }
 
     async getAdminStatistics() {

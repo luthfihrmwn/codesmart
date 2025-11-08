@@ -346,7 +346,7 @@ function retakePretest() {
     if (confirm('Apakah Anda yakin ingin mengulang pretest? Hasil pretest sebelumnya akan dihapus.')) {
         // Note: Backend doesn't have endpoint to reset pretest yet
         // For now, just redirect to pretest page
-        window.location.href = 'pretest.html';
+        window.location.href = 'pretest-new.html';
     }
 }
 

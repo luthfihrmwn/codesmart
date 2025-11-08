@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments Management - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                    <span class="nav-badge" id="pendingUsersBadge">0</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item active">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Assignments Management</h1>
+            </div>
+            <div class="header-right">
+                <div class="header-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge"></span>
+                </div>
+                <div class="user-menu" onclick="toggleUserMenu()">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filters and Actions -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <input type="text" id="searchInput" placeholder="Search assignments..." class="form-input">
+                        </div>
+                        <div class="filter-group">
+                            <select id="moduleFilter" class="form-input">
+                                <option value="">All Modules</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <select id="statusFilter" class="form-input">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <button onclick="openCreateModal()" class="btn btn-primary">
+                                <i class='bx bx-plus'></i> Add Assignment
+                            </button>
+                        </div>
+                        <div class="filter-group">
+                            <button onclick="exportExcel()" class="btn btn-success">
+                                <i class='bx bx-download'></i> Export Excel
+                            </button>
+                        </div>
+                        <div class="filter-group">
+                            <button onclick="exportCSV()" class="btn btn-success">
+                                <i class='bx bx-download'></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignments Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">All Assignments</h2>
+                    <span id="assignmentCount" class="badge badge-info">0 assignments</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Module</th>
+                                    <th>Class #</th>
+                                    <th>Max Score</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Submissions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentsTable">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Assignment Modal -->
+    <div id="assignmentModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Assignment</h2>
+                <button onclick="closeAssignmentModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="assignmentForm" onsubmit="saveAssignment(event)">
+                    <input type="hidden" id="assignmentId">
+
+                    <div class="form-group">
+                        <label for="assignmentModule">Module *</label>
+                        <select id="assignmentModule" class="form-input" required>
+                            <option value="">Select Module</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentClass">Class Number *</label>
+                        <input type="number" id="assignmentClass" class="form-input" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentTitle">Title *</label>
+                        <input type="text" id="assignmentTitle" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentDescription">Description *</label>
+                        <textarea id="assignmentDescription" class="form-input" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentRequirements">Requirements (one per line)</label>
+                        <textarea id="assignmentRequirements" class="form-input" rows="4" placeholder="Submit your solution in a single file&#10;Include comments explaining your code&#10;Test your code before submission"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentRubric">Rubric (JSON format)</label>
+                        <textarea id="assignmentRubric" class="form-input" rows="5" placeholder='{"Functionality": {"points": 40, "description": "Code works correctly"}, "Code Quality": {"points": 30, "description": "Clean, readable code"}}'></textarea>
+                        <small>Enter scoring rubric as JSON</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentMaxScore">Max Score *</label>
+                        <input type="number" id="assignmentMaxScore" class="form-input" min="1" max="100" value="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentDueDate">Due Date *</label>
+                        <input type="datetime-local" id="assignmentDueDate" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="assignmentActive" checked>
+                            Active
+                        </label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeAssignmentModal()" class="btn btn-outline">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class='bx bx-save'></i> Save Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Submissions Modal -->
+    <div id="submissionsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 id="submissionsModalTitle">Assignment Submissions</h2>
+                <button onclick="closeSubmissionsModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Submitted</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th>Graded By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionsTable">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allModules = [];
+        let allAssignments = [];
+        let currentAssignmentId = null;
+
+        // Load data
+        async function loadData() {
+            await loadModules();
+            await loadAssignments();
+        }
+
+        // Load modules
+        async function loadModules() {
+            try {
+                const response = await apiService.getAllModules();
+                if (response.success) {
+                    allModules = response.data;
+                    populateModuleFilters();
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+            }
+        }
+
+        // Populate module filters and selects
+        function populateModuleFilters() {
+            const filterSelect = document.getElementById('moduleFilter');
+            const formSelect = document.getElementById('assignmentModule');
+
+            const options = allModules.map(m =>
+                `<option value="${m.slug}">${m.name} (${m.level})</option>`
+            ).join('');
+
+            filterSelect.innerHTML = '<option value="">All Modules</option>' + options;
+            formSelect.innerHTML = '<option value="">Select Module</option>' + options;
+        }
+
+        // Load assignments
+        async function loadAssignments() {
+            try {
+                const response = await apiService.getAllAssignments();
+                if (response.success) {
+                    allAssignments = response.data.assignments || response.data;
+                    allAssignments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    renderAssignments(allAssignments);
+                }
+            } catch (error) {
+                console.error('Error loading assignments:', error);
+                showError('Failed to load assignments');
+            }
+        }
+
+        // Render assignments table
+        function renderAssignments(assignments) {
+            const tbody = document.getElementById('assignmentsTable');
+            document.getElementById('assignmentCount').textContent = `${assignments.length} assignments`;
+
+            if (assignments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#999;">No assignments found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = assignments.map(assignment => `
+                <tr>
+                    <td>${assignment.id}</td>
+                    <td><strong>${assignment.title}</strong></td>
+                    <td>${assignment.module_name}</td>
+                    <td>Class ${assignment.class_number}</td>
+                    <td>${assignment.max_score}</td>
+                    <td>${new Date(assignment.due_date).toLocaleDateString()}</td>
+                    <td><span class="badge badge-${assignment.is_active ? 'success' : 'secondary'}">${assignment.is_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <button onclick="viewSubmissions(${assignment.id})" class="btn btn-sm btn-outline">
+                            ${assignment.submission_count || 0} <i class='bx bx-show'></i>
+                        </button>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="editAssignment(${assignment.id})" class="btn btn-sm btn-primary" title="Edit">
+                                <i class='bx bx-edit'></i>
+                            </button>
+                            <button onclick="deleteAssignment(${assignment.id})" class="btn btn-sm btn-danger" title="Delete">
+                                <i class='bx bx-trash'></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter assignments
+        function filterAssignments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const moduleFilter = document.getElementById('moduleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = allAssignments.filter(assignment => {
+                const matchesSearch = !searchTerm ||
+                    assignment.title.toLowerCase().includes(searchTerm) ||
+                    assignment.description.toLowerCase().includes(searchTerm);
+                const matchesModule = !moduleFilter || assignment.module_slug === moduleFilter;
+                const matchesStatus = !statusFilter ||
+                    (statusFilter === 'active' && assignment.is_active) ||
+                    (statusFilter === 'inactive' && !assignment.is_active);
+
+                return matchesSearch && matchesModule && matchesStatus;
+            });
+
+            renderAssignments(filtered);
+        }
+
+        // Open create modal
+        function openCreateModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Assignment';
+            document.getElementById('assignmentForm').reset();
+            document.getElementById('assignmentId').value = '';
+            document.getElementById('assignmentActive').checked = true;
+            document.getElementById('assignmentMaxScore').value = 100;
+
+            // Set default due date to 7 days from now
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 7);
+            document.getElementById('assignmentDueDate').value = dueDate.toISOString().slice(0, 16);
+
+            // Set default rubric
+            document.getElementById('assignmentRubric').value = JSON.stringify({
+                "Functionality": { "points": 40, "description": "Code works correctly" },
+                "Code Quality": { "points": 30, "description": "Clean, readable code" },
+                "Comments": { "points": 20, "description": "Well-commented code" },
+                "Best Practices": { "points": 10, "description": "Follows best practices" }
+            }, null, 2);
+
+            document.getElementById('assignmentModal').style.display = 'flex';
+        }
+
+        // Edit assignment
+        async function editAssignment(assignmentId) {
+            const assignment = allAssignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Assignment';
+            document.getElementById('assignmentId').value = assignment.id;
+            document.getElementById('assignmentModule').value = assignment.module_slug;
+            document.getElementById('assignmentClass').value = assignment.class_number;
+            document.getElementById('assignmentTitle').value = assignment.title;
+            document.getElementById('assignmentDescription').value = assignment.description;
+
+            // Parse requirements array to text
+            if (assignment.requirements && Array.isArray(assignment.requirements)) {
+                document.getElementById('assignmentRequirements').value = assignment.requirements.join('\n');
+            } else {
+                document.getElementById('assignmentRequirements').value = '';
+            }
+
+            // Parse rubric object to JSON string
+            if (assignment.rubric) {
+                document.getElementById('assignmentRubric').value = JSON.stringify(assignment.rubric, null, 2);
+            } else {
+                document.getElementById('assignmentRubric').value = '';
+            }
+
+            document.getElementById('assignmentMaxScore').value = assignment.max_score;
+
+            // Format date for datetime-local input
+            const dueDate = new Date(assignment.due_date);
+            document.getElementById('assignmentDueDate').value = dueDate.toISOString().slice(0, 16);
+
+            document.getElementById('assignmentActive').checked = assignment.is_active;
+            document.getElementById('assignmentModal').style.display = 'flex';
+        }
+
+        // Close assignment modal
+        function closeAssignmentModal() {
+            document.getElementById('assignmentModal').style.display = 'none';
+            document.getElementById('assignmentForm').reset();
+        }
+
+        // Save assignment (create or update)
+        async function saveAssignment(event) {
+            event.preventDefault();
+
+            const assignmentId = document.getElementById('assignmentId').value;
+            const moduleSlug = document.getElementById('assignmentModule').value;
+
+            // Parse requirements from textarea (one per line)
+            const requirementsText = document.getElementById('assignmentRequirements').value;
+            const requirements = requirementsText ? requirementsText.split('\n').filter(r => r.trim()) : [];
+
+            // Parse rubric JSON
+            let rubric = null;
+            const rubricText = document.getElementById('assignmentRubric').value;
+            if (rubricText) {
+                try {
+                    rubric = JSON.parse(rubricText);
+                } catch (e) {
+                    showError('Invalid JSON in rubric field');
+                    return;
+                }
+            }
+
+            const assignmentData = {
+                class_number: parseInt(document.getElementById('assignmentClass').value),
+                title: document.getElementById('assignmentTitle').value,
+                description: document.getElementById('assignmentDescription').value,
+                requirements: requirements,
+                rubric: rubric,
+                max_score: parseInt(document.getElementById('assignmentMaxScore').value),
+                due_date: new Date(document.getElementById('assignmentDueDate').value).toISOString(),
+                is_active: document.getElementById('assignmentActive').checked
+            };
+
+            try {
+                let response;
+                if (assignmentId) {
+                    // Update existing assignment
+                    response = await apiService.updateAssignment(moduleSlug, assignmentId, assignmentData);
+                } else {
+                    // Create new assignment
+                    response = await apiService.createAssignment(moduleSlug, assignmentData);
+                }
+
+                if (response.success) {
+                    showSuccess(assignmentId ? 'Assignment updated successfully' : 'Assignment created successfully');
+                    closeAssignmentModal();
+                    await loadAssignments();
+                } else {
+                    showError(response.message || 'Failed to save assignment');
+                }
+            } catch (error) {
+                console.error('Error saving assignment:', error);
+                showError('Failed to save assignment');
+            }
+        }
+
+        // Delete assignment
+        async function deleteAssignment(assignmentId) {
+            const assignment = allAssignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+
+            if (!confirm('Are you sure you want to delete this assignment? This will also delete all submissions.')) return;
+
+            try {
+                const response = await apiService.deleteAssignment(assignment.module_slug, assignmentId);
+                if (response.success) {
+                    showSuccess('Assignment deleted successfully');
+                    await loadAssignments();
+                } else {
+                    showError(response.message || 'Failed to delete assignment');
+                }
+            } catch (error) {
+                console.error('Error deleting assignment:', error);
+                showError('Failed to delete assignment');
+            }
+        }
+
+        // View submissions
+        async function viewSubmissions(assignmentId) {
+            currentAssignmentId = assignmentId;
+            const assignment = allAssignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+
+            document.getElementById('submissionsModalTitle').textContent = `Submissions - ${assignment.title}`;
+            document.getElementById('submissionsModal').style.display = 'flex';
+            await loadSubmissions(assignmentId);
+        }
+
+        // Load submissions
+        async function loadSubmissions(assignmentId) {
+            try {
+                const response = await apiService.getAssignmentSubmissions(assignmentId);
+                if (response.success) {
+                    renderSubmissions(response.data);
+                }
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+                showError('Failed to load submissions');
+            }
+        }
+
+        // Render submissions table
+        function renderSubmissions(submissions) {
+            const tbody = document.getElementById('submissionsTable');
+
+            if (submissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No submissions found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = submissions.map(sub => `
+                <tr>
+                    <td>${sub.user_name || sub.user_email}</td>
+                    <td>${new Date(sub.submitted_at).toLocaleString()}</td>
+                    <td>${sub.score !== null ? `${sub.score}/${sub.max_score}` : 'Not graded'}</td>
+                    <td><span class="badge badge-${getSubmissionBadge(sub.status)}">${sub.status}</span></td>
+                    <td>${sub.graded_by_name || '-'}</td>
+                    <td>
+                        <a href="${sub.file_path}" target="_blank" class="btn btn-sm btn-outline" title="View">
+                            <i class='bx bx-download'></i>
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Close submissions modal
+        function closeSubmissionsModal() {
+            document.getElementById('submissionsModal').style.display = 'none';
+            currentAssignmentId = null;
+        }
+
+        // Helper functions
+        function getSubmissionBadge(status) {
+            switch (status) {
+                case 'graded': return 'success';
+                case 'pending': return 'warning';
+                case 'submitted': return 'info';
+                default: return 'secondary';
+            }
+        }
+
+        function showSuccess(message) {
+            alert(message);
+        }
+
+        function showError(message) {
+            alert('Error: ' + message);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authService.logout();
+            }
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Admin';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterAssignments);
+        document.getElementById('moduleFilter').addEventListener('change', filterAssignments);
+        document.getElementById('statusFilter').addEventListener('change', filterAssignments);
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+
+        // ========== IMPORT/EXPORT FUNCTIONS ==========
+
+        // Export to Excel
+        function exportExcel() {
+            if (allAssignments.length === 0) {
+                alert('No assignments to export');
+                return;
+            }
+
+            const exportData = allAssignments.map(assignment => ({
+                'ID': assignment.id,
+                'Title': assignment.title,
+                'Module': assignment.module_name,
+                'Class Number': assignment.class_number,
+                'Description': assignment.description,
+                'Max Score': assignment.max_score,
+                'Due Date': new Date(assignment.due_date).toLocaleDateString(),
+                'Status': assignment.is_active ? 'Active' : 'Inactive',
+                'Submissions': assignment.submission_count || 0
+            }));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Assignments');
+
+            const filename = `assignments_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, filename);
+
+            showSuccess(`Exported ${exportData.length} assignments to ${filename}`);
+        }
+
+        // Export to CSV
+        function exportCSV() {
+            if (allAssignments.length === 0) {
+                alert('No assignments to export');
+                return;
+            }
+
+            const exportData = allAssignments.map(assignment => ({
+                'ID': assignment.id,
+                'Title': assignment.title,
+                'Module': assignment.module_name,
+                'Class Number': assignment.class_number,
+                'Description': assignment.description,
+                'Max Score': assignment.max_score,
+                'Due Date': new Date(assignment.due_date).toLocaleDateString(),
+                'Status': assignment.is_active ? 'Active' : 'Inactive',
+                'Submissions': assignment.submission_count || 0
+            }));
+
+            const headers = Object.keys(exportData[0]);
+            let csv = headers.join(',') + '\n';
+
+            exportData.forEach(row => {
+                const values = headers.map(header => {
+                    const value = row[header];
+                    if (value === null || value === undefined || value === '') return '';
+                    const strValue = String(value);
+                    if (strValue.includes(',') || strValue.includes('"') || strValue.includes('\n')) {
+                        return '"' + strValue.replace(/"/g, '""') + '"';
+                    }
+                    return strValue;
+                });
+                csv += values.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `assignments_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showSuccess(`Exported ${exportData.length} assignments to CSV`);
+        }
+
+        // Initialize
+        loadData();
+
+        // Update pending users badge
+        async function updatePendingBadge() {
+            try {
+                const response = await apiService.getAdminStatistics();
+                if (response.success) {
+                    document.getElementById('pendingUsersBadge').textContent = response.data.pending_users || 0;
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+        updatePendingBadge();
+    </script>
+</body>
+</html>

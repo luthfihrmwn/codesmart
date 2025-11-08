@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modules Management - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                    <span class="nav-badge" id="pendingUsersBadge">0</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item active">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Modules Management</h1>
+            </div>
+            <div class="header-right">
+                <div class="header-icon">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge"></span>
+                </div>
+                <div class="user-menu" onclick="toggleUserMenu()">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filters and Actions -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <input type="text" id="searchInput" placeholder="Search modules..." class="form-input">
+                        </div>
+                        <div class="filter-group">
+                            <select id="levelFilter" class="form-input">
+                                <option value="">All Levels</option>
+                                <option value="fundamental">Fundamental</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advance">Advance</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <button onclick="openCreateModal()" class="btn btn-primary">
+                                <i class='bx bx-plus'></i> Add Module
+                            </button>
+                        </div>
+                        <div class="filter-group">
+                            <button onclick="exportExcel()" class="btn btn-success">
+                                <i class='bx bx-download'></i> Export Excel
+                            </button>
+                        </div>
+                        <div class="filter-group">
+                            <button onclick="exportCSV()" class="btn btn-success">
+                                <i class='bx bx-download'></i> Export CSV
+                            </button>
+                        </div>
+                        <div class="filter-group">
+                            <button onclick="importFile()" class="btn btn-warning">
+                                <i class='bx bx-upload'></i> Import
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modules Grid -->
+            <div id="modulesGrid" class="modules-grid">
+                <div style="text-align: center; padding: 40px; grid-column: 1/-1;">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Module Modal -->
+    <div id="moduleModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Module</h2>
+                <button onclick="closeModuleModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="moduleForm" onsubmit="saveModule(event)">
+                    <input type="hidden" id="moduleId">
+
+                    <div class="form-group">
+                        <label for="moduleName">Module Name *</label>
+                        <input type="text" id="moduleName" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="moduleSlug">Slug *</label>
+                        <input type="text" id="moduleSlug" class="form-input" required>
+                        <small>URL-friendly identifier (e.g., fundamental-javascript)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="moduleDescription">Description *</label>
+                        <textarea id="moduleDescription" class="form-input" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="moduleLevel">Level *</label>
+                        <select id="moduleLevel" class="form-input" required>
+                            <option value="fundamental">Fundamental</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advance">Advance</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="moduleDuration">Duration (hours) *</label>
+                        <input type="number" id="moduleDuration" class="form-input" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="moduleActive" checked>
+                            Active
+                        </label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeModuleModal()" class="btn btn-outline">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class='bx bx-save'></i> Save Module
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Classes Modal -->
+    <div id="classesModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 id="classesModalTitle">Manage Classes</h2>
+                <button onclick="closeClassesModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <button onclick="openAddClassModal()" class="btn btn-primary btn-sm">
+                        <i class='bx bx-plus'></i> Add Class
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Class #</th>
+                                <th>Title</th>
+                                <th>Content</th>
+                                <th>Order</th>
+                                <th>Published</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesTable">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Class Modal -->
+    <div id="classModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 id="classModalTitle">Add Class</h2>
+                <button onclick="closeClassModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="classForm" onsubmit="saveClass(event)">
+                    <input type="hidden" id="classId">
+                    <input type="hidden" id="classModuleSlug">
+
+                    <div class="form-group">
+                        <label for="classNumber">Class Number *</label>
+                        <input type="number" id="classNumber" class="form-input" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="classTitle">Title *</label>
+                        <input type="text" id="classTitle" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="classContent">Content *</label>
+                        <textarea id="classContent" class="form-input" rows="8" required></textarea>
+                        <small>You can use Markdown formatting</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="classOrder">Order *</label>
+                        <input type="number" id="classOrder" class="form-input" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="classPublished" checked>
+                            Published
+                        </label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeClassModal()" class="btn btn-outline">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class='bx bx-save'></i> Save Class
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allModules = [];
+        let currentModuleSlug = null;
+        let currentClasses = [];
+        let editingClassId = null;
+
+        // Load modules
+        async function loadModules() {
+            try {
+                const response = await apiService.getAllModules();
+                if (response.success) {
+                    allModules = response.data.modules || response.data;
+                    renderModules(allModules);
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+                showError('Failed to load modules');
+            }
+        }
+
+        // Render modules grid
+        function renderModules(modules) {
+            const grid = document.getElementById('modulesGrid');
+
+            if (modules.length === 0) {
+                grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;grid-column:1/-1;">No modules found</div>';
+                return;
+            }
+
+            grid.innerHTML = modules.map(module => `
+                <div class="module-card">
+                    <div class="module-card-header">
+                        <span class="badge badge-${getLevelColor(module.level)}">${module.level}</span>
+                        <span class="badge badge-${module.is_active ? 'success' : 'secondary'}">${module.is_active ? 'Active' : 'Inactive'}</span>
+                    </div>
+                    <h3 class="module-card-title">${module.name}</h3>
+                    <p class="module-card-description">${module.description}</p>
+                    <div class="module-card-meta">
+                        <span><i class='bx bx-time'></i> ${module.duration_hours} hours</span>
+                        <span><i class='bx bx-book-open'></i> ${module.class_count || 0} classes</span>
+                    </div>
+                    <div class="module-card-actions">
+                        <button onclick="manageClasses('${module.slug}')" class="btn btn-sm btn-outline">
+                            <i class='bx bx-list-ul'></i> Classes
+                        </button>
+                        <button onclick="editModule(${module.id})" class="btn btn-sm btn-primary">
+                            <i class='bx bx-edit'></i> Edit
+                        </button>
+                        <button onclick="deleteModule(${module.id})" class="btn btn-sm btn-danger">
+                            <i class='bx bx-trash'></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter modules
+        function filterModules() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const levelFilter = document.getElementById('levelFilter').value;
+
+            const filtered = allModules.filter(module => {
+                const matchesSearch = !searchTerm ||
+                    module.name.toLowerCase().includes(searchTerm) ||
+                    module.description.toLowerCase().includes(searchTerm);
+                const matchesLevel = !levelFilter || module.level === levelFilter;
+
+                return matchesSearch && matchesLevel;
+            });
+
+            renderModules(filtered);
+        }
+
+        // Open create modal
+        function openCreateModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Module';
+            document.getElementById('moduleForm').reset();
+            document.getElementById('moduleId').value = '';
+            document.getElementById('moduleActive').checked = true;
+            document.getElementById('moduleModal').style.display = 'flex';
+        }
+
+        // Edit module
+        async function editModule(id) {
+            const module = allModules.find(m => m.id === id);
+            if (!module) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Module';
+            document.getElementById('moduleId').value = module.id;
+            document.getElementById('moduleName').value = module.name;
+            document.getElementById('moduleSlug').value = module.slug;
+            document.getElementById('moduleDescription').value = module.description;
+            document.getElementById('moduleLevel').value = module.level;
+            document.getElementById('moduleDuration').value = module.duration_hours;
+            document.getElementById('moduleActive').checked = module.is_active;
+            document.getElementById('moduleModal').style.display = 'flex';
+        }
+
+        // Close module modal
+        function closeModuleModal() {
+            document.getElementById('moduleModal').style.display = 'none';
+            document.getElementById('moduleForm').reset();
+        }
+
+        // Save module (create or update)
+        async function saveModule(event) {
+            event.preventDefault();
+
+            const moduleId = document.getElementById('moduleId').value;
+            const slug = document.getElementById('moduleSlug').value;
+            const moduleData = {
+                name: document.getElementById('moduleName').value,
+                slug: slug,
+                description: document.getElementById('moduleDescription').value,
+                level: document.getElementById('moduleLevel').value,
+                duration_hours: parseInt(document.getElementById('moduleDuration').value),
+                is_active: document.getElementById('moduleActive').checked
+            };
+
+            try {
+                let response;
+                if (moduleId) {
+                    // Update existing module
+                    response = await apiService.updateModule(moduleId, moduleData);
+                } else {
+                    // Create new module
+                    response = await apiService.createModule(moduleData);
+                }
+
+                if (response.success) {
+                    showSuccess(moduleId ? 'Module updated successfully' : 'Module created successfully');
+                    closeModuleModal();
+                    await loadModules();
+                } else {
+                    showError(response.message || 'Failed to save module');
+                }
+            } catch (error) {
+                console.error('Error saving module:', error);
+                showError('Failed to save module');
+            }
+        }
+
+        // Delete module
+        async function deleteModule(id) {
+            if (!confirm('Are you sure you want to delete this module? This will also delete all associated classes and assignments.')) return;
+
+            try {
+                const response = await apiService.deleteModule(id);
+                if (response.success) {
+                    showSuccess('Module deleted successfully');
+                    await loadModules();
+                } else {
+                    showError(response.message || 'Failed to delete module');
+                }
+            } catch (error) {
+                console.error('Error deleting module:', error);
+                showError('Failed to delete module');
+            }
+        }
+
+        // Manage classes
+        async function manageClasses(slug) {
+            currentModuleSlug = slug;
+            const module = allModules.find(m => m.slug === slug);
+            if (!module) return;
+
+            document.getElementById('classesModalTitle').textContent = `Manage Classes - ${module.name}`;
+            document.getElementById('classesModal').style.display = 'flex';
+            await loadClasses(slug);
+        }
+
+        // Load classes
+        async function loadClasses(slug) {
+            try {
+                const response = await apiService.getModuleClasses(slug);
+                if (response.success) {
+                    currentClasses = response.data;
+                    renderClasses(currentClasses);
+                }
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                showError('Failed to load classes');
+            }
+        }
+
+        // Render classes table
+        function renderClasses(classes) {
+            const tbody = document.getElementById('classesTable');
+
+            if (classes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No classes found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = classes.map(cls => `
+                <tr>
+                    <td>${cls.class_number}</td>
+                    <td><strong>${cls.title}</strong></td>
+                    <td>${cls.content.substring(0, 50)}...</td>
+                    <td>${cls.order_number}</td>
+                    <td><span class="badge badge-${cls.is_published ? 'success' : 'secondary'}">${cls.is_published ? 'Yes' : 'No'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button onclick="editClass(${cls.id})" class="btn btn-sm btn-primary" title="Edit">
+                                <i class='bx bx-edit'></i>
+                            </button>
+                            <button onclick="deleteClass(${cls.id})" class="btn btn-sm btn-danger" title="Delete">
+                                <i class='bx bx-trash'></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Close classes modal
+        function closeClassesModal() {
+            document.getElementById('classesModal').style.display = 'none';
+            currentModuleSlug = null;
+        }
+
+        // Open add class modal
+        function openAddClassModal() {
+            editingClassId = null;
+            document.getElementById('classModalTitle').textContent = 'Add Class';
+            document.getElementById('classForm').reset();
+            document.getElementById('classId').value = '';
+            document.getElementById('classModuleSlug').value = currentModuleSlug;
+            document.getElementById('classPublished').checked = true;
+            document.getElementById('classModal').style.display = 'flex';
+        }
+
+        // Edit class
+        function editClass(classId) {
+            const cls = currentClasses.find(c => c.id === classId);
+            if (!cls) return;
+
+            editingClassId = classId;
+            document.getElementById('classModalTitle').textContent = 'Edit Class';
+            document.getElementById('classId').value = cls.id;
+            document.getElementById('classModuleSlug').value = currentModuleSlug;
+            document.getElementById('classNumber').value = cls.class_number;
+            document.getElementById('classTitle').value = cls.title;
+            document.getElementById('classContent').value = cls.content;
+            document.getElementById('classOrder').value = cls.order_number;
+            document.getElementById('classPublished').checked = cls.is_published;
+            document.getElementById('classModal').style.display = 'flex';
+        }
+
+        // Close class modal
+        function closeClassModal() {
+            document.getElementById('classModal').style.display = 'none';
+            document.getElementById('classForm').reset();
+            editingClassId = null;
+        }
+
+        // Save class
+        async function saveClass(event) {
+            event.preventDefault();
+
+            const classId = document.getElementById('classId').value;
+            const moduleSlug = document.getElementById('classModuleSlug').value;
+            const classData = {
+                class_number: parseInt(document.getElementById('classNumber').value),
+                title: document.getElementById('classTitle').value,
+                content: document.getElementById('classContent').value,
+                order_number: parseInt(document.getElementById('classOrder').value),
+                is_published: document.getElementById('classPublished').checked
+            };
+
+            try {
+                let response;
+                if (classId) {
+                    // Update existing class
+                    response = await apiService.updateClass(moduleSlug, classId, classData);
+                } else {
+                    // Create new class
+                    response = await apiService.createClass(moduleSlug, classData);
+                }
+
+                if (response.success) {
+                    showSuccess(classId ? 'Class updated successfully' : 'Class created successfully');
+                    closeClassModal();
+                    await loadClasses(moduleSlug);
+                } else {
+                    showError(response.message || 'Failed to save class');
+                }
+            } catch (error) {
+                console.error('Error saving class:', error);
+                showError('Failed to save class');
+            }
+        }
+
+        // Delete class
+        async function deleteClass(classId) {
+            if (!confirm('Are you sure you want to delete this class?')) return;
+
+            try {
+                const response = await apiService.deleteClass(currentModuleSlug, classId);
+                if (response.success) {
+                    showSuccess('Class deleted successfully');
+                    await loadClasses(currentModuleSlug);
+                    await loadModules(); // Refresh module counts
+                } else {
+                    showError(response.message || 'Failed to delete class');
+                }
+            } catch (error) {
+                console.error('Error deleting class:', error);
+                showError('Failed to delete class');
+            }
+        }
+
+        // Helper functions
+        function getLevelColor(level) {
+            switch (level) {
+                case 'fundamental': return 'success';
+                case 'intermediate': return 'warning';
+                case 'advance': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        function showSuccess(message) {
+            alert(message);
+        }
+
+        function showError(message) {
+            alert('Error: ' + message);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authService.logout();
+            }
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Admin';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterModules);
+        document.getElementById('levelFilter').addEventListener('change', filterModules);
+
+        // Auto-generate slug from name
+        document.getElementById('moduleName').addEventListener('input', function() {
+            const name = this.value;
+            const slug = name.toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim();
+            document.getElementById('moduleSlug').value = slug;
+        });
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+
+        // ========== IMPORT/EXPORT FUNCTIONS ==========
+
+        // Export to Excel
+        function exportExcel() {
+            if (allModules.length === 0) {
+                alert('No modules to export');
+                return;
+            }
+
+            const exportData = allModules.map(module => ({
+                'ID': module.id,
+                'Name': module.name,
+                'Slug': module.slug,
+                'Description': module.description,
+                'Level': module.level,
+                'Duration (hours)': module.duration_hours,
+                'Active': module.is_active ? 'Yes' : 'No',
+                'Classes Count': module.class_count || 0
+            }));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Modules');
+
+            const filename = `modules_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, filename);
+
+            showSuccess(`Exported ${exportData.length} modules to ${filename}`);
+        }
+
+        // Export to CSV
+        function exportCSV() {
+            if (allModules.length === 0) {
+                alert('No modules to export');
+                return;
+            }
+
+            const exportData = allModules.map(module => ({
+                'ID': module.id,
+                'Name': module.name,
+                'Slug': module.slug,
+                'Description': module.description,
+                'Level': module.level,
+                'Duration (hours)': module.duration_hours,
+                'Active': module.is_active ? 'Yes' : 'No',
+                'Classes Count': module.class_count || 0
+            }));
+
+            const headers = Object.keys(exportData[0]);
+            let csv = headers.join(',') + '\n';
+
+            exportData.forEach(row => {
+                const values = headers.map(header => {
+                    const value = row[header];
+                    if (value === null || value === undefined || value === '') return '';
+                    const strValue = String(value);
+                    if (strValue.includes(',') || strValue.includes('"') || strValue.includes('\n')) {
+                        return '"' + strValue.replace(/"/g, '""') + '"';
+                    }
+                    return strValue;
+                });
+                csv += values.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `modules_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showSuccess(`Exported ${exportData.length} modules to CSV`);
+        }
+
+        // Import from file
+        function importFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.xlsx,.xls,.csv';
+
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const filename = file.name.toLowerCase();
+
+                if (filename.endsWith('.csv')) {
+                    importFromCSV(file);
+                } else if (filename.endsWith('.xlsx') || filename.endsWith('.xls')) {
+                    importFromExcel(file);
+                } else {
+                    alert('Please select a valid Excel (.xlsx, .xls) or CSV (.csv) file');
+                }
+            };
+
+            input.click();
+        }
+
+        // Import from Excel
+        function importFromExcel(file) {
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    await processImportData(jsonData);
+                } catch (error) {
+                    console.error('Error importing Excel:', error);
+                    showError('Failed to import Excel file: ' + error.message);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Import from CSV
+        function importFromCSV(file) {
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n');
+                    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+
+                    const jsonData = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+
+                        const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            row[header] = values[index];
+                        });
+                        jsonData.push(row);
+                    }
+
+                    await processImportData(jsonData);
+                } catch (error) {
+                    console.error('Error importing CSV:', error);
+                    showError('Failed to import CSV file: ' + error.message);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Process imported data
+        async function processImportData(data) {
+            if (!data || data.length === 0) {
+                alert('No data found in file');
+                return;
+            }
+
+            if (!confirm(`Import ${data.length} modules? This will create new modules for each row.`)) {
+                return;
+            }
+
+            let successCount = 0;
+            let errorCount = 0;
+            const errors = [];
+
+            for (const row of data) {
+                try {
+                    const moduleData = {
+                        name: row.Name || row.name || '',
+                        slug: row.Slug || row.slug || '',
+                        description: row.Description || row.description || '',
+                        level: (row.Level || row.level || 'fundamental').toLowerCase(),
+                        duration_hours: parseInt(row['Duration (hours)'] || row.duration_hours || 1),
+                        is_active: (row.Active || row.is_active || 'Yes').toLowerCase() !== 'no'
+                    };
+
+                    if (!moduleData.name || !moduleData.slug) {
+                        errors.push(`Row skipped: missing name or slug`);
+                        errorCount++;
+                        continue;
+                    }
+
+                    const response = await apiService.createModule(moduleData);
+
+                    if (response.success) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                        errors.push(`${moduleData.name}: ${response.message}`);
+                    }
+                } catch (error) {
+                    errorCount++;
+                    errors.push(`Error: ${error.message}`);
+                }
+            }
+
+            let message = `Import completed:\n✅ ${successCount} modules created\n`;
+            if (errorCount > 0) {
+                message += `❌ ${errorCount} errors\n\n`;
+                if (errors.length > 0) {
+                    message += 'Errors:\n' + errors.slice(0, 10).join('\n');
+                    if (errors.length > 10) {
+                        message += `\n... and ${errors.length - 10} more`;
+                    }
+                }
+            }
+
+            alert(message);
+
+            if (successCount > 0) {
+                await loadModules();
+            }
+        }
+
+        // Initialize
+        loadModules();
+
+        // Update pending users badge
+        async function updatePendingBadge() {
+            try {
+                const response = await apiService.getAdminStatistics();
+                if (response.success) {
+                    document.getElementById('pendingUsersBadge').textContent = response.data.pending_users || 0;
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+        updatePendingBadge();
+    </script>
+</body>
+</html>

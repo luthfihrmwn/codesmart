@@ -21,7 +21,7 @@ async function initDashboard() {
 
         // Check if pretest completed
         if (!currentUser.pretest_score) {
-            window.location.href = 'pretest.html';
+            window.location.href = 'pretest-new.html';
             return;
         }
 
@@ -193,7 +193,7 @@ function renderProgress() {
 
 // Open modules page
 function openModules(level) {
-    window.location.href = `modules.html?level=${level}`;
+    window.location.href = `modules-new.html?level=${level}`;
 }
 
 // Request promotion
