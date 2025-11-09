@@ -156,13 +156,14 @@
                                     <th>Status</th>
                                     <th>Pretest Score</th>
                                     <th>Level</th>
+                                    <th>Class</th>
                                     <th>Registered</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="usersTable">
                                 <tr>
-                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                    <td colspan="9" style="text-align: center; padding: 40px;">
                                         <div class="loader"></div>
                                     </td>
                                 </tr>
@@ -224,7 +225,7 @@
                         <input type="number" id="userPretestScore" class="form-input" min="0" max="100">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="levelGroup">
                         <label for="userLevel">Level</label>
                         <select id="userLevel" class="form-input">
                             <option value="">Not Set</option>
@@ -232,6 +233,15 @@
                             <option value="intermediate">Intermediate</option>
                             <option value="advance">Advance</option>
                         </select>
+                        <small>Level is only for regular users (students)</small>
+                    </div>
+
+                    <div class="form-group" id="classGroup">
+                        <label for="userClass">Class</label>
+                        <select id="userClass" class="form-input">
+                            <option value="">-- No Class --</option>
+                        </select>
+                        <small>Class is only for regular users (students)</small>
                     </div>
 
                     <div class="modal-footer">
@@ -257,6 +267,64 @@
 
         let allUsers = [];
         let editingUserId = null;
+        let allClasses = [];
+
+        // Load classes from modules
+        async function loadClasses() {
+            try {
+                const response = await apiService.getAllModules();
+                if (response.success) {
+                    const modules = response.data.modules || response.data || [];
+                    allClasses = [];
+                    modules.forEach(module => {
+                        if (module.classes && Array.isArray(module.classes)) {
+                            module.classes.forEach(cls => {
+                                allClasses.push({
+                                    id: cls.id,
+                                    name: `${module.name} - Class ${cls.class_number}`,
+                                    module_name: module.name,
+                                    class_number: cls.class_number
+                                });
+                            });
+                        }
+                    });
+                    populateClassDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading classes:', error);
+            }
+        }
+
+        // Populate class dropdown
+        function populateClassDropdown() {
+            const select = document.getElementById('userClass');
+            select.innerHTML = '<option value="">-- No Class --</option>';
+            allClasses.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Toggle Level and Class fields based on role
+        function toggleStudentFields() {
+            const role = document.getElementById('userRole').value;
+            const levelGroup = document.getElementById('levelGroup');
+            const classGroup = document.getElementById('classGroup');
+
+            // Hide for admin and assessor, show for user
+            if (role === 'admin' || role === 'assessor') {
+                levelGroup.style.display = 'none';
+                classGroup.style.display = 'none';
+                // Clear values
+                document.getElementById('userLevel').value = '';
+                document.getElementById('userClass').value = '';
+            } else {
+                levelGroup.style.display = 'block';
+                classGroup.style.display = 'block';
+            }
+        }
 
         // Show loading skeleton
         function showLoadingSkeleton() {
@@ -279,39 +347,55 @@
         // Load users with skeleton loading
         async function loadUsers() {
             try {
+                console.log('Loading users...');
                 showLoadingSkeleton();
                 const response = await apiService.getAllUsers();
+                console.log('API Response:', response);
+
                 if (response.success) {
-                    allUsers = response.data.users || response.data; // Support both response structures
+                    allUsers = response.data.users || response.data || []; // Support both response structures
+                    console.log('Users loaded:', allUsers.length);
                     renderUsers(allUsers);
+                } else {
+                    console.error('API returned error:', response);
+                    const tbody = document.getElementById('usersTable');
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#ef4444;">Failed to load users: ' + (response.message || 'Unknown error') + '</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading users:', error);
-                showError('Failed to load users');
+                showError('Failed to load users: ' + error.message);
                 const tbody = document.getElementById('usersTable');
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#ef4444;">Failed to load users</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#ef4444;">Failed to load users. Please try refreshing the page.</td></tr>';
             }
         }
 
-        // Optimized render users table with batch rendering
+        // Render users table - simplified for faster loading
         function renderUsers(users) {
+            console.log('Rendering users:', users);
             const tbody = document.getElementById('usersTable');
-            document.getElementById('userCount').textContent = `${users.length} users`;
+            const userCountEl = document.getElementById('userCount');
 
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No users found</td></tr>';
+            if (!tbody) {
+                console.error('usersTable element not found!');
                 return;
             }
 
-            // Use DocumentFragment for better performance
-            const fragment = document.createDocumentFragment();
-            const tempDiv = document.createElement('div');
+            if (userCountEl) {
+                userCountEl.textContent = `${users.length} users`;
+            }
 
-            // Batch rendering for large datasets
-            const batchSize = 50;
-            const renderBatch = (startIndex) => {
-                const endIndex = Math.min(startIndex + batchSize, users.length);
-                const batchHTML = users.slice(startIndex, endIndex).map(user => `
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#999;">No users found</td></tr>';
+                return;
+            }
+
+            // Direct rendering - faster and simpler
+            const html = users.map(user => {
+                // Find class info if user has class_id
+                const userClass = user.class_id ? allClasses.find(c => c.id === user.class_id) : null;
+                const className = userClass ? userClass.name : '-';
+
+                return `
                     <tr>
                         <td><strong>${user.name || 'N/A'}</strong></td>
                         <td>${user.email}</td>
@@ -319,6 +403,7 @@
                         <td><span class="badge badge-${getBadgeColor(user.status)}">${user.status}</span></td>
                         <td>${user.pretest_score !== null ? user.pretest_score : '-'}</td>
                         <td>${(user.current_level || user.level) ? `<span class="badge badge-primary">${user.current_level || user.level}</span>` : '-'}</td>
+                        <td>${user.role === 'user' ? className : '<span style="color:#999;">N/A</span>'}</td>
                         <td>${new Date(user.created_at).toLocaleDateString()}</td>
                         <td>
                             <div class="action-buttons">
@@ -336,22 +421,11 @@
                             </div>
                         </td>
                     </tr>
-                `).join('');
+                `;
+            }).join('');
 
-                tempDiv.innerHTML = batchHTML;
-                while (tempDiv.firstChild) {
-                    fragment.appendChild(tempDiv.firstChild);
-                }
-
-                if (endIndex < users.length) {
-                    requestAnimationFrame(() => renderBatch(endIndex));
-                } else {
-                    tbody.innerHTML = '';
-                    tbody.appendChild(fragment);
-                }
-            };
-
-            renderBatch(0);
+            tbody.innerHTML = html;
+            console.log('Table rendered with', users.length, 'rows');
         }
 
         // Filter users
@@ -381,6 +455,8 @@
             document.getElementById('userId').value = '';
             document.getElementById('userPassword').required = true;
             document.getElementById('userModal').style.display = 'flex';
+            // Show Level and Class fields by default (for user role)
+            toggleStudentFields();
         }
 
         // Edit user
@@ -399,7 +475,10 @@
             document.getElementById('userStatus').value = user.status;
             document.getElementById('userPretestScore').value = user.pretest_score || '';
             document.getElementById('userLevel').value = user.current_level || user.level || '';
+            document.getElementById('userClass').value = user.class_id || '';
             document.getElementById('userModal').style.display = 'flex';
+            // Show/hide fields based on role
+            toggleStudentFields();
         }
 
         // Close modal
@@ -414,14 +493,26 @@
             event.preventDefault();
 
             const userId = document.getElementById('userId').value;
+            const role = document.getElementById('userRole').value;
+
             const userData = {
                 name: document.getElementById('userNameInput').value,
                 email: document.getElementById('userEmail').value,
-                role: document.getElementById('userRole').value,
+                role: role,
                 status: document.getElementById('userStatus').value,
                 pretest_score: document.getElementById('userPretestScore').value || null,
-                current_level: document.getElementById('userLevel').value || null
             };
+
+            // Only include level and class for user role (not admin/assessor)
+            if (role === 'user') {
+                userData.current_level = document.getElementById('userLevel').value || null;
+                const classId = document.getElementById('userClass').value;
+                userData.class_id = classId ? parseInt(classId) : null;
+            } else {
+                // Explicitly set to null for admin/assessor
+                userData.current_level = null;
+                userData.class_id = null;
+            }
 
             const password = document.getElementById('userPassword').value;
             if (password) {
@@ -453,20 +544,76 @@
 
         // Approve user
         async function approveUser(userId) {
-            if (!confirm('Approve this user?')) return;
-
-            try {
-                const response = await apiService.approveUser(userId);
-                if (response.success) {
-                    showSuccess('User approved successfully');
-                    await loadUsers();
-                } else {
-                    showError(response.message || 'Failed to approve user');
-                }
-            } catch (error) {
-                console.error('Error approving user:', error);
-                showError('Failed to approve user');
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) {
+                showError('User not found');
+                return;
             }
+
+            const userName = user.name || user.email;
+            const userEmail = user.email;
+            const userRole = user.role;
+
+            // Format detailed message
+            const detailedMessage = `
+                <div style="text-align: left; margin: 20px 0;">
+                    <p style="margin-bottom: 15px; font-size: 15px; color: #1e293b; font-weight: 500;">
+                        You are about to approve the following user account:
+                    </p>
+                    <div style="background: #f1f5f9; border-left: 4px solid #10b981; padding: 16px; border-radius: 8px; margin: 15px 0;">
+                        <div style="margin-bottom: 10px;">
+                            <strong style="color: #0f172a; font-size: 14px;">Name:</strong>
+                            <span style="color: #1e293b; font-size: 14px; font-weight: 500; margin-left: 8px;">${userName}</span>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong style="color: #0f172a; font-size: 14px;">Email:</strong>
+                            <span style="color: #1e293b; font-size: 14px; font-weight: 500; margin-left: 8px;">${userEmail}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #0f172a; font-size: 14px;">Role:</strong>
+                            <span class="badge badge-info" style="margin-left: 8px;">${userRole}</span>
+                        </div>
+                    </div>
+                    <div style="background: #d1fae5; border: 1px solid #10b981; padding: 14px; border-radius: 8px; margin-top: 15px;">
+                        <p style="margin: 0; font-size: 14px; color: #065f46; font-weight: 500;">
+                            <i class='bx bx-info-circle' style="vertical-align: middle; margin-right: 6px; font-size: 16px;"></i>
+                            <strong>After approval:</strong> This user will be able to login and access the CodeSmart platform immediately.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            modalService.confirm({
+                title: '<i class=\'bx bx-check-circle\'></i> Approve User Account',
+                message: detailedMessage,
+                confirmText: '<i class=\'bx bx-check\'></i> Yes, Approve User',
+                cancelText: '<i class=\'bx bx-x\'></i> Cancel',
+                danger: false,
+                success: true,
+                onConfirm: async function() {
+                    const loadingId = modalService.loading('Approving user account...');
+                    try {
+                        const response = await apiService.approveUser(userId);
+                        modalService.close(loadingId);
+
+                        if (response.success) {
+                            showSuccess('✓ User approved successfully!');
+                            modalService.addNotification({
+                                title: 'User Approved',
+                                message: `${userName} has been approved and can now access the system`,
+                                type: 'success'
+                            });
+                            await loadUsers();
+                        } else {
+                            showError(response.message || 'Failed to approve user');
+                        }
+                    } catch (error) {
+                        modalService.close(loadingId);
+                        console.error('Error approving user:', error);
+                        showError('Failed to approve user. Please try again.');
+                    }
+                }
+            });
         }
 
         // Delete user
@@ -502,7 +649,6 @@
                 }
             });
         }
-        }
 
         // Helper functions
         function getBadgeColor(status) {
@@ -521,7 +667,7 @@
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
-                onConfirm: () => {
+                onConfirm: function() {
                     authService.logout();
                 }
             });
@@ -538,6 +684,8 @@
         document.getElementById('searchInput').addEventListener('input', filterUsers);
         document.getElementById('roleFilter').addEventListener('change', filterUsers);
         document.getElementById('statusFilter').addEventListener('change', filterUsers);
+        // Add event listener to role dropdown in modal to toggle Level/Class fields
+        document.getElementById('userRole').addEventListener('change', toggleStudentFields);
 
         // Close modal on outside click
         window.onclick = function(event) {
@@ -817,21 +965,44 @@
         }
 
         // Initialize
+        loadClasses(); // Load classes first
         loadUsers();
 
-        // Notification bell click handler
+        // Add click handler for notification bell - make sure it works
         document.addEventListener('DOMContentLoaded', function() {
-            const notificationBell = document.getElementById('notificationBellBtn');
+            const notificationBell = document.querySelector('.notification-bell');
             if (notificationBell) {
                 notificationBell.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    console.log('Notification bell clicked');
                     if (typeof modalService !== 'undefined' && modalService.showNotifications) {
                         modalService.showNotifications();
+                    } else {
+                        console.error('modalService not found');
                     }
                 });
+                console.log('Notification bell event listener attached');
             }
         });
+
+        // Add welcome notification after 1 second
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Welcome to Users Management',
+                message: 'You can manage all users, roles, and permissions from this page',
+                type: 'success'
+            });
+        }, 1000);
+
+        // Add sample notifications for demo
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'New User Registration',
+                message: '3 new users have registered and are waiting for approval',
+                type: 'info'
+            });
+        }, 2500);
     </script>
 </body>
 </html>

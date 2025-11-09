@@ -321,12 +321,14 @@
             }
         }
 
-        // Load users
+        // Load users - filter only role 'user'
         async function loadUsers() {
             try {
                 const response = await apiService.getAllUsers();
                 if (response.success) {
-                    allUsers = response.data.users || response.data || [];
+                    const allUsersData = response.data.users || response.data || [];
+                    // Filter only users with role 'user'
+                    allUsers = allUsersData.filter(user => user.role === 'user');
                     calculateUserLevels();
                 }
             } catch (error) {
@@ -625,7 +627,7 @@
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
-                onConfirm: () => {
+                onConfirm: function() {
                     authService.logout();
                 }
             });
@@ -642,6 +644,42 @@
         document.getElementById('moduleFilterAssignments').addEventListener('change', function() {
             renderAssignmentStats(this.value);
         });
+
+        // Add click handler for notification bell - make sure it works
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Notification bell clicked');
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    } else {
+                        console.error('modalService not found');
+                    }
+                });
+                console.log('Notification bell event listener attached');
+            }
+        });
+
+        // Add welcome notification after 1 second
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Welcome to Reports & Analytics',
+                message: 'View comprehensive reports and insights about student performance',
+                type: 'success'
+            });
+        }, 1000);
+
+        // Add sample notifications for demo
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Report Generated',
+                message: 'Monthly performance report is ready to download',
+                type: 'info'
+            });
+        }, 2500);
 
         // Initialize
         loadAllData();

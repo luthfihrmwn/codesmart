@@ -7,6 +7,7 @@ class ModalService {
     constructor() {
         this.activeModals = new Map();
         this.notifications = [];
+        this.buttonCallbacks = new Map();
         this.init();
     }
 
@@ -105,14 +106,30 @@ class ModalService {
             return `<button class="btn-modal btn-secondary" onclick="modalService.close('${modalId}')">Close</button>`;
         }
 
-        return buttons.map(btn => {
+        return buttons.map((btn, index) => {
             const btnClass = btn.className || 'btn-secondary';
             const btnText = btn.text || 'Button';
             const btnIcon = btn.icon ? `<i class='bx ${btn.icon}'></i>` : '';
-            const onclick = btn.onClick ? `onclick="(${btn.onClick.toString()})()"` : '';
+
+            // Store callback and create unique ID
+            const callbackId = `${modalId}-btn-${index}`;
+            if (btn.onClick) {
+                this.buttonCallbacks.set(callbackId, btn.onClick);
+            }
+
+            const onclick = btn.onClick ? `onclick="modalService.handleButtonClick('${callbackId}')"` : '';
 
             return `<button class="btn-modal ${btnClass}" ${onclick}>${btnIcon}${btnText}</button>`;
         }).join('');
+    }
+
+    handleButtonClick(callbackId) {
+        const callback = this.buttonCallbacks.get(callbackId);
+        if (callback && typeof callback === 'function') {
+            callback();
+            // Clean up callback after use
+            this.buttonCallbacks.delete(callbackId);
+        }
     }
 
     /**
@@ -165,14 +182,19 @@ class ModalService {
             cancelText = 'Cancel',
             onConfirm = null,
             onCancel = null,
-            danger = false
+            danger = false,
+            success = false
         } = options;
+
+        let className = '';
+        if (danger) className = 'danger-modal';
+        else if (success) className = 'success-modal';
 
         const modalId = this.show({
             title: title,
             content: `<p style="font-size: 16px; color: #334155; line-height: 1.8;">${message}</p>`,
             size: 'sm',
-            className: danger ? 'danger-modal' : '',
+            className: className,
             buttons: [
                 {
                     text: cancelText,
@@ -184,7 +206,7 @@ class ModalService {
                 },
                 {
                     text: confirmText,
-                    className: danger ? 'btn-danger' : 'btn-primary',
+                    className: danger ? 'btn-danger' : (success ? 'btn-success' : 'btn-primary'),
                     onClick: () => {
                         this.close(modalId);
                         if (onConfirm) onConfirm();
@@ -340,7 +362,17 @@ class ModalService {
                     icon: 'bx-check-double',
                     onClick: () => {
                         this.markAllAsRead();
-                        this.close(modalId);
+                        this.updateNotificationBadge();
+                        // Update modal content to show all as read
+                        const notifList = document.getElementById('notificationList');
+                        if (notifList) {
+                            notifList.innerHTML = this.notifications.map(n => this.renderNotificationItem(n)).join('');
+                        }
+                        // Show success message
+                        this.success({
+                            message: 'All notifications marked as read',
+                            duration: 2000
+                        });
                     }
                 },
                 {
@@ -348,8 +380,24 @@ class ModalService {
                     className: 'btn-outline',
                     icon: 'bx-trash',
                     onClick: () => {
-                        this.clearAllNotifications();
-                        this.close(modalId);
+                        // Show confirmation before clearing
+                        this.confirm({
+                            title: '<i class="bx bx-trash"></i> Clear All Notifications',
+                            message: 'Are you sure you want to clear all notifications? This action cannot be undone.',
+                            confirmText: 'Yes, Clear All',
+                            cancelText: 'Cancel',
+                            danger: true,
+                            onConfirm: () => {
+                                this.clearAllNotifications();
+                                this.updateNotificationBadge();
+                                this.close(modalId);
+                                // Show success message
+                                this.success({
+                                    message: 'All notifications cleared',
+                                    duration: 2000
+                                });
+                            }
+                        });
                     }
                 }
             ] : []

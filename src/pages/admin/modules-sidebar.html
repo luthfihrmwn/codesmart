@@ -220,13 +220,14 @@
                                 <th>Title</th>
                                 <th>Content</th>
                                 <th>Order</th>
+                                <th>Assessor</th>
                                 <th>Published</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="classesTable">
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                <td colspan="7" style="text-align: center; padding: 20px;">
                                     <div class="loader"></div>
                                 </td>
                             </tr>
@@ -271,6 +272,14 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="classAssessor">Assessor</label>
+                        <select id="classAssessor" class="form-input">
+                            <option value="">-- No Assessor --</option>
+                        </select>
+                        <small>Assign an assessor to grade this class (optional)</small>
+                    </div>
+
+                    <div class="form-group">
                         <label>
                             <input type="checkbox" id="classPublished" checked>
                             Published
@@ -302,6 +311,36 @@
         let currentModuleSlug = null;
         let currentClasses = [];
         let editingClassId = null;
+        let allAssessors = [];
+
+        // Load assessors (users with role 'assessor')
+        async function loadAssessors() {
+            try {
+                const response = await apiService.getAllUsers();
+                if (response.success) {
+                    const users = response.data.users || response.data || [];
+                    // Filter only users with role 'assessor'
+                    allAssessors = users.filter(user => user.role === 'assessor');
+                    populateAssessorDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading assessors:', error);
+            }
+        }
+
+        // Populate assessor dropdown
+        function populateAssessorDropdown() {
+            const select = document.getElementById('classAssessor');
+            // Keep the default "No Assessor" option
+            select.innerHTML = '<option value="">-- No Assessor --</option>';
+            // Add assessor options
+            allAssessors.forEach(assessor => {
+                const option = document.createElement('option');
+                option.value = assessor.id;
+                option.textContent = `${assessor.name} (${assessor.email})`;
+                select.appendChild(option);
+            });
+        }
 
         // Load modules
         async function loadModules() {
@@ -528,16 +567,22 @@
             const tbody = document.getElementById('classesTable');
 
             if (!classes || classes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No classes found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:#999;">No classes found</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = classes.map(cls => `
+            tbody.innerHTML = classes.map(cls => {
+                // Find assessor name
+                const assessor = cls.assessor_id ? allAssessors.find(a => a.id === cls.assessor_id) : null;
+                const assessorName = assessor ? assessor.name : '<span style="color:#999;">No Assessor</span>';
+
+                return `
                 <tr>
                     <td>${cls.class_number}</td>
                     <td><strong>${cls.title}</strong></td>
                     <td>${cls.description ? (cls.description.substring(0, 50) + '...') : 'No description'}</td>
                     <td>${cls.order_index || cls.class_number}</td>
+                    <td>${assessorName}</td>
                     <td><span class="badge badge-${cls.is_published ? 'success' : 'secondary'}">${cls.is_published ? 'Yes' : 'No'}</span></td>
                     <td>
                         <div class="action-buttons">
@@ -550,7 +595,8 @@
                         </div>
                     </td>
                 </tr>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Close classes modal
@@ -584,6 +630,8 @@
             document.getElementById('classContent').value = cls.content;
             document.getElementById('classOrder').value = cls.order_number;
             document.getElementById('classPublished').checked = cls.is_published;
+            // Set assessor dropdown value
+            document.getElementById('classAssessor').value = cls.assessor_id || '';
             document.getElementById('classModal').style.display = 'flex';
         }
 
@@ -600,12 +648,15 @@
 
             const classId = document.getElementById('classId').value;
             const moduleSlug = document.getElementById('classModuleSlug').value;
+            const assessorId = document.getElementById('classAssessor').value;
+
             const classData = {
                 class_number: parseInt(document.getElementById('classNumber').value),
                 title: document.getElementById('classTitle').value,
                 content: document.getElementById('classContent').value,
                 order_number: parseInt(document.getElementById('classOrder').value),
-                is_published: document.getElementById('classPublished').checked
+                is_published: document.getElementById('classPublished').checked,
+                assessor_id: assessorId ? parseInt(assessorId) : null
             };
 
             try {
@@ -666,7 +717,7 @@ function logout() {
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
-                onConfirm: () => {
+                onConfirm: function() {
                     authService.logout();
                 }
             });
@@ -958,6 +1009,7 @@ function logout() {
 
         // Initialize
         loadModules();
+        loadAssessors();
 
         // Update pending users badge
         async function updatePendingBadge() {
@@ -971,6 +1023,42 @@ function logout() {
             }
         }
         updatePendingBadge();
+
+        // Add click handler for notification bell - make sure it works
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Notification bell clicked');
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    } else {
+                        console.error('modalService not found');
+                    }
+                });
+                console.log('Notification bell event listener attached');
+            }
+        });
+
+        // Add welcome notification after 1 second
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Welcome to Modules Management',
+                message: 'You can create, edit, and organize learning modules from this page',
+                type: 'success'
+            });
+        }, 1000);
+
+        // Add sample notifications for demo
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Module Update Available',
+                message: 'New content has been added to the JavaScript Advanced module',
+                type: 'info'
+            });
+        }, 2500);
     </script>
 </body>
 </html>

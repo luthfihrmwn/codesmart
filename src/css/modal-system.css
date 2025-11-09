@@ -225,6 +225,40 @@
     height: 3px;
 }
 
+/* Special styling for success/approval modals */
+.modal-container.success-modal .modal-title {
+    color: #059669;
+}
+
+.modal-container.success-modal .modal-title i {
+    color: #10b981;
+    animation: successPulse 2s ease-in-out infinite;
+    text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+@keyframes successPulse {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        transform: scale(1.1);
+        text-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+    }
+}
+
+/* Success indicator line for approval modals */
+.modal-container.success-modal .modal-header {
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+    border-bottom-color: #a7f3d0;
+}
+
+.modal-container.success-modal .modal-header::after {
+    background: linear-gradient(90deg, transparent 0%, #10b981 50%, transparent 100%);
+    opacity: 0.8;
+    height: 3px;
+}
+
 .modal-close {
     background: #f3f4f6;
     border: none;

@@ -642,7 +642,7 @@ function logout() {
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
-                onConfirm: () => {
+                onConfirm: function() {
                     authService.logout();
                 }
             });
@@ -952,6 +952,42 @@ function logout() {
             }
         }
         updatePendingBadge();
+
+        // Add click handler for notification bell - make sure it works
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Notification bell clicked');
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    } else {
+                        console.error('modalService not found');
+                    }
+                });
+                console.log('Notification bell event listener attached');
+            }
+        });
+
+        // Add welcome notification after 1 second
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Welcome to Assignments Management',
+                message: 'You can create, assign, and grade student assignments from this page',
+                type: 'success'
+            });
+        }, 1000);
+
+        // Add sample notifications for demo
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Assignment Deadline',
+                message: 'Assignment "JavaScript Basics" deadline is approaching in 2 days',
+                type: 'warning'
+            });
+        }, 2500);
     </script>
 </body>
 </html>
