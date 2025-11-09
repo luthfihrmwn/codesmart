@@ -71,9 +71,9 @@
                 <h1 class="page-title-header">Modules Management</h1>
             </div>
             <div class="header-right">
-                <div class="header-icon">
+                <div class="notification-bell" id="notificationBellBtn">
                     <i class='bx bx-bell'></i>
-                    <span class="notification-badge"></span>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
                 <div class="user-menu" onclick="toggleUserMenu()">
                     <div class="user-avatar" id="userAvatar">A</div>
@@ -465,20 +465,36 @@
 
         // Delete module
         async function deleteModule(id) {
-            if (!confirm('Are you sure you want to delete this module? This will also delete all associated classes and assignments.')) return;
+            modalService.confirm({
+                title: '<i class=\'bx bx-trash\'></i> Delete Module',
+                message: 'Are you sure you want to delete this module? This will also delete all associated classes and assignments.',
+                confirmText: 'Yes, Delete Module',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: async () => {
+                    const loadingId = modalService.loading('Deleting module...');
+                    try {
+                        const response = await apiService.deleteModule(id);
+                        modalService.close(loadingId);
 
-            try {
-                const response = await apiService.deleteModule(id);
-                if (response.success) {
-                    showSuccess('Module deleted successfully');
-                    await loadModules();
-                } else {
-                    showError(response.message || 'Failed to delete module');
+                        if (response.success) {
+                            showSuccess('✓ Module deleted successfully!');
+                            modalService.addNotification({
+                                title: 'Module Deleted',
+                                message: 'Module and all related content removed',
+                                type: 'success'
+                            });
+                            await loadModules();
+                        } else {
+                            showError(response.message || 'Failed to delete module');
+                        }
+                    } catch (error) {
+                        modalService.close(loadingId);
+                        console.error('Error deleting module:', error);
+                        showError('Failed to delete module');
+                    }
                 }
-            } catch (error) {
-                console.error('Error deleting module:', error);
-                showError('Failed to delete module');
-            }
+            });
         }
 
         // Manage classes
@@ -645,9 +661,10 @@
         }
 function logout() {
             modalService.confirm({
-                title: 'Logout',
-                message: 'Are you sure you want to logout?',
-                confirmText: 'Logout',
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
                 danger: true,
                 onConfirm: () => {
                     authService.logout();

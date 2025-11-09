@@ -169,9 +169,10 @@ class ModalService {
         } = options;
 
         const modalId = this.show({
-            title: `<i class='bx bx-question-mark'></i>${title}`,
-            content: `<p style="font-size: 16px; color: #4b5563; line-height: 1.6;">${message}</p>`,
+            title: title,
+            content: `<p style="font-size: 16px; color: #334155; line-height: 1.8;">${message}</p>`,
             size: 'sm',
+            className: danger ? 'danger-modal' : '',
             buttons: [
                 {
                     text: cancelText,
@@ -327,7 +328,7 @@ class ModalService {
         const modalId = this.show({
             title: '<i class=\'bx bx-bell\'></i>Notifications',
             content: `
-                <div class="notification-list">
+                <div class="notification-list" id="notificationList">
                     ${notificationsList}
                 </div>
             `,
@@ -357,6 +358,22 @@ class ModalService {
         // Mark notifications as read when opening
         this.notifications.forEach(n => n.read = true);
         this.updateNotificationBadge();
+
+        // Add click event listeners to notification items
+        setTimeout(() => {
+            const notifList = document.getElementById('notificationList');
+            if (notifList) {
+                notifList.addEventListener('click', (e) => {
+                    const notifItem = e.target.closest('.notification-item');
+                    if (notifItem && notifItem.dataset.notifId) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const notifId = parseInt(notifItem.dataset.notifId);
+                        this.markAsRead(notifId);
+                    }
+                });
+            }
+        }, 100);
     }
 
     renderNotificationItem(notification) {
@@ -372,7 +389,7 @@ class ModalService {
         };
 
         return `
-            <div class="notification-item ${readClass} ${typeClass}" onclick="modalService.markAsRead(${notification.id})">
+            <div class="notification-item ${readClass} ${typeClass}" data-notif-id="${notification.id}">
                 <div class="notification-icon">
                     <i class='bx ${icons[notification.type]}'></i>
                 </div>

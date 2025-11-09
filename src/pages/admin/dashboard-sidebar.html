@@ -70,9 +70,9 @@
                 <h1 class="page-title-header">Dashboard</h1>
             </div>
             <div class="header-right">
-                <div class="header-icon">
+                <div class="notification-bell" id="notificationBellBtn">
                     <i class='bx bx-bell'></i>
-                    <span class="notification-badge"></span>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
                 <div class="user-menu" onclick="toggleUserMenu()">
                     <div class="user-avatar" id="userAvatar">A</div>
@@ -271,9 +271,10 @@
 
         function logout() {
             modalService.confirm({
-                title: 'Logout',
-                message: 'Are you sure you want to logout?',
-                confirmText: 'Logout',
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
                 danger: true,
                 onConfirm: () => {
                     authService.logout();
@@ -290,6 +291,50 @@
 
         // Initialize
         loadDashboardData();
+
+        // Add click handler for notification bell - make sure it works
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Notification bell clicked');
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    } else {
+                        console.error('modalService not found');
+                    }
+                });
+                console.log('Notification bell event listener attached');
+            }
+        });
+
+        // Add welcome notification after 1 second
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Welcome Back!',
+                message: 'You have successfully logged in to CodeSmart Admin Dashboard',
+                type: 'success'
+            });
+        }, 1000);
+
+        // Add sample notifications for demo
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'New User Registration',
+                message: '3 new users have registered and are waiting for approval',
+                type: 'info'
+            });
+        }, 2500);
+
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Assignment Deadline',
+                message: 'Assignment "JavaScript Basics" deadline is approaching in 2 days',
+                type: 'warning'
+            });
+        }, 4000);
     </script>
 </body>
 </html>

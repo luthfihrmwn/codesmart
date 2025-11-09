@@ -71,9 +71,9 @@
                 <h1 class="page-title-header">Assignments Management</h1>
             </div>
             <div class="header-right">
-                <div class="header-icon">
+                <div class="notification-bell" id="notificationBellBtn">
                     <i class='bx bx-bell'></i>
-                    <span class="notification-badge"></span>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
                 <div class="user-menu" onclick="toggleUserMenu()">
                     <div class="user-avatar" id="userAvatar">A</div>
@@ -522,20 +522,36 @@
             const assignment = allAssignments.find(a => a.id === assignmentId);
             if (!assignment) return;
 
-            if (!confirm('Are you sure you want to delete this assignment? This will also delete all submissions.')) return;
+            modalService.confirm({
+                title: '<i class=\'bx bx-trash\'></i> Delete Assignment',
+                message: 'Are you sure you want to delete this assignment? All student submissions will be permanently lost.',
+                confirmText: 'Yes, Delete Assignment',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: async () => {
+                    const loadingId = modalService.loading('Deleting assignment...');
+                    try {
+                        const response = await apiService.deleteAssignment(assignment.module_slug, assignmentId);
+                        modalService.close(loadingId);
 
-            try {
-                const response = await apiService.deleteAssignment(assignment.module_slug, assignmentId);
-                if (response.success) {
-                    showSuccess('Assignment deleted successfully');
-                    await loadAssignments();
-                } else {
-                    showError(response.message || 'Failed to delete assignment');
+                        if (response.success) {
+                            showSuccess('✓ Assignment deleted successfully!');
+                            modalService.addNotification({
+                                title: 'Assignment Deleted',
+                                message: 'Assignment and all submissions removed',
+                                type: 'success'
+                            });
+                            await loadAssignments();
+                        } else {
+                            showError(response.message || 'Failed to delete assignment');
+                        }
+                    } catch (error) {
+                        modalService.close(loadingId);
+                        console.error('Error deleting assignment:', error);
+                        showError('Failed to delete assignment');
+                    }
                 }
-            } catch (error) {
-                console.error('Error deleting assignment:', error);
-                showError('Failed to delete assignment');
-            }
+            });
         }
 
         // View submissions
@@ -621,9 +637,10 @@
         }
 function logout() {
             modalService.confirm({
-                title: 'Logout',
-                message: 'Are you sure you want to logout?',
-                confirmText: 'Logout',
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
                 danger: true,
                 onConfirm: () => {
                     authService.logout();
