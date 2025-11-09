@@ -6,6 +6,8 @@
     <title>Reports & Analytics - CodeSmart</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
 </head>
 <body>
     <!-- Sidebar -->
@@ -275,6 +277,8 @@
 
     <script src="/src/js/auth.js"></script>
     <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/modal-service.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAdmin()) {
@@ -284,7 +288,6 @@
         let allUsers = [];
         let allModules = [];
         let allAssignments = [];
-        let moduleEnrollments = {};
         let assignmentSubmissions = {};
 
         // Load all data
@@ -359,9 +362,9 @@
             try {
                 const response = await apiService.getAllModules();
                 if (response.success) {
-                    allModules = response.data;
+                    allModules = response.data.modules || response.data || [];
+                    console.log('Loaded modules:', allModules);
                     populateModuleFilter();
-                    await loadModuleEnrollments();
                 }
             } catch (error) {
                 console.error('Error loading modules:', error);
@@ -371,41 +374,25 @@
         // Populate module filter
         function populateModuleFilter() {
             const select = document.getElementById('moduleFilterAssignments');
-            const options = allModules.map(m =>
-                `<option value="${m.slug}">${m.name}</option>`
-            ).join('');
-            select.innerHTML = '<option value="">All Modules</option>' + options;
-        }
-
-        // Load module enrollments
-        async function loadModuleEnrollments() {
-            for (const module of allModules) {
-                try {
-                    const response = await apiService.getModuleEnrollments(module.slug);
-                    if (response.success) {
-                        moduleEnrollments[module.slug] = response.data;
-                    }
-                } catch (error) {
-                    console.error(`Error loading enrollments for ${module.slug}:`, error);
-                }
+            if (select && allModules.length > 0) {
+                const options = allModules.map(m =>
+                    `<option value="${m.slug}">${m.name}</option>`
+                ).join('');
+                select.innerHTML = '<option value="">All Modules</option>' + options;
             }
         }
 
         // Load assignments
         async function loadAssignments() {
             try {
-                allAssignments = [];
-                for (const module of allModules) {
-                    const response = await apiService.getModuleAssignments(module.slug);
-                    if (response.success && response.data.length > 0) {
-                        response.data.forEach(a => {
-                            a.module_name = module.name;
-                            a.module_slug = module.slug;
-                        });
-                        allAssignments.push(...response.data);
-                    }
+                const response = await apiService.getAllAssignments();
+                if (response.success) {
+                    allAssignments = response.data.assignments || response.data || [];
+                    console.log('Loaded assignments:', allAssignments);
+
+                    // Load submissions for each assignment
+                    await loadAssignmentSubmissions();
                 }
-                await loadAssignmentSubmissions();
             } catch (error) {
                 console.error('Error loading assignments:', error);
             }
@@ -417,10 +404,11 @@
                 try {
                     const response = await apiService.getAssignmentSubmissions(assignment.id);
                     if (response.success) {
-                        assignmentSubmissions[assignment.id] = response.data;
+                        assignmentSubmissions[assignment.id] = response.data || [];
                     }
                 } catch (error) {
                     console.error(`Error loading submissions for assignment ${assignment.id}:`, error);
+                    assignmentSubmissions[assignment.id] = [];
                 }
             }
         }
@@ -465,17 +453,14 @@
             }
 
             tbody.innerHTML = allModules.map(module => {
-                const enrollments = moduleEnrollments[module.slug] || [];
-                const activeEnrollments = enrollments.filter(e => e.is_active).length;
-
                 return `
                     <tr>
                         <td><strong>${module.name}</strong></td>
                         <td><span class="badge badge-${getLevelColor(module.level)}">${module.level}</span></td>
-                        <td>${enrollments.length}</td>
-                        <td>${activeEnrollments}</td>
-                        <td>${module.class_count || 0}</td>
-                        <td>${module.assignment_count || 0}</td>
+                        <td>${module.total_enrollments || 0}</td>
+                        <td>${module.total_enrollments || 0}</td>
+                        <td>${module.total_classes || 0}</td>
+                        <td>${module.total_assignments || 0}</td>
                     </tr>
                 `;
             }).join('');
@@ -581,11 +566,8 @@
             );
 
             tbody.innerHTML = sortedUsers.map(user => {
-                // Count enrollments for this user
-                let enrollmentCount = 0;
-                Object.values(moduleEnrollments).forEach(enrollments => {
-                    enrollmentCount += enrollments.filter(e => e.user_id === user.id).length;
-                });
+                // Use enrollment count from user object if available
+                const enrollmentCount = user.enrollment_count || user.total_enrollments || 0;
 
                 return `
                     <tr>
@@ -637,9 +619,15 @@
         }
 
         function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                authService.logout();
-            }
+            modalService.confirm({
+                title: 'Logout',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Logout',
+                danger: true,
+                onConfirm: () => {
+                    authService.logout();
+                }
+            });
         }
 
         // Set user info

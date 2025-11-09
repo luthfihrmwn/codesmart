@@ -17,19 +17,19 @@ exports.getAllUsers = async (req, res, next) => {
         const conditions = [];
 
         if (role) {
-            conditions.push(`role = $${paramCount}`);
+            conditions.push(`u.role = $${paramCount}`);
             params.push(role);
             paramCount++;
         }
 
         if (status) {
-            conditions.push(`status = $${paramCount}`);
+            conditions.push(`u.status = $${paramCount}`);
             params.push(status);
             paramCount++;
         }
 
         if (search) {
-            conditions.push(`(username ILIKE $${paramCount} OR email ILIKE $${paramCount} OR name ILIKE $${paramCount})`);
+            conditions.push(`(u.username ILIKE $${paramCount} OR u.email ILIKE $${paramCount} OR u.name ILIKE $${paramCount})`);
             params.push(`%${search}%`);
             paramCount++;
         }
@@ -40,17 +40,21 @@ exports.getAllUsers = async (req, res, next) => {
 
         // Get total count
         const countResult = await query(
-            `SELECT COUNT(*) FROM users ${whereClause}`,
+            `SELECT COUNT(*) FROM users u ${whereClause}`,
             params
         );
         const total = parseInt(countResult.rows[0].count);
 
-        // Get users with pagination
+        // Get users with pagination and enrollment count
         const result = await query(
-            `SELECT id, username, email, name, phone, photo_url, role, status,
-                    pretest_score, current_level, created_at, updated_at
-             FROM users ${whereClause}
-             ORDER BY created_at DESC
+            `SELECT u.id, u.username, u.email, u.name, u.phone, u.photo_url, u.role, u.status,
+                    u.pretest_score, u.current_level as level, u.created_at, u.updated_at,
+                    COUNT(DISTINCT e.id) as enrollment_count
+             FROM users u
+             LEFT JOIN enrollments e ON u.id = e.user_id
+             ${whereClause}
+             GROUP BY u.id
+             ORDER BY u.created_at DESC
              LIMIT $${paramCount} OFFSET $${paramCount + 1}`,
             [...params, limit, offset]
         );

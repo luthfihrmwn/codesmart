@@ -442,4 +442,50 @@ exports.deleteSubmission = async (req, res, next) => {
     }
 };
 
+// @desc    Get all submissions for an assignment (Admin)
+// @route   GET /api/v1/admin/assignments/:assignmentId/submissions
+// @access  Admin
+exports.getAssignmentSubmissions = async (req, res, next) => {
+    try {
+        const { assignmentId } = req.params;
+
+        // Get assignment details first
+        const assignmentCheck = await query(
+            'SELECT id, title FROM assignments WHERE id = $1',
+            [assignmentId]
+        );
+
+        if (assignmentCheck.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Assignment not found'
+            });
+        }
+
+        // Get all submissions for this assignment
+        const result = await query(
+            `SELECT s.id, s.user_id, s.assignment_id, s.file_url, s.file_name,
+                    s.status, s.score, s.feedback, s.submitted_at, s.graded_at,
+                    u.name as user_name, u.email as user_email,
+                    grader.name as graded_by_name,
+                    a.max_score, a.title as assignment_title
+             FROM submissions s
+             JOIN users u ON s.user_id = u.id
+             JOIN assignments a ON s.assignment_id = a.id
+             LEFT JOIN users grader ON s.graded_by = grader.id
+             WHERE s.assignment_id = $1
+             ORDER BY s.submitted_at DESC`,
+            [assignmentId]
+        );
+
+        res.json({
+            success: true,
+            data: result.rows
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = exports;

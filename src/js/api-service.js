@@ -213,7 +213,7 @@ class APIService {
 
         // Don't set Content-Type, let browser set it with boundary
         const response = await fetch(`${this.baseURL}${endpoint}`, {
-            method: 'POST',
+            method: options.method || 'POST',
             headers,
             body: formData,
             ...options,
@@ -461,16 +461,28 @@ class APIService {
         // Support both patterns:
         // createAssignment(assignmentData) - old pattern
         // createAssignment(moduleSlug, assignmentData) - new pattern
-        if (typeof moduleSlugOrData === 'string') {
+        // createAssignment(formData) - with file upload
+        if (moduleSlugOrData instanceof FormData) {
+            // FormData upload pattern
+            return this.upload('/admin/assignments', moduleSlugOrData);
+        } else if (typeof moduleSlugOrData === 'string') {
             // Get module ID from slug
             const module = await this.getModuleBySlug(moduleSlugOrData);
             if (!module.success) {
                 return module;
             }
             assignmentData.module_id = module.data.id;
+
+            // Check if assignmentData has file
+            if (assignmentData instanceof FormData) {
+                return this.upload('/admin/assignments', assignmentData);
+            }
             return this.post('/admin/assignments', assignmentData);
         } else {
             // Old pattern - data is in first parameter
+            if (moduleSlugOrData instanceof FormData) {
+                return this.upload('/admin/assignments', moduleSlugOrData);
+            }
             return this.post('/admin/assignments', moduleSlugOrData);
         }
     }
@@ -479,11 +491,18 @@ class APIService {
         // Support both patterns:
         // updateAssignment(id, assignmentData) - old pattern
         // updateAssignment(moduleSlug, id, assignmentData) - new pattern
+        // updateAssignment(id, formData) - with file upload
         if (assignmentData) {
             // New pattern with 3 parameters
+            if (assignmentData instanceof FormData) {
+                return this.upload(`/admin/assignments/${idOrData}`, assignmentData, { method: 'PUT' });
+            }
             return this.put(`/admin/assignments/${idOrData}`, assignmentData);
         } else {
             // Old pattern with 2 parameters
+            if (idOrData instanceof FormData) {
+                return this.upload(`/admin/assignments/${moduleSlugOrId}`, idOrData, { method: 'PUT' });
+            }
             return this.put(`/admin/assignments/${moduleSlugOrId}`, idOrData);
         }
     }
@@ -501,6 +520,10 @@ class APIService {
 
     async getAdminStatistics() {
         return this.get('/admin/statistics');
+    }
+
+    async getAssignmentSubmissions(assignmentId) {
+        return this.get(`/admin/assignments/${assignmentId}/submissions`);
     }
 
     async exportUsers() {

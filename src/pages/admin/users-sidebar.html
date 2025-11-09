@@ -6,6 +6,8 @@
     <title>Users Management - CodeSmart</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -245,6 +247,8 @@
 
     <script src="/src/js/auth.js"></script>
     <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/modal-service.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAdmin()) {
@@ -449,18 +453,16 @@
             }
         }
 
-        function showSuccess(message) {
-            alert(message); // Replace with better notification system
-        }
-
-        function showError(message) {
-            alert('Error: ' + message); // Replace with better notification system
-        }
-
         function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                authService.logout();
-            }
+            modalService.confirm({
+                title: 'Logout',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Logout',
+                danger: true,
+                onConfirm: () => {
+                    authService.logout();
+                }
+            });
         }
 
         // Set user info
@@ -488,7 +490,7 @@
         // Export to Excel
         function exportExcel() {
             if (allUsers.length === 0) {
-                alert('No users to export');
+                modalService.alert({ title: 'Alert', message: 'No users to export', type: 'info' });
                 return;
             }
 
@@ -519,7 +521,7 @@
         // Export to CSV
         function exportCSV() {
             if (allUsers.length === 0) {
-                alert('No users to export');
+                modalService.alert({ title: 'Alert', message: 'No users to export', type: 'info' });
                 return;
             }
 
@@ -621,7 +623,7 @@
                 } else if (filename.endsWith('.xlsx') || filename.endsWith('.xls')) {
                     importFromExcel(file);
                 } else {
-                    alert('Please select a valid Excel (.xlsx, .xls) or CSV (.csv) file');
+                    modalService.alert({ title: 'Alert', message: 'Please select a valid Excel (.xlsx, .xls) or CSV (.csv) file', type: 'info' });
                 }
             };
 
@@ -685,7 +687,7 @@
         // Process imported data
         async function processImportData(data) {
             if (!data || data.length === 0) {
-                alert('No data found in file');
+                modalService.alert({ title: 'Alert', message: 'No data found in file', type: 'info' });
                 return;
             }
 

@@ -230,10 +230,13 @@ exports.createAssignment = async (req, res, next) => {
             title,
             description,
             class_number,
+            requirements,
             rubric,
             due_date,
-            total_points,
-            is_active
+            max_score,
+            is_active,
+            attachment_url,
+            attachment_name
         } = req.body;
 
         // Check if module exists
@@ -246,21 +249,45 @@ exports.createAssignment = async (req, res, next) => {
             });
         }
 
+        // Handle file upload if present
+        let fileUrl = attachment_url || null;
+        let fileName = attachment_name || null;
+
+        if (req.file) {
+            fileUrl = `/uploads/assignments/${req.file.filename}`;
+            fileName = req.file.originalname;
+        }
+
+        // Parse requirements if it's a string
+        let parsedRequirements = requirements;
+        if (typeof requirements === 'string') {
+            try {
+                parsedRequirements = JSON.parse(requirements);
+            } catch {
+                // If not JSON, treat as array of lines
+                parsedRequirements = requirements.split('\n').filter(r => r.trim());
+            }
+        }
+
         // Create assignment
         const result = await query(
             `INSERT INTO assignments
-             (module_id, title, description, class_number, rubric, due_date, total_points, is_active)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             (module_id, title, description, class_number, requirements, rubric, due_date, max_score, is_active, created_by, attachment_url, attachment_name)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
              RETURNING *`,
             [
                 module_id,
                 title,
                 description || null,
                 class_number || null,
+                JSON.stringify(parsedRequirements || []),
                 JSON.stringify(rubric || {}),
                 due_date || null,
-                total_points || 100,
-                is_active !== undefined ? is_active : true
+                max_score || 100,
+                is_active !== undefined ? is_active : true,
+                req.user?.id || null,
+                fileUrl,
+                fileName
             ]
         );
 
@@ -287,20 +314,45 @@ exports.updateAssignment = async (req, res, next) => {
             title,
             description,
             class_number,
+            requirements,
             rubric,
             due_date,
-            total_points,
-            is_active
+            max_score,
+            is_active,
+            attachment_url,
+            attachment_name
         } = req.body;
 
         const fieldsToUpdate = {};
         if (title !== undefined) fieldsToUpdate.title = title;
         if (description !== undefined) fieldsToUpdate.description = description;
         if (class_number !== undefined) fieldsToUpdate.class_number = class_number;
+
+        if (requirements !== undefined) {
+            let parsedRequirements = requirements;
+            if (typeof requirements === 'string') {
+                try {
+                    parsedRequirements = JSON.parse(requirements);
+                } catch {
+                    parsedRequirements = requirements.split('\n').filter(r => r.trim());
+                }
+            }
+            fieldsToUpdate.requirements = JSON.stringify(parsedRequirements);
+        }
+
         if (rubric !== undefined) fieldsToUpdate.rubric = JSON.stringify(rubric);
         if (due_date !== undefined) fieldsToUpdate.due_date = due_date;
-        if (total_points !== undefined) fieldsToUpdate.total_points = total_points;
+        if (max_score !== undefined) fieldsToUpdate.max_score = max_score;
         if (is_active !== undefined) fieldsToUpdate.is_active = is_active;
+
+        // Handle file upload
+        if (req.file) {
+            fieldsToUpdate.attachment_url = `/uploads/assignments/${req.file.filename}`;
+            fieldsToUpdate.attachment_name = req.file.originalname;
+        } else if (attachment_url !== undefined) {
+            fieldsToUpdate.attachment_url = attachment_url;
+            if (attachment_name !== undefined) fieldsToUpdate.attachment_name = attachment_name;
+        }
 
         if (Object.keys(fieldsToUpdate).length === 0) {
             return res.status(400).json({
@@ -309,11 +361,16 @@ exports.updateAssignment = async (req, res, next) => {
             });
         }
 
+        fieldsToUpdate.updated_at = 'CURRENT_TIMESTAMP';
+
         const setClause = Object.keys(fieldsToUpdate)
-            .map((key, index) => `${key} = $${index + 1}`)
+            .map((key, index) => {
+                if (key === 'updated_at') return `${key} = CURRENT_TIMESTAMP`;
+                return `${key} = $${index + 1}`;
+            })
             .join(', ');
 
-        const values = [...Object.values(fieldsToUpdate), id];
+        const values = [...Object.values(fieldsToUpdate).filter((_, i) => Object.keys(fieldsToUpdate)[i] !== 'updated_at'), id];
 
         const result = await query(
             `UPDATE assignments SET ${setClause} WHERE id = $${values.length}

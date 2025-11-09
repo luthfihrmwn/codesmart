@@ -4,6 +4,35 @@ const { verifyToken, requireAdmin } = require('../middleware/auth');
 const adminController = require('../controllers/adminController');
 const assignmentController = require('../controllers/assignmentController');
 const moduleController = require('../controllers/moduleController');
+const submissionController = require('../controllers/submissionController');
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for assignment file uploads
+const assignmentStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/assignments/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'assignment-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const uploadAssignment = multer({
+    storage: assignmentStorage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB
+    },
+    fileFilter: function (req, file, cb) {
+        const allowedTypes = /pdf|doc|docx|zip|txt|png|jpg|jpeg/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        if (extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Invalid file type. Only PDF, DOC, DOCX, ZIP, TXT, PNG, JPG files are allowed'));
+    }
+});
 
 // All admin routes require authentication and admin role
 router.use(verifyToken, requireAdmin);
@@ -32,9 +61,10 @@ router.put('/materials/:id', moduleController.updateLearningMaterial);
 router.delete('/materials/:id', moduleController.deleteLearningMaterial);
 
 // Assignment Management
+router.get('/assignments/:assignmentId/submissions', submissionController.getAssignmentSubmissions);
 router.get('/assignments', assignmentController.getAllAssignments);
-router.post('/assignments', assignmentController.createAssignment);
-router.put('/assignments/:id', assignmentController.updateAssignment);
+router.post('/assignments', uploadAssignment.single('attachment'), assignmentController.createAssignment);
+router.put('/assignments/:id', uploadAssignment.single('attachment'), assignmentController.updateAssignment);
 router.delete('/assignments/:id', assignmentController.deleteAssignment);
 
 // Statistics

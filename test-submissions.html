@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Submissions Loading</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .result { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Test Submissions API</h1>
+    <button onclick="testSubmissions()">Test Load Submissions for Assignment ID 1</button>
+    <div id="result" class="result"></div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script>
+        async function testSubmissions() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Loading...';
+            resultDiv.className = 'result';
+
+            try {
+                console.log('Testing API call...');
+                const response = await apiService.getAssignmentSubmissions(1);
+                console.log('Response:', response);
+
+                if (response.success) {
+                    const submissions = Array.isArray(response.data) ? response.data : (response.data.submissions || []);
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Success!</h3>
+                        <p>Found ${submissions.length} submissions</p>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ API returned error</h3>
+                        <p>${response.message}</p>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>${error.message}</p>
+                    <p>Check console for details</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

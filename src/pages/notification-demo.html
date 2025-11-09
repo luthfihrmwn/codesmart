@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Demo - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/notification.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .demo-section {
+            margin-bottom: 30px;
+        }
+
+        .demo-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .demo-section h2 i {
+            color: #667eea;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .demo-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .demo-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-error {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-info {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-loading {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-confirm {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-clear {
+            background: #6b7280;
+            color: white;
+        }
+
+        .code-section {
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .code-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        pre {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+        }
+
+        .feature-list {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-list h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .feature-list ul {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li i {
+            color: #10b981;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Notification System Demo</h1>
+        <p class="subtitle">Modern toast notifications for CodeSmart</p>
+
+        <div class="demo-section">
+            <h2><i class='bx bx-message-square-dots'></i>Toast Notifications</h2>
+            <div class="button-group">
+                <button class="demo-btn btn-success" onclick="testSuccess()">
+                    <i class='bx bx-check-circle'></i>
+                    Success
+                </button>
+                <button class="demo-btn btn-error" onclick="testError()">
+                    <i class='bx bx-error-circle'></i>
+                    Error
+                </button>
+                <button class="demo-btn btn-warning" onclick="testWarning()">
+                    <i class='bx bx-error'></i>
+                    Warning
+                </button>
+                <button class="demo-btn btn-info" onclick="testInfo()">
+                    <i class='bx bx-info-circle'></i>
+                    Info
+                </button>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2><i class='bx bx-loader-alt'></i>Special Notifications</h2>
+            <div class="button-group">
+                <button class="demo-btn btn-loading" onclick="testLoading()">
+                    <i class='bx bx-loader-alt bx-spin'></i>
+                    Loading
+                </button>
+                <button class="demo-btn btn-confirm" onclick="testConfirm()">
+                    <i class='bx bx-question-mark'></i>
+                    Confirm
+                </button>
+                <button class="demo-btn btn-clear" onclick="clearAll()">
+                    <i class='bx bx-x'></i>
+                    Clear All
+                </button>
+            </div>
+        </div>
+
+        <div class="code-section">
+            <h3><i class='bx bx-code-alt'></i> Usage Examples</h3>
+            <pre><code>// Show success notification
+showSuccess('Data saved successfully!');
+
+// Show error notification
+showError('Failed to load data');
+
+// Show warning notification
+showWarning('Please check your input');
+
+// Show info notification
+showInfo('New update available');
+
+// Show loading notification
+const loader = showLoading('Processing...');
+// Remove when done
+notificationService.remove(loader);
+
+// Show confirmation dialog
+notificationService.confirm(
+    'Are you sure?',
+    () => { /* on confirm */ },
+    () => { /* on cancel */ }
+);</code></pre>
+        </div>
+
+        <div class="feature-list">
+            <h3><i class='bx bx-star'></i> Features</h3>
+            <ul>
+                <li><i class='bx bx-check'></i> Modern, animated toast notifications</li>
+                <li><i class='bx bx-check'></i> Multiple notification types (success, error, warning, info)</li>
+                <li><i class='bx bx-check'></i> Auto-dismiss with customizable duration</li>
+                <li><i class='bx bx-check'></i> Beautiful confirmation dialogs</li>
+                <li><i class='bx bx-check'></i> Loading indicators</li>
+                <li><i class='bx bx-check'></i> Fully responsive design</li>
+                <li><i class='bx bx-check'></i> Dark mode support</li>
+                <li><i class='bx bx-check'></i> No dependencies required</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../js/notification-service.js"></script>
+    <script>
+        function testSuccess() {
+            showSuccess('User created successfully!');
+        }
+
+        function testError() {
+            showError('Failed to connect to server. Please try again.');
+        }
+
+        function testWarning() {
+            showWarning('Your session will expire in 5 minutes');
+        }
+
+        function testInfo() {
+            showInfo('New version 2.0 is now available');
+        }
+
+        function testLoading() {
+            const loader = showLoading('Uploading file...');
+            // Simulate async operation
+            setTimeout(() => {
+                notificationService.remove(loader);
+                showSuccess('File uploaded successfully!');
+            }, 3000);
+        }
+
+        function testConfirm() {
+            notificationService.confirm(
+                'Are you sure you want to delete this item? This action cannot be undone.',
+                () => {
+                    showSuccess('Item deleted successfully');
+                },
+                () => {
+                    showInfo('Action cancelled');
+                }
+            );
+        }
+
+        function clearAll() {
+            notificationService.clearAll();
+        }
+    </script>
+</body>
+</html>

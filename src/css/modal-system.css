@@ -1,0 +1,579 @@
+/* Modern Modal System */
+
+/* Notification Bell & Badge */
+.notification-bell {
+    position: relative;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.notification-bell:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.notification-bell i {
+    font-size: 24px;
+    color: #6b7280;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-overlay.active .modal-container {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* Modal Container */
+.modal-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-container.modal-sm {
+    max-width: 400px;
+}
+
+.modal-container.modal-lg {
+    max-width: 800px;
+}
+
+.modal-container.modal-xl {
+    max-width: 1200px;
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-title i {
+    font-size: 24px;
+    color: #3b82f6;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.modal-close i {
+    font-size: 24px;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Notification Modal Specific */
+.notification-modal .modal-container {
+    max-width: 500px;
+}
+
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notification-item {
+    padding: 16px;
+    border-radius: 12px;
+    background: #f9fafb;
+    border-left: 4px solid #d1d5db;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    gap: 12px;
+}
+
+.notification-item:hover {
+    background: #f3f4f6;
+    transform: translateX(4px);
+}
+
+.notification-item.unread {
+    background: #eff6ff;
+    border-left-color: #3b82f6;
+}
+
+.notification-item.success {
+    border-left-color: #10b981;
+}
+
+.notification-item.warning {
+    border-left-color: #f59e0b;
+}
+
+.notification-item.error {
+    border-left-color: #ef4444;
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+}
+
+.notification-item.success .notification-icon {
+    background: #d1fae5;
+    color: #10b981;
+}
+
+.notification-item.warning .notification-icon {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.notification-item.error .notification-icon {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.notification-item.unread .notification-icon {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.notification-title {
+    font-weight: 600;
+    color: #111827;
+    font-size: 14px;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.notification-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9ca3af;
+}
+
+.notification-empty i {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.notification-empty p {
+    font-size: 14px;
+}
+
+/* Buttons */
+.btn-modal {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-modal:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #e5e7eb;
+    color: #374151;
+}
+
+.btn-outline:hover:not(:disabled) {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #eff6ff;
+}
+
+/* Form Elements in Modals */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.form-label.required::after {
+    content: '*';
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #111827;
+    transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-help {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.form-error {
+    font-size: 12px;
+    color: #ef4444;
+    margin-top: 4px;
+}
+
+/* Loading State */
+.modal-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 16px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-overlay {
+        padding: 0;
+    }
+
+    .modal-container {
+        max-height: 100vh;
+        border-radius: 0;
+        width: 100%;
+        max-width: none;
+    }
+
+    .modal-header {
+        padding: 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 16px 20px;
+        flex-direction: column-reverse;
+    }
+
+    .modal-footer .btn-modal {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .notification-item {
+        padding: 12px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .modal-container {
+        background: #1f2937;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+        border-bottom-color: #374151;
+    }
+
+    .modal-title {
+        color: #f3f4f6;
+    }
+
+    .modal-close {
+        color: #9ca3af;
+    }
+
+    .modal-close:hover {
+        background: #374151;
+        color: #f3f4f6;
+    }
+
+    .modal-footer {
+        border-top-color: #374151;
+    }
+
+    .notification-item {
+        background: #374151;
+        border-left-color: #4b5563;
+    }
+
+    .notification-item:hover {
+        background: #4b5563;
+    }
+
+    .notification-item.unread {
+        background: #1e3a5f;
+    }
+
+    .notification-title {
+        color: #f3f4f6;
+    }
+
+    .notification-message {
+        color: #d1d5db;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f3f4f6;
+    }
+
+    .form-label {
+        color: #d1d5db;
+    }
+
+    .btn-secondary {
+        background: #374151;
+        color: #d1d5db;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        background: #4b5563;
+    }
+
+    .btn-outline {
+        border-color: #4b5563;
+        color: #d1d5db;
+    }
+
+    .btn-outline:hover:not(:disabled) {
+        background: #1e3a5f;
+        border-color: #3b82f6;
+        color: #60a5fa;
+    }
+}

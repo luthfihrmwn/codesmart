@@ -6,6 +6,8 @@
     <title>Assignments Management - CodeSmart</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -275,6 +277,8 @@
 
     <script src="/src/js/auth.js"></script>
     <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/modal-service.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAdmin()) {
@@ -547,14 +551,31 @@
 
         // Load submissions
         async function loadSubmissions(assignmentId) {
+            const tbody = document.getElementById('submissionsTable');
             try {
                 const response = await apiService.getAssignmentSubmissions(assignmentId);
+                console.log('Submissions API response:', response);
+
                 if (response.success) {
-                    renderSubmissions(response.data);
+                    // Handle both array and object responses
+                    const submissions = Array.isArray(response.data) ? response.data : (response.data.submissions || []);
+                    console.log('Submissions data:', submissions);
+                    renderSubmissions(submissions);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#dc3545;">
+                        <i class='bx bx-error-circle' style="font-size:24px;"></i><br>
+                        ${response.message || 'Failed to load submissions'}
+                    </td></tr>`;
+                    showError(response.message || 'Failed to load submissions');
                 }
             } catch (error) {
                 console.error('Error loading submissions:', error);
-                showError('Failed to load submissions');
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#dc3545;">
+                    <i class='bx bx-error-circle' style="font-size:24px;"></i><br>
+                    Error: ${error.message}<br>
+                    <small>Check console for details</small>
+                </td></tr>`;
+                showError('Failed to load submissions: ' + error.message);
             }
         }
 
@@ -562,7 +583,7 @@
         function renderSubmissions(submissions) {
             const tbody = document.getElementById('submissionsTable');
 
-            if (submissions.length === 0) {
+            if (!submissions || submissions.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No submissions found</td></tr>';
                 return;
             }
@@ -575,7 +596,7 @@
                     <td><span class="badge badge-${getSubmissionBadge(sub.status)}">${sub.status}</span></td>
                     <td>${sub.graded_by_name || '-'}</td>
                     <td>
-                        <a href="${sub.file_path}" target="_blank" class="btn btn-sm btn-outline" title="View">
+                        <a href="${sub.file_url || sub.file_path}" target="_blank" class="btn btn-sm btn-outline" title="Download">
                             <i class='bx bx-download'></i>
                         </a>
                     </td>
@@ -598,19 +619,16 @@
                 default: return 'secondary';
             }
         }
-
-        function showSuccess(message) {
-            alert(message);
-        }
-
-        function showError(message) {
-            alert('Error: ' + message);
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                authService.logout();
-            }
+function logout() {
+            modalService.confirm({
+                title: 'Logout',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Logout',
+                danger: true,
+                onConfirm: () => {
+                    authService.logout();
+                }
+            });
         }
 
         // Set user info
@@ -637,7 +655,7 @@
         // Export to Excel
         function exportExcel() {
             if (allAssignments.length === 0) {
-                alert('No assignments to export');
+                modalService.alert({ title: 'Alert', message: 'No assignments to export', type: 'info' });
                 return;
             }
 
@@ -666,7 +684,7 @@
         // Export to CSV
         function exportCSV() {
             if (allAssignments.length === 0) {
-                alert('No assignments to export');
+                modalService.alert({ title: 'Alert', message: 'No assignments to export', type: 'info' });
                 return;
             }
 
@@ -771,7 +789,7 @@
                 } else if (filename.endsWith('.xlsx') || filename.endsWith('.xls')) {
                     importFromExcel(file);
                 } else {
-                    alert('Please select a valid Excel (.xlsx, .xls) or CSV (.csv) file');
+                    modalService.alert({ title: 'Alert', message: 'Please select a valid Excel (.xlsx, .xls) or CSV (.csv) file', type: 'info' });
                 }
             };
 

@@ -6,6 +6,8 @@
     <title>Admin Dashboard - CodeSmart</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
 </head>
 <body>
     <!-- Sidebar -->
@@ -191,6 +193,8 @@
 
     <script src="/src/js/auth.js"></script>
     <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/modal-service.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAdmin()) {
@@ -266,9 +270,15 @@
         }
 
         function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                authService.logout();
-            }
+            modalService.confirm({
+                title: 'Logout',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Logout',
+                danger: true,
+                onConfirm: () => {
+                    authService.logout();
+                }
+            });
         }
 
         // Set user info
