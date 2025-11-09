@@ -124,23 +124,25 @@ exports.getModuleMaterials = async (req, res, next) => {
 
         const module = moduleResult.rows[0];
 
-        // Check if user is enrolled
-        const enrollmentCheck = await query(
-            'SELECT id FROM enrollments WHERE user_id = $1 AND module_id = $2',
-            [req.user.id, module.id]
-        );
+        // Check if user is enrolled (only for regular users, not admin/assessor)
+        if (req.user.role === 'user') {
+            const enrollmentCheck = await query(
+                'SELECT id FROM enrollments WHERE user_id = $1 AND module_id = $2',
+                [req.user.id, module.id]
+            );
 
-        if (enrollmentCheck.rows.length === 0 && req.user.role === 'user') {
-            return res.status(403).json({
-                success: false,
-                message: 'You must be enrolled in this module to access materials'
-            });
+            if (enrollmentCheck.rows.length === 0) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'You must be enrolled in this module to access materials'
+                });
+            }
         }
 
         // Get all learning materials
         const materials = await query(
-            `SELECT id, class_number, title, description, video_url,
-                    content_type, estimated_duration, created_at
+            `SELECT id, class_number, title, description, content,
+                    order_index, duration_minutes, is_published, created_at
              FROM learning_materials
              WHERE module_id = $1
              ORDER BY class_number`,
@@ -199,8 +201,8 @@ exports.getClassMaterial = async (req, res, next) => {
 
         // Get class material
         const materialResult = await query(
-            `SELECT id, class_number, title, description, video_url,
-                    content_type, content_data, code_examples, estimated_duration,
+            `SELECT id, class_number, title, description, content,
+                    order_index, duration_minutes, is_published,
                     created_at, updated_at
              FROM learning_materials
              WHERE module_id = $1 AND class_number = $2`,
@@ -241,22 +243,21 @@ exports.getClassMaterial = async (req, res, next) => {
 // @access  Admin
 exports.createLearningMaterial = async (req, res, next) => {
     try {
-        const { slug } = req.params;
+        const { module_slug } = req.body;
         const {
             class_number,
             title,
             description,
-            video_url,
-            content_type,
-            content_data,
-            code_examples,
-            estimated_duration
+            content,
+            order_index,
+            duration_minutes,
+            is_published
         } = req.body;
 
-        // Get module
+        // Get module by slug
         const moduleResult = await query(
             'SELECT id FROM modules WHERE slug = $1',
-            [slug]
+            [module_slug]
         );
 
         if (moduleResult.rows.length === 0) {
@@ -284,20 +285,18 @@ exports.createLearningMaterial = async (req, res, next) => {
         // Create learning material
         const result = await query(
             `INSERT INTO learning_materials
-             (module_id, class_number, title, description, video_url, content_type,
-              content_data, code_examples, estimated_duration)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+             (module_id, class_number, title, description, content, order_index, duration_minutes, is_published)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
              RETURNING *`,
             [
                 moduleId,
                 class_number,
                 title,
                 description || null,
-                video_url || null,
-                content_type || 'video',
-                JSON.stringify(content_data || {}),
-                JSON.stringify(code_examples || []),
-                estimated_duration || null
+                JSON.stringify(content || {}),
+                order_index || class_number,
+                duration_minutes || null,
+                is_published !== undefined ? is_published : true
             ]
         );
 
@@ -323,21 +322,19 @@ exports.updateLearningMaterial = async (req, res, next) => {
         const {
             title,
             description,
-            video_url,
-            content_type,
-            content_data,
-            code_examples,
-            estimated_duration
+            content,
+            order_index,
+            duration_minutes,
+            is_published
         } = req.body;
 
         const fieldsToUpdate = {};
         if (title !== undefined) fieldsToUpdate.title = title;
         if (description !== undefined) fieldsToUpdate.description = description;
-        if (video_url !== undefined) fieldsToUpdate.video_url = video_url;
-        if (content_type !== undefined) fieldsToUpdate.content_type = content_type;
-        if (content_data !== undefined) fieldsToUpdate.content_data = JSON.stringify(content_data);
-        if (code_examples !== undefined) fieldsToUpdate.code_examples = JSON.stringify(code_examples);
-        if (estimated_duration !== undefined) fieldsToUpdate.estimated_duration = estimated_duration;
+        if (content !== undefined) fieldsToUpdate.content = JSON.stringify(content);
+        if (order_index !== undefined) fieldsToUpdate.order_index = order_index;
+        if (duration_minutes !== undefined) fieldsToUpdate.duration_minutes = duration_minutes;
+        if (is_published !== undefined) fieldsToUpdate.is_published = is_published;
 
         if (Object.keys(fieldsToUpdate).length === 0) {
             return res.status(400).json({
@@ -346,11 +343,17 @@ exports.updateLearningMaterial = async (req, res, next) => {
             });
         }
 
+        // Add updated_at timestamp
+        fieldsToUpdate.updated_at = 'CURRENT_TIMESTAMP';
+
         const setClause = Object.keys(fieldsToUpdate)
-            .map((key, index) => `${key} = $${index + 1}`)
+            .map((key, index) => {
+                if (key === 'updated_at') return `${key} = CURRENT_TIMESTAMP`;
+                return `${key} = $${index + 1}`;
+            })
             .join(', ');
 
-        const values = [...Object.values(fieldsToUpdate), id];
+        const values = [...Object.values(fieldsToUpdate).filter((_, i) => Object.keys(fieldsToUpdate)[i] !== 'updated_at'), id];
 
         const result = await query(
             `UPDATE learning_materials SET ${setClause} WHERE id = $${values.length}
@@ -406,5 +409,3 @@ exports.deleteLearningMaterial = async (req, res, next) => {
         next(error);
     }
 };
-
-module.exports = exports;

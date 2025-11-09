@@ -600,6 +600,16 @@ exports.deleteModule = async (req, res, next) => {
 // @access  Admin
 exports.getAdminStatistics = async (req, res, next) => {
     try {
+        // Get total counts
+        const totalCounts = await query(
+            `SELECT
+                (SELECT COUNT(*) FROM users) as total_users,
+                (SELECT COUNT(*) FROM users WHERE status = 'active') as active_users,
+                (SELECT COUNT(*) FROM modules WHERE is_active = true) as total_modules,
+                (SELECT COUNT(*) FROM assignments WHERE is_active = true) as total_assignments,
+                (SELECT COUNT(*) FROM users WHERE status = 'pending') as pending_users`
+        );
+
         // Total users by role
         const userStats = await query(
             `SELECT role, status, COUNT(*) as count
@@ -649,6 +659,14 @@ exports.getAdminStatistics = async (req, res, next) => {
         res.json({
             success: true,
             data: {
+                // Dashboard summary counts
+                total_users: parseInt(totalCounts.rows[0].total_users),
+                active_users: parseInt(totalCounts.rows[0].active_users),
+                total_modules: parseInt(totalCounts.rows[0].total_modules),
+                total_assignments: parseInt(totalCounts.rows[0].total_assignments),
+                pending_users: parseInt(totalCounts.rows[0].pending_users),
+
+                // Detailed statistics
                 users: userStats.rows,
                 modules: moduleStats.rows,
                 enrollments: enrollmentStats.rows,

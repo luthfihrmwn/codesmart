@@ -32,7 +32,6 @@
                 <a href="users-sidebar.html" class="nav-item">
                     <i class='bx bx-user'></i>
                     <span>Users</span>
-                    <span class="nav-badge" id="pendingUsersBadge">0</span>
                 </a>
                 <a href="modules-sidebar.html" class="nav-item active">
                     <i class='bx bx-book'></i>
@@ -86,41 +85,46 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <!-- Filters and Actions -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="filters-row">
-                        <div class="filter-group">
-                            <input type="text" id="searchInput" placeholder="Search modules..." class="form-input">
-                        </div>
-                        <div class="filter-group">
-                            <select id="levelFilter" class="form-input">
-                                <option value="">All Levels</option>
-                                <option value="fundamental">Fundamental</option>
-                                <option value="intermediate">Intermediate</option>
-                                <option value="advance">Advance</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="openCreateModal()" class="btn btn-primary">
-                                <i class='bx bx-plus'></i> Add Module
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="exportExcel()" class="btn btn-success">
-                                <i class='bx bx-download'></i> Export Excel
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="exportCSV()" class="btn btn-success">
-                                <i class='bx bx-download'></i> Export CSV
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="importFile()" class="btn btn-warning">
-                                <i class='bx bx-upload'></i> Import
-                            </button>
-                        </div>
+            <!-- Modern Filters and Actions -->
+            <div class="modern-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <i class='bx bx-search'></i>
+                        <input type="text" id="searchInput" placeholder="Search modules by name or description..." class="search-input">
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="levelFilter" class="modern-select">
+                            <option value="">All Levels</option>
+                            <option value="fundamental">Fundamental</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advance">Advance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button onclick="openCreateModal()" class="btn-modern btn-primary">
+                        <i class='bx bx-plus-circle'></i>
+                        <span>New Module</span>
+                    </button>
+                    <div class="btn-group">
+                        <button onclick="exportExcel()" class="btn-modern btn-success" title="Export to Excel">
+                            <i class='bx bxs-file-export'></i>
+                            <span>Excel</span>
+                        </button>
+                        <button onclick="exportCSV()" class="btn-modern btn-success" title="Export to CSV">
+                            <i class='bx bxs-file-export'></i>
+                            <span>CSV</span>
+                        </button>
+                    </div>
+                    <div class="btn-group">
+                        <button onclick="importFile()" class="btn-modern btn-warning" title="Import Data">
+                            <i class='bx bxs-cloud-upload'></i>
+                            <span>Import</span>
+                        </button>
+                        <button onclick="downloadTemplate()" class="btn-modern btn-info" title="Download Template">
+                            <i class='bx bxs-download'></i>
+                            <span>Template</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -320,26 +324,50 @@
 
             grid.innerHTML = modules.map(module => `
                 <div class="module-card">
-                    <div class="module-card-header">
-                        <span class="badge badge-${getLevelColor(module.level)}">${module.level}</span>
-                        <span class="badge badge-${module.is_active ? 'success' : 'secondary'}">${module.is_active ? 'Active' : 'Inactive'}</span>
+                    <div class="module-header">
+                        <span class="module-level-badge ${getLevelColor(module.level)}">
+                            <i class='bx bxs-graduation'></i>
+                            ${module.level}
+                        </span>
+                        <div class="module-status">
+                            <span class="status-dot ${module.is_active ? '' : 'inactive'}"></span>
+                        </div>
                     </div>
-                    <h3 class="module-card-title">${module.name}</h3>
-                    <p class="module-card-description">${module.description}</p>
-                    <div class="module-card-meta">
-                        <span><i class='bx bx-time'></i> ${module.duration_hours} hours</span>
-                        <span><i class='bx bx-book-open'></i> ${module.class_count || 0} classes</span>
-                    </div>
-                    <div class="module-card-actions">
-                        <button onclick="manageClasses('${module.slug}')" class="btn btn-sm btn-outline">
-                            <i class='bx bx-list-ul'></i> Classes
-                        </button>
-                        <button onclick="editModule(${module.id})" class="btn btn-sm btn-primary">
-                            <i class='bx bx-edit'></i> Edit
-                        </button>
-                        <button onclick="deleteModule(${module.id})" class="btn btn-sm btn-danger">
-                            <i class='bx bx-trash'></i>
-                        </button>
+                    <div class="module-card-body">
+                        <h3 class="module-card-title">${module.name}</h3>
+                        <p class="module-card-description">${module.description}</p>
+
+                        <div class="module-card-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">${module.total_classes || 0}</span>
+                                <span class="stat-label">Classes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${module.total_assignments || 0}</span>
+                                <span class="stat-label">Assignments</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${module.total_enrollments || 0}</span>
+                                <span class="stat-label">Students</span>
+                            </div>
+                        </div>
+
+                        <div class="module-card-meta">
+                            <span><i class='bx bx-time-five'></i> ${module.duration_hours || 0}h Duration</span>
+                            <span><i class='bx ${module.is_active ? 'bxs-check-circle' : 'bxs-x-circle'}'></i> ${module.is_active ? 'Published' : 'Draft'}</span>
+                        </div>
+
+                        <div class="module-card-actions">
+                            <button onclick="manageClasses('${module.slug}')" class="btn btn-outline">
+                                <i class='bx bx-list-ul'></i> Classes
+                            </button>
+                            <button onclick="editModule(${module.id})" class="btn btn-primary">
+                                <i class='bx bx-edit'></i> Edit
+                            </button>
+                            <button onclick="deleteModule(${module.id})" class="btn btn-danger">
+                                <i class='bx bx-trash'></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -465,7 +493,8 @@
             try {
                 const response = await apiService.getModuleClasses(slug);
                 if (response.success) {
-                    currentClasses = response.data;
+                    // API returns {data: {module: ..., materials: [...]}}
+                    currentClasses = response.data.materials || response.data || [];
                     renderClasses(currentClasses);
                 }
             } catch (error) {
@@ -478,7 +507,7 @@
         function renderClasses(classes) {
             const tbody = document.getElementById('classesTable');
 
-            if (classes.length === 0) {
+            if (!classes || classes.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No classes found</td></tr>';
                 return;
             }
@@ -487,8 +516,8 @@
                 <tr>
                     <td>${cls.class_number}</td>
                     <td><strong>${cls.title}</strong></td>
-                    <td>${cls.content.substring(0, 50)}...</td>
-                    <td>${cls.order_number}</td>
+                    <td>${cls.description ? (cls.description.substring(0, 50) + '...') : 'No description'}</td>
+                    <td>${cls.order_index || cls.class_number}</td>
                     <td><span class="badge badge-${cls.is_published ? 'success' : 'secondary'}">${cls.is_published ? 'Yes' : 'No'}</span></td>
                     <td>
                         <div class="action-buttons">
@@ -729,6 +758,42 @@
             document.body.removeChild(link);
 
             showSuccess(`Exported ${exportData.length} modules to CSV`);
+        }
+
+        // Download Template
+        function downloadTemplate() {
+            const templateData = [
+                {
+                    'Name': 'Example Module Name',
+                    'Slug': 'example-module-name',
+                    'Description': 'This is an example module description',
+                    'Level': 'fundamental',
+                    'Duration (hours)': '8',
+                    'Active': 'Yes'
+                }
+            ];
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(templateData);
+
+            // Add instructions in a separate row
+            XLSX.utils.sheet_add_aoa(ws, [
+                [],
+                ['INSTRUCTIONS:'],
+                ['- Name: Module name (required)'],
+                ['- Slug: URL-friendly identifier, lowercase with hyphens (required)'],
+                ['- Description: Brief description of the module (required)'],
+                ['- Level: Must be one of: fundamental, intermediate, advance (required)'],
+                ['- Duration (hours): Number of hours (required)'],
+                ['- Active: Yes or No (default: Yes)'],
+                [],
+                ['Remove the example row and instructions before importing']
+            ], {origin: 'A3'});
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Modules Template');
+            XLSX.writeFile(wb, 'modules_import_template.xlsx');
+
+            showSuccess('Template downloaded successfully');
         }
 
         // Import from file

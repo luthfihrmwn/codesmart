@@ -32,7 +32,6 @@
                 <a href="users-sidebar.html" class="nav-item active">
                     <i class='bx bx-user'></i>
                     <span>Users</span>
-                    <span class="nav-badge" id="pendingUsersBadge">0</span>
                 </a>
                 <a href="modules-sidebar.html" class="nav-item">
                     <i class='bx bx-book'></i>
@@ -86,49 +85,54 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <!-- Filters and Actions -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="filters-row">
-                        <div class="filter-group">
-                            <input type="text" id="searchInput" placeholder="Search users..." class="form-input">
-                        </div>
-                        <div class="filter-group">
-                            <select id="roleFilter" class="form-input">
-                                <option value="">All Roles</option>
-                                <option value="admin">Admin</option>
-                                <option value="assessor">Assessor</option>
-                                <option value="user">User</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <select id="statusFilter" class="form-input">
-                                <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                                <option value="pending">Pending</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="openCreateModal()" class="btn btn-primary">
-                                <i class='bx bx-plus'></i> Add User
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="exportExcel()" class="btn btn-success">
-                                <i class='bx bx-download'></i> Export Excel
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="exportCSV()" class="btn btn-success">
-                                <i class='bx bx-download'></i> Export CSV
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="importFile()" class="btn btn-warning">
-                                <i class='bx bx-upload'></i> Import
-                            </button>
-                        </div>
+            <!-- Modern Filters and Actions -->
+            <div class="modern-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <i class='bx bx-search'></i>
+                        <input type="text" id="searchInput" placeholder="Search users by name, email, or role..." class="search-input">
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="roleFilter" class="modern-select">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="assessor">Assessor</option>
+                            <option value="user">User</option>
+                        </select>
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="statusFilter" class="modern-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button onclick="openCreateModal()" class="btn-modern btn-primary">
+                        <i class='bx bx-user-plus'></i>
+                        <span>New User</span>
+                    </button>
+                    <div class="btn-group">
+                        <button onclick="exportExcel()" class="btn-modern btn-success" title="Export to Excel">
+                            <i class='bx bxs-file-export'></i>
+                            <span>Excel</span>
+                        </button>
+                        <button onclick="exportCSV()" class="btn-modern btn-success" title="Export to CSV">
+                            <i class='bx bxs-file-export'></i>
+                            <span>CSV</span>
+                        </button>
+                    </div>
+                    <div class="btn-group">
+                        <button onclick="importFile()" class="btn-modern btn-warning" title="Import Data">
+                            <i class='bx bxs-cloud-upload'></i>
+                            <span>Import</span>
+                        </button>
+                        <button onclick="downloadTemplate()" class="btn-modern btn-info" title="Download Template">
+                            <i class='bx bxs-download'></i>
+                            <span>Template</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -144,7 +148,6 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
@@ -157,7 +160,7 @@
                             </thead>
                             <tbody id="usersTable">
                                 <tr>
-                                    <td colspan="9" style="text-align: center; padding: 40px;">
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
                                         <div class="loader"></div>
                                     </td>
                                 </tr>
@@ -258,7 +261,6 @@
                 if (response.success) {
                     allUsers = response.data.users || response.data; // Support both response structures
                     renderUsers(allUsers);
-                    updatePendingBadge();
                 }
             } catch (error) {
                 console.error('Error loading users:', error);
@@ -272,13 +274,12 @@
             document.getElementById('userCount').textContent = `${users.length} users`;
 
             if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#999;">No users found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No users found</td></tr>';
                 return;
             }
 
             tbody.innerHTML = users.map(user => `
                 <tr>
-                    <td>${user.id}</td>
                     <td><strong>${user.name || 'N/A'}</strong></td>
                     <td>${user.email}</td>
                     <td><span class="badge badge-info">${user.role}</span></td>
@@ -438,12 +439,6 @@
             }
         }
 
-        // Update pending users badge
-        function updatePendingBadge() {
-            const pendingCount = allUsers.filter(u => u.status === 'pending').length;
-            document.getElementById('pendingUsersBadge').textContent = pendingCount;
-        }
-
         // Helper functions
         function getBadgeColor(status) {
             switch (status) {
@@ -569,6 +564,44 @@
             document.body.removeChild(link);
 
             showSuccess(`Exported ${exportData.length} users to CSV`);
+        }
+
+        // Download Template
+        function downloadTemplate() {
+            const templateData = [
+                {
+                    'Name': 'John Doe',
+                    'Email': 'john.doe@example.com',
+                    'Password': 'password123',
+                    'Role': 'user',
+                    'Status': 'active',
+                    'Pretest Score': '85',
+                    'Level': 'fundamental'
+                }
+            ];
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(templateData);
+
+            // Add instructions
+            XLSX.utils.sheet_add_aoa(ws, [
+                [],
+                ['INSTRUCTIONS:'],
+                ['- Name: Full name of the user (required)'],
+                ['- Email: Valid email address (required, must be unique)'],
+                ['- Password: User password, minimum 6 characters (required for new users)'],
+                ['- Role: Must be one of: admin, assessor, user (default: user)'],
+                ['- Status: Must be one of: active, inactive, pending (default: active)'],
+                ['- Pretest Score: Numeric value 0-100 (optional)'],
+                ['- Level: Must be one of: fundamental, intermediate, advance (optional)'],
+                [],
+                ['Remove the example row and instructions before importing']
+            ], {origin: 'A3'});
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Users Template');
+            XLSX.writeFile(wb, 'users_import_template.xlsx');
+
+            showSuccess('Template downloaded successfully');
         }
 
         // Import from file

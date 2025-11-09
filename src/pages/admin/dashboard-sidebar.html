@@ -31,7 +31,6 @@
                 <a href="users-sidebar.html" class="nav-item">
                     <i class='bx bx-user'></i>
                     <span>Users</span>
-                    <span class="nav-badge" id="pendingUsersBadge">0</span>
                 </a>
                 <a href="modules-sidebar.html" class="nav-item">
                     <i class='bx bx-book'></i>
@@ -209,32 +208,20 @@
                     document.getElementById('totalModules').textContent = stats.total_modules || 0;
                     document.getElementById('totalAssignments').textContent = stats.total_assignments || 0;
                     document.getElementById('activeUsers').textContent = stats.active_users || 0;
-                    document.getElementById('pendingUsersBadge').textContent = stats.pending_users || 0;
                 }
 
                 // Load recent users
                 const usersResponse = await apiService.getAllUsers();
                 if (usersResponse.success) {
-                    const users = usersResponse.data.slice(0, 5); // Latest 5
+                    const users = (usersResponse.data.users || usersResponse.data || []).slice(0, 5); // Latest 5
                     renderRecentUsers(users);
                 }
 
                 // Load recent assignments
-                const modulesResponse = await apiService.getAllModules();
-                if (modulesResponse.success) {
-                    let allAssignments = [];
-                    for (const module of modulesResponse.data) {
-                        const assignmentsResponse = await apiService.getModuleAssignments(module.slug);
-                        if (assignmentsResponse.success && assignmentsResponse.data.length > 0) {
-                            assignmentsResponse.data.forEach(a => {
-                                a.module_name = module.name;
-                                a.module_slug = module.slug;
-                            });
-                            allAssignments.push(...assignmentsResponse.data);
-                        }
-                    }
-                    allAssignments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    renderRecentAssignments(allAssignments.slice(0, 5));
+                const assignmentsResponse = await apiService.getAllAssignments();
+                if (assignmentsResponse.success) {
+                    const assignments = (assignmentsResponse.data.assignments || assignmentsResponse.data || []).slice(0, 5);
+                    renderRecentAssignments(assignments);
                 }
 
             } catch (error) {

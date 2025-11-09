@@ -397,5 +397,3 @@ exports.deleteAssignment = async (req, res, next) => {
         client.release();
     }
 };
-
-module.exports = exports;

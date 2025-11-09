@@ -32,7 +32,6 @@
                 <a href="users-sidebar.html" class="nav-item">
                     <i class='bx bx-user'></i>
                     <span>Users</span>
-                    <span class="nav-badge" id="pendingUsersBadge">0</span>
                 </a>
                 <a href="modules-sidebar.html" class="nav-item">
                     <i class='bx bx-book'></i>
@@ -86,40 +85,50 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <!-- Filters and Actions -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="filters-row">
-                        <div class="filter-group">
-                            <input type="text" id="searchInput" placeholder="Search assignments..." class="form-input">
-                        </div>
-                        <div class="filter-group">
-                            <select id="moduleFilter" class="form-input">
-                                <option value="">All Modules</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <select id="statusFilter" class="form-input">
-                                <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="openCreateModal()" class="btn btn-primary">
-                                <i class='bx bx-plus'></i> Add Assignment
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="exportExcel()" class="btn btn-success">
-                                <i class='bx bx-download'></i> Export Excel
-                            </button>
-                        </div>
-                        <div class="filter-group">
-                            <button onclick="exportCSV()" class="btn btn-success">
-                                <i class='bx bx-download'></i> Export CSV
-                            </button>
-                        </div>
+            <!-- Modern Filters and Actions -->
+            <div class="modern-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <i class='bx bx-search'></i>
+                        <input type="text" id="searchInput" placeholder="Search assignments by title or description..." class="search-input">
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="moduleFilter" class="modern-select">
+                            <option value="">All Modules</option>
+                        </select>
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="statusFilter" class="modern-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button onclick="openCreateModal()" class="btn-modern btn-primary">
+                        <i class='bx bx-task'></i>
+                        <span>New Assignment</span>
+                    </button>
+                    <div class="btn-group">
+                        <button onclick="exportExcel()" class="btn-modern btn-success" title="Export to Excel">
+                            <i class='bx bxs-file-export'></i>
+                            <span>Excel</span>
+                        </button>
+                        <button onclick="exportCSV()" class="btn-modern btn-success" title="Export to CSV">
+                            <i class='bx bxs-file-export'></i>
+                            <span>CSV</span>
+                        </button>
+                    </div>
+                    <div class="btn-group">
+                        <button onclick="importFile()" class="btn-modern btn-warning" title="Import Data">
+                            <i class='bx bxs-cloud-upload'></i>
+                            <span>Import</span>
+                        </button>
+                        <button onclick="downloadTemplate()" class="btn-modern btn-info" title="Download Template">
+                            <i class='bx bxs-download'></i>
+                            <span>Template</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -135,7 +144,6 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Title</th>
                                     <th>Module</th>
                                     <th>Class #</th>
@@ -148,7 +156,7 @@
                             </thead>
                             <tbody id="assignmentsTable">
                                 <tr>
-                                    <td colspan="9" style="text-align: center; padding: 40px;">
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
                                         <div class="loader"></div>
                                     </td>
                                 </tr>
@@ -330,13 +338,12 @@
             document.getElementById('assignmentCount').textContent = `${assignments.length} assignments`;
 
             if (assignments.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#999;">No assignments found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No assignments found</td></tr>';
                 return;
             }
 
             tbody.innerHTML = assignments.map(assignment => `
                 <tr>
-                    <td>${assignment.id}</td>
                     <td><strong>${assignment.title}</strong></td>
                     <td>${assignment.module_name}</td>
                     <td>Class ${assignment.class_number}</td>
@@ -702,6 +709,197 @@
             document.body.removeChild(link);
 
             showSuccess(`Exported ${exportData.length} assignments to CSV`);
+        }
+
+        // Download Template
+        function downloadTemplate() {
+            const templateData = [
+                {
+                    'Title': 'Example Assignment Title',
+                    'Module ID': '1',
+                    'Class Number': '1',
+                    'Description': 'Assignment description here',
+                    'Max Score': '100',
+                    'Due Date': '2025-12-31',
+                    'Requirements': 'Assignment requirements',
+                    'Rubric': 'Grading rubric',
+                    'Active': 'Yes'
+                }
+            ];
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(templateData);
+
+            // Add instructions
+            XLSX.utils.sheet_add_aoa(ws, [
+                [],
+                ['INSTRUCTIONS:'],
+                ['- Title: Assignment title (required)'],
+                ['- Module ID: ID of the module this assignment belongs to (required)'],
+                ['- Class Number: Class number within the module (required)'],
+                ['- Description: Assignment description (required)'],
+                ['- Max Score: Maximum score for this assignment (required, numeric)'],
+                ['- Due Date: Due date in YYYY-MM-DD format (required)'],
+                ['- Requirements: Assignment requirements and instructions (optional)'],
+                ['- Rubric: Grading criteria and rubric (optional)'],
+                ['- Active: Yes or No (default: Yes)'],
+                [],
+                ['Note: To find Module IDs, export modules list first'],
+                ['Remove the example row and instructions before importing']
+            ], {origin: 'A3'});
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Assignments Template');
+            XLSX.writeFile(wb, 'assignments_import_template.xlsx');
+
+            showSuccess('Template downloaded successfully');
+        }
+
+        // Import from file
+        function importFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.xlsx,.xls,.csv';
+
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const filename = file.name.toLowerCase();
+
+                if (filename.endsWith('.csv')) {
+                    importFromCSV(file);
+                } else if (filename.endsWith('.xlsx') || filename.endsWith('.xls')) {
+                    importFromExcel(file);
+                } else {
+                    alert('Please select a valid Excel (.xlsx, .xls) or CSV (.csv) file');
+                }
+            };
+
+            input.click();
+        }
+
+        // Import from Excel
+        function importFromExcel(file) {
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    await processImportData(jsonData);
+                } catch (error) {
+                    console.error('Error importing Excel:', error);
+                    showError('Failed to import Excel file: ' + error.message);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Import from CSV
+        function importFromCSV(file) {
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n').filter(line => line.trim());
+
+                    if (lines.length === 0) {
+                        showError('Empty CSV file');
+                        return;
+                    }
+
+                    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+                    const data = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                        if (values.length !== headers.length) continue;
+
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            row[header] = values[index];
+                        });
+                        data.push(row);
+                    }
+
+                    await processImportData(data);
+                } catch (error) {
+                    console.error('Error importing CSV:', error);
+                    showError('Failed to import CSV file: ' + error.message);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Process imported data
+        async function processImportData(data) {
+            if (data.length === 0) {
+                showError('No data to import');
+                return;
+            }
+
+            let successCount = 0;
+            let errorCount = 0;
+            const errors = [];
+
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+
+                try {
+                    const assignmentData = {
+                        title: row['Title'] || row['title'],
+                        module_id: parseInt(row['Module ID'] || row['module_id']),
+                        class_number: parseInt(row['Class Number'] || row['class_number']),
+                        description: row['Description'] || row['description'],
+                        max_score: parseInt(row['Max Score'] || row['max_score']),
+                        due_date: row['Due Date'] || row['due_date'],
+                        requirements: row['Requirements'] || row['requirements'] || '',
+                        rubric: row['Rubric'] || row['rubric'] || '',
+                        is_active: (row['Active'] || row['active'] || 'Yes').toLowerCase() === 'yes'
+                    };
+
+                    // Validate required fields
+                    if (!assignmentData.title || !assignmentData.module_id || !assignmentData.class_number ||
+                        !assignmentData.description || !assignmentData.max_score || !assignmentData.due_date) {
+                        errors.push(`Row ${i + 1}: Missing required fields`);
+                        errorCount++;
+                        continue;
+                    }
+
+                    const response = await apiService.createAssignment(assignmentData);
+
+                    if (response.success) {
+                        successCount++;
+                    } else {
+                        errors.push(`Row ${i + 1}: ${response.message}`);
+                        errorCount++;
+                    }
+                } catch (error) {
+                    errors.push(`Row ${i + 1}: ${error.message}`);
+                    errorCount++;
+                }
+            }
+
+            // Show results
+            let message = `Import completed!\n\nSuccessful: ${successCount}\nFailed: ${errorCount}`;
+
+            if (errors.length > 0 && errors.length <= 5) {
+                message += '\n\nErrors:\n' + errors.join('\n');
+            } else if (errors.length > 5) {
+                message += '\n\nShowing first 5 errors:\n' + errors.slice(0, 5).join('\n');
+            }
+
+            alert(message);
+
+            if (successCount > 0) {
+                await loadData();
+            }
         }
 
         // Initialize

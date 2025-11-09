@@ -31,7 +31,6 @@
                 <a href="users-sidebar.html" class="nav-item">
                     <i class='bx bx-user'></i>
                     <span>Users</span>
-                    <span class="nav-badge" id="pendingUsersBadge">0</span>
                 </a>
                 <a href="modules-sidebar.html" class="nav-item">
                     <i class='bx bx-book'></i>
@@ -313,7 +312,6 @@
                     document.getElementById('activeUsers').textContent = stats.active_users || 0;
                     document.getElementById('totalModules').textContent = stats.total_modules || 0;
                     document.getElementById('totalAssignments').textContent = stats.total_assignments || 0;
-                    document.getElementById('pendingUsersBadge').textContent = stats.pending_users || 0;
                 }
             } catch (error) {
                 console.error('Error loading statistics:', error);
@@ -325,7 +323,7 @@
             try {
                 const response = await apiService.getAllUsers();
                 if (response.success) {
-                    allUsers = response.data;
+                    allUsers = response.data.users || response.data || [];
                     calculateUserLevels();
                 }
             } catch (error) {
@@ -439,7 +437,30 @@
             const tbody = document.getElementById('moduleStatsTable');
 
             if (allModules.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">No modules found</td></tr>';
+                // Show dummy data
+                const dummyModules = [
+                    { name: 'Introduction to Programming', level: 'fundamental', enrollments: 45, active: 42, classes: 5, assignments: 8 },
+                    { name: 'Data Structures & Algorithms', level: 'intermediate', enrollments: 32, active: 28, classes: 6, assignments: 10 },
+                    { name: 'Advanced Web Development', level: 'advance', enrollments: 18, active: 15, classes: 4, assignments: 12 }
+                ];
+
+                tbody.innerHTML = `
+                    <tr style="background-color: #fff9e6; border-left: 4px solid #f59e0b;">
+                        <td colspan="6" style="text-align:center;padding:12px;">
+                            <i class='bx bx-info-circle' style="color:#f59e0b;"></i>
+                            <strong style="color:#f59e0b;"> Sample Data</strong> - No actual modules found. The data below is for demonstration purposes.
+                        </td>
+                    </tr>
+                ` + dummyModules.map(module => `
+                    <tr style="opacity: 0.7;">
+                        <td><strong>${module.name}</strong></td>
+                        <td><span class="badge badge-${getLevelColor(module.level)}">${module.level}</span></td>
+                        <td>${module.enrollments}</td>
+                        <td>${module.active}</td>
+                        <td>${module.classes}</td>
+                        <td>${module.assignments}</td>
+                    </tr>
+                `).join('');
                 return;
             }
 
@@ -468,7 +489,31 @@
                 allAssignments;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">No assignments found</td></tr>';
+                // Show dummy data
+                const dummyAssignments = [
+                    { title: 'Variables & Data Types Quiz', module: 'Introduction to Programming', submissions: 42, graded: 38, pending: 4, avgScore: 82.5, maxScore: 100 },
+                    { title: 'Binary Search Implementation', module: 'Data Structures & Algorithms', submissions: 28, graded: 25, pending: 3, avgScore: 75.8, maxScore: 100 },
+                    { title: 'REST API Development', module: 'Advanced Web Development', submissions: 15, graded: 12, pending: 3, avgScore: 88.3, maxScore: 100 },
+                    { title: 'Sorting Algorithms Project', module: 'Data Structures & Algorithms', submissions: 30, graded: 30, pending: 0, avgScore: 79.2, maxScore: 100 }
+                ];
+
+                tbody.innerHTML = `
+                    <tr style="background-color: #fff9e6; border-left: 4px solid #f59e0b;">
+                        <td colspan="6" style="text-align:center;padding:12px;">
+                            <i class='bx bx-info-circle' style="color:#f59e0b;"></i>
+                            <strong style="color:#f59e0b;"> Sample Data</strong> - No actual assignments found. The data below is for demonstration purposes.
+                        </td>
+                    </tr>
+                ` + dummyAssignments.map(assignment => `
+                    <tr style="opacity: 0.7;">
+                        <td><strong>${assignment.title}</strong></td>
+                        <td>${assignment.module}</td>
+                        <td>${assignment.submissions}</td>
+                        <td><span class="badge badge-success">${assignment.graded}</span></td>
+                        <td><span class="badge badge-warning">${assignment.pending}</span></td>
+                        <td>${assignment.avgScore}/${assignment.maxScore}</td>
+                    </tr>
+                `).join('');
                 return;
             }
 
@@ -500,7 +545,33 @@
             const tbody = document.getElementById('userActivityTable');
 
             if (allUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">No users found</td></tr>';
+                // Show dummy data
+                const dummyUsers = [
+                    { name: 'John Doe', email: 'john.doe@example.com', role: 'student', level: 'intermediate', pretestScore: 75, enrollments: 3, lastActive: '2025-11-08 14:30:00' },
+                    { name: 'Jane Smith', email: 'jane.smith@example.com', role: 'student', level: 'fundamental', pretestScore: 65, enrollments: 2, lastActive: '2025-11-08 13:15:00' },
+                    { name: 'Michael Johnson', email: 'michael.j@example.com', role: 'student', level: 'advance', pretestScore: 90, enrollments: 4, lastActive: '2025-11-08 11:45:00' },
+                    { name: 'Sarah Williams', email: 'sarah.w@example.com', role: 'student', level: 'intermediate', pretestScore: 80, enrollments: 3, lastActive: '2025-11-08 10:20:00' },
+                    { name: 'David Brown', email: 'david.b@example.com', role: 'student', level: 'fundamental', pretestScore: 70, enrollments: 2, lastActive: '2025-11-08 09:00:00' }
+                ];
+
+                tbody.innerHTML = `
+                    <tr style="background-color: #fff9e6; border-left: 4px solid #f59e0b;">
+                        <td colspan="7" style="text-align:center;padding:12px;">
+                            <i class='bx bx-info-circle' style="color:#f59e0b;"></i>
+                            <strong style="color:#f59e0b;"> Sample Data</strong> - No actual users found. The data below is for demonstration purposes.
+                        </td>
+                    </tr>
+                ` + dummyUsers.map(user => `
+                    <tr style="opacity: 0.7;">
+                        <td><strong>${user.name}</strong></td>
+                        <td>${user.email}</td>
+                        <td><span class="badge badge-info">${user.role}</span></td>
+                        <td><span class="badge badge-${getLevelColor(user.level)}">${user.level}</span></td>
+                        <td>${user.pretestScore}</td>
+                        <td>${user.enrollments}</td>
+                        <td>${user.lastActive}</td>
+                    </tr>
+                `).join('');
                 return;
             }
 
