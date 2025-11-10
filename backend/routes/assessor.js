@@ -3,6 +3,7 @@ const router = express.Router();
 const { verifyToken, requireAssessorOrAdmin } = require('../middleware/auth');
 const assessorController = require('../controllers/assessorController');
 const assignmentController = require('../controllers/assignmentController');
+const moduleController = require('../controllers/moduleController');
 
 // All assessor routes require authentication and assessor/admin role
 router.use(verifyToken, requireAssessorOrAdmin);
@@ -29,11 +30,13 @@ router.post('/promotions/:id/reject', assessorController.rejectPromotion);
 router.get('/statistics', assessorController.getAssessorStatistics);
 
 // Assignment Management (Assessors can create/edit assignments)
-router.get('/assignments', (req, res) => {
-    res.json({ success: true, message: 'Get assignments list - Use /api/v1/assignments/module/:slug instead' });
-});
-
+router.get('/assignments', assessorController.getAllAssignments);
 router.post('/assignments', assignmentController.createAssignment);
 router.put('/assignments/:id', assignmentController.updateAssignment);
+
+// Learning Materials Management (Assessors can manage learning materials)
+router.post('/materials', moduleController.createLearningMaterial);
+router.put('/materials/:id', moduleController.updateLearningMaterial);
+router.delete('/materials/:id', moduleController.deleteLearningMaterial);
 
 module.exports = router;

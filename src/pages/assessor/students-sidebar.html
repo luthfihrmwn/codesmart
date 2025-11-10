@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Progress - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Grading</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Grade Submissions</span>
+                </a>
+                <a href="students-sidebar.html" class="nav-item active">
+                    <i class='bx bx-user-check'></i>
+                    <span>Student Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Student Progress</h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Assessor</div>
+                        <div class="user-role">Assessor</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filters -->
+            <div class="modern-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search by student name or email...">
+                        <i class='bx bx-search'></i>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <select id="levelFilter" class="modern-select">
+                        <option value="all">All Levels</option>
+                        <option value="fundamental">Fundamental</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advance">Advanced</option>
+                    </select>
+                    <select id="statusFilter" class="modern-select">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Students Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class='bx bx-user-check'></i> Students</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-outline btn-sm" onclick="refreshStudents()">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Current Level</th>
+                                    <th>Pretest Score</th>
+                                    <th>Avg Score</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div class="modal" id="studentModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class='bx bx-user'></i> Student Details</h3>
+                <button class="modal-close" onclick="closeStudentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="studentDetails">
+                    <div class="loader"></div>
+                </div>
+
+                <!-- Student Info Section -->
+                <div id="studentInfo" style="display: none;">
+                    <div class="stats-grid" style="margin-bottom: 30px;">
+                        <div class="stat-card">
+                            <div class="stat-icon info">
+                                <i class='bx bx-bar-chart'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="studentAvgScore">0</h3>
+                                <p>Average Score</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <i class='bx bx-check-circle'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="studentCompleted">0</h3>
+                                <p>Completed</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon warning">
+                                <i class='bx bx-time'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="studentPending">0</h3>
+                                <p>Pending</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submissions History -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class='bx bx-history'></i> Submission History</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Assignment</th>
+                                            <th>Module</th>
+                                            <th>Submitted</th>
+                                            <th>Score</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="submissionsHistory">
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: 20px;">
+                                                No submissions found
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Chart Placeholder -->
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class='bx bx-line-chart'></i> Performance Overview</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="performanceChart" style="padding: 40px; text-align: center; color: #999;">
+                                <i class='bx bx-line-chart' style="font-size: 48px; opacity: 0.3;"></i>
+                                <p>Performance chart will be displayed here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeStudentModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAssessor()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allStudents = [];
+
+        // Load students
+        async function loadStudents() {
+            try {
+                const response = await apiService.getStudents();
+
+                if (response.success) {
+                    allStudents = response.data.students || response.data || [];
+                    renderStudents(allStudents);
+                } else {
+                    throw new Error(response.message || 'Failed to load students');
+                }
+
+            } catch (error) {
+                console.error('Error loading students:', error);
+                document.getElementById('studentsTable').innerHTML =
+                    '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">Error loading students</td></tr>';
+            }
+        }
+
+        function renderStudents(students) {
+            const tbody = document.getElementById('studentsTable');
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">No students found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = students.map(student => {
+                const avgScore = student.average_score || student.avg_score || 0;
+                const pretestScore = student.pretest_score !== null ? student.pretest_score : '-';
+
+                return `
+                    <tr>
+                        <td><strong>${student.name || 'N/A'}</strong></td>
+                        <td>${student.email || 'N/A'}</td>
+                        <td>
+                            <span class="badge badge-${
+                                student.current_level === 'fundamental' ? 'success' :
+                                student.current_level === 'intermediate' ? 'warning' : 'danger'
+                            }">
+                                ${(student.current_level || 'fundamental').toUpperCase()}
+                            </span>
+                        </td>
+                        <td>${pretestScore}</td>
+                        <td>${avgScore > 0 ? avgScore.toFixed(1) : '-'}</td>
+                        <td>
+                            <span class="badge badge-${student.status === 'active' ? 'success' : 'secondary'}">
+                                ${student.status || 'active'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="viewStudentDetails(${student.id})">
+                                    <i class='bx bx-show'></i> View
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter students
+        function filterStudents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const levelFilter = document.getElementById('levelFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            let filtered = allStudents.filter(student => {
+                const matchesSearch = !searchTerm ||
+                    (student.name || '').toLowerCase().includes(searchTerm) ||
+                    (student.email || '').toLowerCase().includes(searchTerm);
+
+                const matchesLevel = levelFilter === 'all' || student.current_level === levelFilter;
+                const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
+
+                return matchesSearch && matchesLevel && matchesStatus;
+            });
+
+            renderStudents(filtered);
+        }
+
+        // View student details
+        async function viewStudentDetails(studentId) {
+            const modal = document.getElementById('studentModal');
+            modal.classList.add('active');
+
+            const detailsDiv = document.getElementById('studentDetails');
+            const infoDiv = document.getElementById('studentInfo');
+
+            detailsDiv.style.display = 'block';
+            infoDiv.style.display = 'none';
+
+            try {
+                // Get student info
+                const student = allStudents.find(s => s.id === studentId);
+
+                // Get student progress
+                const progressResponse = await apiService.getStudentProgress(studentId);
+
+                if (progressResponse.success) {
+                    const progress = progressResponse.data;
+                    displayStudentProgress(student, progress);
+                }
+
+            } catch (error) {
+                console.error('Error loading student details:', error);
+                detailsDiv.innerHTML = '<p style="text-align:center;color:#999;">Error loading student details</p>';
+            }
+        }
+
+        function displayStudentProgress(student, progress) {
+            const detailsDiv = document.getElementById('studentDetails');
+            const infoDiv = document.getElementById('studentInfo');
+
+            detailsDiv.style.display = 'none';
+            infoDiv.style.display = 'block';
+
+            // Display student basic info
+            detailsDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <i class='bx bx-info-circle'></i>
+                    <div>
+                        <strong>Name:</strong> ${student.name}<br>
+                        <strong>Email:</strong> ${student.email}<br>
+                        <strong>Current Level:</strong> ${(student.current_level || 'fundamental').toUpperCase()}<br>
+                        <strong>Pretest Score:</strong> ${student.pretest_score !== null ? student.pretest_score : 'Not taken'}
+                    </div>
+                </div>
+            `;
+
+            // Update stats
+            const submissions = progress.submissions || [];
+            const completed = submissions.filter(s => s.status === 'graded').length;
+            const pending = submissions.filter(s => s.status === 'pending').length;
+            const avgScore = submissions.length > 0
+                ? submissions.reduce((sum, s) => sum + (s.score || 0), 0) / submissions.length
+                : 0;
+
+            document.getElementById('studentAvgScore').textContent = avgScore.toFixed(1);
+            document.getElementById('studentCompleted').textContent = completed;
+            document.getElementById('studentPending').textContent = pending;
+
+            // Display submissions history
+            const historyTable = document.getElementById('submissionsHistory');
+            if (submissions.length === 0) {
+                historyTable.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No submissions found</td></tr>';
+            } else {
+                historyTable.innerHTML = submissions.map(sub => `
+                    <tr>
+                        <td>${sub.assignment_title || 'N/A'}</td>
+                        <td>${sub.module_name || 'N/A'}</td>
+                        <td>${new Date(sub.submitted_at || sub.created_at).toLocaleDateString()}</td>
+                        <td>${sub.score !== null ? sub.score : '-'}</td>
+                        <td>
+                            <span class="badge badge-${sub.status === 'graded' ? 'success' : 'warning'}">
+                                ${sub.status || 'pending'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function closeStudentModal() {
+            document.getElementById('studentModal').classList.remove('active');
+        }
+
+        function refreshStudents() {
+            loadStudents();
+            notificationService.show('success', 'Students list refreshed');
+        }
+
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterStudents);
+        document.getElementById('levelFilter').addEventListener('change', filterStudents);
+        document.getElementById('statusFilter').addEventListener('change', filterStudents);
+
+        // Close modal on outside click
+        document.getElementById('studentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStudentModal();
+            }
+        });
+
+        // Initialize
+        loadStudents();
+
+        // Notification bell
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Submissions - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Grading</div>
+                <a href="submissions-sidebar.html" class="nav-item active">
+                    <i class='bx bx-file'></i>
+                    <span>Grade Submissions</span>
+                </a>
+                <a href="students-sidebar.html" class="nav-item">
+                    <i class='bx bx-user-check'></i>
+                    <span>Student Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Grade Submissions</h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Assessor</div>
+                        <div class="user-role">Assessor</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filters -->
+            <div class="modern-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search by student name or assignment...">
+                        <i class='bx bx-search'></i>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <select id="statusFilter" class="modern-select">
+                        <option value="all">All Submissions</option>
+                        <option value="pending">Pending</option>
+                        <option value="graded">Graded</option>
+                    </select>
+                    <select id="moduleFilter" class="modern-select">
+                        <option value="all">All Modules</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Submissions Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class='bx bx-file'></i> Submissions</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-outline btn-sm" onclick="refreshSubmissions()">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Assignment</th>
+                                    <th>Module</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Score</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissionsTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Modal -->
+    <div class="modal" id="gradeModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class='bx bx-edit'></i> Grade Submission</h3>
+                <button class="modal-close" onclick="closeGradeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="submissionDetails">
+                    <div class="loader"></div>
+                </div>
+
+                <form id="gradeForm" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label required">Score (0-100)</label>
+                        <input type="number" id="score" class="form-input" min="0" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">Feedback</label>
+                        <textarea id="feedback" class="form-input" rows="6" placeholder="Provide detailed feedback for the student..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="gradeStatus" class="form-input">
+                            <option value="graded">Graded - Pass</option>
+                            <option value="failed">Graded - Fail</option>
+                            <option value="revision">Needs Revision</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeGradeModal()">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="submitGrade()">
+                    <i class='bx bx-check'></i> Submit Grade
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAssessor()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allSubmissions = [];
+        let currentSubmissionId = null;
+
+        // Load submissions
+        async function loadSubmissions() {
+            try {
+                // Load pending submissions
+                const pendingResponse = await apiService.getPendingSubmissions();
+                const gradedResponse = await apiService.getGradedSubmissions();
+
+                const pending = pendingResponse.success ? (pendingResponse.data.submissions || pendingResponse.data || []) : [];
+                const graded = gradedResponse.success ? (gradedResponse.data.submissions || gradedResponse.data || []) : [];
+
+                allSubmissions = [...pending, ...graded];
+
+                // Load modules for filter
+                const modulesResponse = await apiService.getModules();
+                if (modulesResponse.success) {
+                    const modules = modulesResponse.data.modules || modulesResponse.data || [];
+                    populateModuleFilter(modules);
+                }
+
+                renderSubmissions(allSubmissions);
+
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+                document.getElementById('submissionsTable').innerHTML =
+                    '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">Error loading submissions</td></tr>';
+            }
+        }
+
+        function populateModuleFilter(modules) {
+            const filter = document.getElementById('moduleFilter');
+            modules.forEach(module => {
+                const option = document.createElement('option');
+                option.value = module.slug || module.id;
+                option.textContent = module.title || module.name;
+                filter.appendChild(option);
+            });
+        }
+
+        function renderSubmissions(submissions) {
+            const tbody = document.getElementById('submissionsTable');
+            if (submissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">No submissions found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = submissions.map(submission => `
+                <tr>
+                    <td><strong>${submission.student_name || submission.user_name || 'N/A'}</strong></td>
+                    <td>${submission.assignment_title || 'N/A'}</td>
+                    <td>${submission.module_name || 'N/A'}</td>
+                    <td>${new Date(submission.submitted_at || submission.created_at).toLocaleDateString()}</td>
+                    <td><span class="badge badge-${submission.status === 'graded' ? 'success' : submission.status === 'failed' ? 'danger' : 'warning'}">${submission.status || 'pending'}</span></td>
+                    <td>${submission.score !== null && submission.score !== undefined ? submission.score : '-'}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-sm" onclick="openGradeModal(${submission.id})">
+                                <i class='bx bx-edit'></i> ${submission.status === 'graded' ? 'Edit' : 'Grade'}
+                            </button>
+                            ${submission.file_path ? `
+                                <a href="${submission.file_path}" class="btn btn-info btn-sm" download>
+                                    <i class='bx bx-download'></i>
+                                </a>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter submissions
+        function filterSubmissions() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const moduleFilter = document.getElementById('moduleFilter').value;
+
+            let filtered = allSubmissions.filter(submission => {
+                const matchesSearch = !searchTerm ||
+                    (submission.student_name || '').toLowerCase().includes(searchTerm) ||
+                    (submission.user_name || '').toLowerCase().includes(searchTerm) ||
+                    (submission.assignment_title || '').toLowerCase().includes(searchTerm);
+
+                const matchesStatus = statusFilter === 'all' || submission.status === statusFilter;
+
+                const matchesModule = moduleFilter === 'all' ||
+                    submission.module_slug === moduleFilter ||
+                    submission.module_id == moduleFilter;
+
+                return matchesSearch && matchesStatus && matchesModule;
+            });
+
+            renderSubmissions(filtered);
+        }
+
+        // Open grade modal
+        async function openGradeModal(submissionId) {
+            currentSubmissionId = submissionId;
+            const modal = document.getElementById('gradeModal');
+            modal.classList.add('active');
+
+            // Load submission details
+            try {
+                const response = await apiService.getSubmissionDetails(submissionId);
+                if (response.success) {
+                    const submission = response.data.submission || response.data;
+                    displaySubmissionDetails(submission);
+                }
+            } catch (error) {
+                console.error('Error loading submission:', error);
+                notificationService.show('error', 'Failed to load submission details');
+            }
+        }
+
+        function displaySubmissionDetails(submission) {
+            const detailsDiv = document.getElementById('submissionDetails');
+            const form = document.getElementById('gradeForm');
+
+            detailsDiv.style.display = 'block';
+            form.style.display = 'block';
+
+            detailsDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <i class='bx bx-info-circle'></i>
+                    <div>
+                        <strong>Student:</strong> ${submission.student_name || submission.user_name}<br>
+                        <strong>Assignment:</strong> ${submission.assignment_title}<br>
+                        <strong>Module:</strong> ${submission.module_name}<br>
+                        <strong>Submitted:</strong> ${new Date(submission.submitted_at || submission.created_at).toLocaleString()}
+                    </div>
+                </div>
+                ${submission.file_path ? `
+                    <div style="margin: 20px 0;">
+                        <a href="${submission.file_path}" class="btn btn-info" download>
+                            <i class='bx bx-download'></i> Download Submission File
+                        </a>
+                    </div>
+                ` : ''}
+                ${submission.notes ? `
+                    <div class="form-group">
+                        <label class="form-label">Student Notes:</label>
+                        <p style="padding: 12px; background: #f8f9fa; border-radius: 8px;">${submission.notes}</p>
+                    </div>
+                ` : ''}
+            `;
+
+            // Pre-fill if already graded
+            if (submission.status === 'graded' || submission.score !== null) {
+                document.getElementById('score').value = submission.score || '';
+                document.getElementById('feedback').value = submission.feedback || '';
+                document.getElementById('gradeStatus').value = submission.status || 'graded';
+            } else {
+                document.getElementById('score').value = '';
+                document.getElementById('feedback').value = '';
+                document.getElementById('gradeStatus').value = 'graded';
+            }
+        }
+
+        function closeGradeModal() {
+            document.getElementById('gradeModal').classList.remove('active');
+            currentSubmissionId = null;
+        }
+
+        async function submitGrade() {
+            const score = parseInt(document.getElementById('score').value);
+            const feedback = document.getElementById('feedback').value;
+            const status = document.getElementById('gradeStatus').value;
+
+            if (!score || score < 0 || score > 100) {
+                notificationService.show('error', 'Please enter a valid score (0-100)');
+                return;
+            }
+
+            if (!feedback.trim()) {
+                notificationService.show('error', 'Please provide feedback');
+                return;
+            }
+
+            try {
+                const gradeData = {
+                    score: score,
+                    feedback: feedback,
+                    status: status
+                };
+
+                const response = await apiService.gradeSubmission(currentSubmissionId, gradeData);
+
+                if (response.success) {
+                    notificationService.show('success', 'Submission graded successfully');
+                    closeGradeModal();
+                    loadSubmissions();
+                } else {
+                    notificationService.show('error', response.message || 'Failed to grade submission');
+                }
+            } catch (error) {
+                console.error('Error grading submission:', error);
+                notificationService.show('error', 'Failed to grade submission');
+            }
+        }
+
+        function refreshSubmissions() {
+            loadSubmissions();
+            notificationService.show('success', 'Submissions refreshed');
+        }
+
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterSubmissions);
+        document.getElementById('statusFilter').addEventListener('change', filterSubmissions);
+        document.getElementById('moduleFilter').addEventListener('change', filterSubmissions);
+
+        // Close modal on outside click
+        document.getElementById('gradeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGradeModal();
+            }
+        });
+
+        // Initialize
+        loadSubmissions();
+
+        // Notification bell
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

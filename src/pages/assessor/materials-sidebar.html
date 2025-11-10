@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Materials - CodeSmart Assessor</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+    <style>
+        /* File Upload Styles */
+        .file-upload-container {
+            margin-bottom: 20px;
+        }
+
+        .file-upload-zone {
+            border: 3px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02));
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-upload-zone:hover {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            transform: translateY(-2px);
+        }
+
+        .file-upload-zone.drag-over {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            transform: scale(1.02);
+        }
+
+        .file-upload-zone.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .upload-formats {
+            font-size: 12px;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .file-preview {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        .file-preview.active {
+            display: block;
+        }
+
+        .file-preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .file-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .file-size {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .file-remove {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .file-remove:hover {
+            background: #c53030;
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 16px;
+        }
+
+        .upload-progress.active {
+            display: block;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        .url-input-container {
+            display: none;
+        }
+
+        .url-input-container.active {
+            display: block;
+        }
+
+        .material-type-toggle {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 8px;
+            background: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .type-toggle-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid transparent;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .type-toggle-btn:hover {
+            color: var(--primary-color);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .type-toggle-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .type-toggle-btn i {
+            font-size: 20px;
+        }
+
+        /* File type icons */
+        .file-icon.pdf { background: linear-gradient(135deg, #f56565, #c53030); }
+        .file-icon.ppt { background: linear-gradient(135deg, #ed8936, #c05621); }
+        .file-icon.doc { background: linear-gradient(135deg, #4299e1, #2c5282); }
+        .file-icon.zip { background: linear-gradient(135deg, #9f7aea, #6b46c1); }
+        .file-icon.video { background: linear-gradient(135deg, #f56565, #c53030); }
+
+        .validation-error {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: rgba(245, 101, 101, 0.1);
+            border-left: 4px solid var(--danger-color);
+            border-radius: 8px;
+            color: var(--danger-color);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .validation-error.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        /* Download link styles */
+        .file-download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .file-download-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .file-download-link i {
+            font-size: 16px;
+        }
+
+        /* External link styles */
+        .external-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--info-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(66, 153, 225, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .external-link:hover {
+            background: rgba(66, 153, 225, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .external-link i {
+            font-size: 16px;
+        }
+
+        /* Page header enhancements */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h1 i {
+            -webkit-text-fill-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item active">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Grading</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Grade Submissions</span>
+                </a>
+                <a href="students-sidebar.html" class="nav-item">
+                    <i class='bx bx-user-check'></i>
+                    <span>Student Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Learning Materials</h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" onclick="toggleUserMenu()">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Assessor</div>
+                        <div class="user-role">Assessor</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>
+                    <i class='bx bx-folder'></i>
+                    Learning Materials
+                </h1>
+                <button class="btn btn-primary" onclick="openUploadModal()">
+                    <i class='bx bx-upload'></i>
+                    Upload Material
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-row">
+                <div class="filter-group" style="flex: 2;">
+                    <input type="text" class="form-input" id="searchInput" placeholder="Search materials..." onkeyup="filterMaterials()">
+                </div>
+                <div class="filter-group">
+                    <select class="form-input" id="moduleFilter" onchange="filterMaterials()">
+                        <option value="">All Modules</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select class="form-input" id="classFilter" onchange="filterMaterials()">
+                        <option value="">All Classes</option>
+                        <option value="1">Class 1</option>
+                        <option value="2">Class 2</option>
+                        <option value="3">Class 3</option>
+                        <option value="4">Class 4</option>
+                        <option value="5">Class 5</option>
+                        <option value="6">Class 6</option>
+                        <option value="7">Class 7</option>
+                        <option value="8">Class 8</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select class="form-input" id="typeFilter" onchange="filterMaterials()">
+                        <option value="">All Types</option>
+                        <option value="PDF">PDF</option>
+                        <option value="PPT">PPT</option>
+                        <option value="Video Link">Video Link</option>
+                        <option value="Code Example">Code Example</option>
+                        <option value="Document">Document</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Materials Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class='bx bx-folder-open'></i> Materials Library</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Module</th>
+                                    <th>Class</th>
+                                    <th>Type</th>
+                                    <th>File/Link</th>
+                                    <th>Uploaded</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materialsTable">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload/Edit Material Modal -->
+    <div class="modal" id="materialModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">
+                    <i class='bx bx-upload'></i>
+                    Upload Learning Material
+                </h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="materialForm">
+                    <input type="hidden" id="materialId" value="">
+
+                    <div class="form-group">
+                        <label class="form-label required">Material Title</label>
+                        <input type="text" class="form-input" id="materialTitle" placeholder="e.g., Introduction to Variables" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">Module</label>
+                        <select class="form-input" id="materialModule" required>
+                            <option value="">Select Module</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">Class Number</label>
+                        <select class="form-input" id="materialClass" required>
+                            <option value="">Select Class</option>
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                            <option value="3">Class 3</option>
+                            <option value="4">Class 4</option>
+                            <option value="5">Class 5</option>
+                            <option value="6">Class 6</option>
+                            <option value="7">Class 7</option>
+                            <option value="8">Class 8</option>
+                            <option value="9">Class 9</option>
+                            <option value="10">Class 10</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label required">Material Type</label>
+                        <select class="form-input" id="materialType" onchange="handleTypeChange()" required>
+                            <option value="">Select Type</option>
+                            <option value="PDF">PDF Document</option>
+                            <option value="PPT">PowerPoint Presentation</option>
+                            <option value="Video Link">Video Link</option>
+                            <option value="Code Example">Code Example</option>
+                            <option value="Document">Document (Word, etc.)</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="materialDescription" rows="4" placeholder="Brief description of the material..."></textarea>
+                    </div>
+
+                    <!-- Material Type Toggle -->
+                    <div class="material-type-toggle" id="uploadTypeToggle" style="display: none;">
+                        <button type="button" class="type-toggle-btn active" id="fileToggleBtn" onclick="toggleUploadType('file')">
+                            <i class='bx bx-file'></i>
+                            <span>Upload File</span>
+                        </button>
+                        <button type="button" class="type-toggle-btn" id="urlToggleBtn" onclick="toggleUploadType('url')">
+                            <i class='bx bx-link'></i>
+                            <span>External URL</span>
+                        </button>
+                    </div>
+
+                    <!-- File Upload Container -->
+                    <div class="file-upload-container" id="fileUploadContainer">
+                        <label class="form-label">Upload File</label>
+                        <input type="file" id="fileInput" style="display: none;" accept=".pdf,.ppt,.pptx,.doc,.docx,.zip" onchange="handleFileSelect(event)">
+
+                        <div class="file-upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                            <i class='bx bx-cloud-upload upload-icon'></i>
+                            <div class="upload-text">Drag & Drop or Click to Upload</div>
+                            <div class="upload-hint">Maximum file size: 50MB</div>
+                            <div class="upload-formats">Accepted formats: PDF, PPT, PPTX, DOC, DOCX, ZIP</div>
+                        </div>
+
+                        <div class="validation-error" id="fileValidationError"></div>
+
+                        <div class="file-preview" id="filePreview">
+                            <div class="file-preview-header">
+                                <div class="file-info">
+                                    <div class="file-icon" id="fileIcon">
+                                        <i class='bx bx-file'></i>
+                                    </div>
+                                    <div class="file-details">
+                                        <div class="file-name" id="fileName">No file selected</div>
+                                        <div class="file-size" id="fileSize">0 KB</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="file-remove" onclick="removeFile()">
+                                    <i class='bx bx-x'></i>
+                                </button>
+                            </div>
+
+                            <div class="upload-progress" id="uploadProgress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="progressBar"></div>
+                                </div>
+                                <div class="progress-text" id="progressText">Uploading: 0%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URL Input Container -->
+                    <div class="url-input-container" id="urlInputContainer">
+                        <div class="form-group">
+                            <label class="form-label">External URL</label>
+                            <input type="url" class="form-input" id="materialUrl" placeholder="https://example.com/video">
+                            <small>Enter the URL for video links or external resources</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveMaterialBtn" onclick="saveMaterial()">
+                    <i class='bx bx-save'></i>
+                    Save Material
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAssessor()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        // Global variables
+        let allMaterials = [];
+        let allModules = [];
+        let selectedFile = null;
+        let currentMaterialId = null;
+        let uploadType = 'file'; // 'file' or 'url'
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadModules();
+            loadMaterials();
+            setupDragDrop();
+
+            // Set user info
+            const currentUser = authService.getCurrentUser();
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name || 'Assessor';
+                document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+            }
+
+            // Notification bell handler
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    }
+                });
+            }
+        });
+
+        // Load modules for dropdown
+        async function loadModules() {
+            try {
+                const response = await apiService.getModules();
+                if (response && response.success) {
+                    allModules = response.data.modules || response.data || [];
+                    populateModuleDropdowns();
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+            }
+        }
+
+        function populateModuleDropdowns() {
+            const moduleFilter = document.getElementById('moduleFilter');
+            const materialModule = document.getElementById('materialModule');
+
+            // Clear existing options except first
+            moduleFilter.innerHTML = '<option value="">All Modules</option>';
+            materialModule.innerHTML = '<option value="">Select Module</option>';
+
+            allModules.forEach(module => {
+                const option1 = document.createElement('option');
+                option1.value = module.id;
+                option1.textContent = module.title || module.name;
+                moduleFilter.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = module.id;
+                option2.textContent = module.title || module.name;
+                materialModule.appendChild(option2);
+            });
+        }
+
+        // Load materials
+        async function loadMaterials() {
+            try {
+                // Load materials from all modules
+                const modulesResponse = await apiService.getModules();
+                if (!modulesResponse.success) {
+                    renderMaterials([]);
+                    return;
+                }
+
+                const modules = modulesResponse.data.modules || modulesResponse.data || [];
+                let materials = [];
+
+                // Load materials for each module
+                for (const module of modules) {
+                    try {
+                        const materialResponse = await apiService.getModuleMaterials(module.slug);
+                        if (materialResponse.success) {
+                            const moduleMaterials = materialResponse.data.materials || materialResponse.data || [];
+                            materials = materials.concat(moduleMaterials.map(m => ({
+                                ...m,
+                                module_name: module.name,
+                                module_slug: module.slug
+                            })));
+                        }
+                    } catch (err) {
+                        console.error(`Error loading materials for ${module.slug}:`, err);
+                    }
+                }
+
+                allMaterials = materials;
+                renderMaterials(allMaterials);
+            } catch (error) {
+                console.error('Error loading materials:', error);
+                renderMaterials([]);
+            }
+        }
+
+        function renderMaterials(materials) {
+            const tbody = document.getElementById('materialsTable');
+
+            if (materials.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            <div class="empty-state">
+                                <i class='bx bx-folder-open'></i>
+                                <h3>No Materials Found</h3>
+                                <p>Upload your first learning material to get started</p>
+                                <button class="btn btn-primary" onclick="openUploadModal()">
+                                    <i class='bx bx-upload'></i> Upload Material
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = materials.map(material => {
+                const module = allModules.find(m => m.id == material.module_id);
+                const moduleName = module ? (module.title || module.name) : 'N/A';
+                const uploadedDate = new Date(material.created_at).toLocaleDateString();
+
+                let fileDisplay = '';
+                if (material.file_url) {
+                    const fileName = material.file_url.split('/').pop();
+                    fileDisplay = `<a href="${material.file_url}" target="_blank" class="file-download-link" download>
+                        <i class='bx bx-download'></i> ${fileName}
+                    </a>`;
+                } else if (material.external_url) {
+                    fileDisplay = `<a href="${material.external_url}" target="_blank" class="external-link">
+                        <i class='bx bx-link-external'></i> External Link
+                    </a>`;
+                } else {
+                    fileDisplay = '<span style="color: #999;">No file</span>';
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${material.title}</strong></td>
+                        <td>${moduleName}</td>
+                        <td><span class="badge badge-primary">Class ${material.class_number}</span></td>
+                        <td><span class="badge badge-info">${material.type}</span></td>
+                        <td>${fileDisplay}</td>
+                        <td>${uploadedDate}</td>
+                        <td>
+                            <div class="action-buttons">
+                                ${material.file_url ? `
+                                    <a href="${material.file_url}" class="btn btn-info btn-sm" download>
+                                        <i class='bx bx-download'></i>
+                                    </a>
+                                ` : ''}
+                                <button class="btn btn-primary btn-sm" onclick="editMaterial(${material.id})">
+                                    <i class='bx bx-edit'></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteMaterial(${material.id})">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter materials
+        function filterMaterials() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const moduleFilter = document.getElementById('moduleFilter').value;
+            const classFilter = document.getElementById('classFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            const filtered = allMaterials.filter(material => {
+                const matchesSearch = material.title.toLowerCase().includes(searchTerm) ||
+                                    (material.description && material.description.toLowerCase().includes(searchTerm));
+                const matchesModule = !moduleFilter || material.module_id == moduleFilter;
+                const matchesClass = !classFilter || material.class_number == classFilter;
+                const matchesType = !typeFilter || material.type === typeFilter;
+
+                return matchesSearch && matchesModule && matchesClass && matchesType;
+            });
+
+            renderMaterials(filtered);
+        }
+
+        // Modal functions
+        function openUploadModal() {
+            currentMaterialId = null;
+            selectedFile = null;
+            uploadType = 'file';
+
+            document.getElementById('modalTitle').innerHTML = '<i class="bx bx-upload"></i> Upload Learning Material';
+            document.getElementById('materialForm').reset();
+            document.getElementById('materialId').value = '';
+            document.getElementById('filePreview').classList.remove('active');
+            document.getElementById('uploadProgress').classList.remove('active');
+            document.getElementById('fileValidationError').classList.remove('active');
+            document.getElementById('uploadTypeToggle').style.display = 'none';
+            document.getElementById('fileUploadContainer').style.display = 'block';
+            document.getElementById('urlInputContainer').classList.remove('active');
+            document.getElementById('fileToggleBtn').classList.add('active');
+            document.getElementById('urlToggleBtn').classList.remove('active');
+
+            document.getElementById('materialModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('materialModal').classList.remove('active');
+            selectedFile = null;
+            currentMaterialId = null;
+        }
+
+        // Edit material
+        async function editMaterial(id) {
+            try {
+                // Find the material in allMaterials array
+                const material = allMaterials.find(m => m.id == id);
+                if (!material) {
+                    notificationService.error('Material not found');
+                    return;
+                }
+
+                currentMaterialId = material.id;
+
+                document.getElementById('modalTitle').innerHTML = '<i class="bx bx-edit"></i> Edit Learning Material';
+                document.getElementById('materialId').value = material.id;
+                document.getElementById('materialTitle').value = material.title;
+                document.getElementById('materialModule').value = material.module_id;
+                document.getElementById('materialClass').value = material.class_number;
+                document.getElementById('materialType').value = material.type;
+                document.getElementById('materialDescription').value = material.description || '';
+
+                // Handle file vs URL
+                if (material.external_url) {
+                    uploadType = 'url';
+                    document.getElementById('materialUrl').value = material.external_url;
+                    toggleUploadType('url');
+                } else {
+                    uploadType = 'file';
+                    toggleUploadType('file');
+                }
+
+                handleTypeChange();
+                document.getElementById('materialModal').classList.add('active');
+            } catch (error) {
+                console.error('Error loading material:', error);
+                modalService.alert({
+                    title: 'Error',
+                    message: 'Failed to load material details',
+                    confirmText: 'OK'
+                });
+            }
+        }
+
+        // Delete material
+        function deleteMaterial(id) {
+            modalService.confirm({
+                title: '<i class="bx bx-trash"></i> Delete Material',
+                message: 'Are you sure you want to delete this learning material? This action cannot be undone.',
+                confirmText: 'Yes, Delete',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: async function() {
+                    try {
+                        const data = await apiService.deleteAssessorMaterial(id);
+
+                        if (data.success) {
+                            notificationService.success('Material deleted successfully');
+                            loadMaterials();
+                        } else {
+                            notificationService.error(data.message || 'Failed to delete material');
+                        }
+                    } catch (error) {
+                        console.error('Error deleting material:', error);
+                        notificationService.error('Failed to delete material');
+                    }
+                }
+            });
+        }
+
+        // Handle material type change
+        function handleTypeChange() {
+            const type = document.getElementById('materialType').value;
+            const toggleDiv = document.getElementById('uploadTypeToggle');
+
+            // Show toggle for video links or other types that can be URLs
+            if (type === 'Video Link' || type === 'Other') {
+                toggleDiv.style.display = 'flex';
+            } else {
+                toggleDiv.style.display = 'none';
+                uploadType = 'file';
+                document.getElementById('fileUploadContainer').style.display = 'block';
+                document.getElementById('urlInputContainer').classList.remove('active');
+                document.getElementById('fileToggleBtn').classList.add('active');
+                document.getElementById('urlToggleBtn').classList.remove('active');
+            }
+        }
+
+        // Toggle between file upload and URL
+        function toggleUploadType(type) {
+            uploadType = type;
+
+            if (type === 'file') {
+                document.getElementById('fileUploadContainer').style.display = 'block';
+                document.getElementById('urlInputContainer').classList.remove('active');
+                document.getElementById('fileToggleBtn').classList.add('active');
+                document.getElementById('urlToggleBtn').classList.remove('active');
+            } else {
+                document.getElementById('fileUploadContainer').style.display = 'none';
+                document.getElementById('urlInputContainer').classList.add('active');
+                document.getElementById('fileToggleBtn').classList.remove('active');
+                document.getElementById('urlToggleBtn').classList.add('active');
+            }
+        }
+
+        // Drag and drop setup
+        function setupDragDrop() {
+            const dropZone = document.getElementById('dropZone');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('drag-over');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('drag-over');
+                }, false);
+            });
+
+            dropZone.addEventListener('drop', handleDrop, false);
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                handleFiles(files[0]);
+            }
+        }
+
+        // File selection
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFiles(file);
+            }
+        }
+
+        function handleFiles(file) {
+            // Validate file
+            const validation = validateFile(file);
+            const errorDiv = document.getElementById('fileValidationError');
+
+            if (!validation.valid) {
+                errorDiv.textContent = validation.message;
+                errorDiv.classList.add('active');
+                return;
+            }
+
+            errorDiv.classList.remove('active');
+            selectedFile = file;
+            displayFilePreview(file);
+        }
+
+        // File validation
+        function validateFile(file) {
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            const allowedTypes = [
+                'application/pdf',
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/zip',
+                'application/x-zip-compressed'
+            ];
+
+            if (file.size > maxSize) {
+                return {
+                    valid: false,
+                    message: 'File size exceeds 50MB limit'
+                };
+            }
+
+            if (!allowedTypes.includes(file.type)) {
+                return {
+                    valid: false,
+                    message: 'Invalid file type. Only PDF, PPT, PPTX, DOC, DOCX, and ZIP files are allowed'
+                };
+            }
+
+            return { valid: true };
+        }
+
+        // Display file preview
+        function displayFilePreview(file) {
+            const preview = document.getElementById('filePreview');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const fileIcon = document.getElementById('fileIcon');
+
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+
+            // Set icon based on file type
+            const ext = file.name.split('.').pop().toLowerCase();
+            fileIcon.className = 'file-icon ' + ext;
+
+            let iconClass = 'bx-file';
+            if (ext === 'pdf') iconClass = 'bx-file-pdf';
+            else if (ext === 'ppt' || ext === 'pptx') iconClass = 'bxs-file-ppt';
+            else if (ext === 'doc' || ext === 'docx') iconClass = 'bxs-file-doc';
+            else if (ext === 'zip') iconClass = 'bxs-file-archive';
+
+            fileIcon.innerHTML = `<i class='bx ${iconClass}'></i>`;
+            preview.classList.add('active');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // Remove file
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('filePreview').classList.remove('active');
+            document.getElementById('uploadProgress').classList.remove('active');
+            document.getElementById('fileValidationError').classList.remove('active');
+        }
+
+        // Save material
+        async function saveMaterial() {
+            // Validate form
+            const title = document.getElementById('materialTitle').value.trim();
+            const moduleId = document.getElementById('materialModule').value;
+            const classNumber = document.getElementById('materialClass').value;
+            const type = document.getElementById('materialType').value;
+            const description = document.getElementById('materialDescription').value.trim();
+            const url = document.getElementById('materialUrl').value.trim();
+
+            if (!title || !moduleId || !classNumber || !type) {
+                notificationService.error('Please fill in all required fields');
+                return;
+            }
+
+            if (uploadType === 'file' && !selectedFile && !currentMaterialId) {
+                notificationService.error('Please select a file to upload');
+                return;
+            }
+
+            if (uploadType === 'url' && !url) {
+                notificationService.error('Please enter a URL');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveMaterialBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="bx bx-loader bx-spin"></i> Saving...';
+
+            try {
+                let response;
+
+                if (uploadType === 'file' && selectedFile) {
+                    // Upload with file
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('module_id', moduleId);
+                    formData.append('class_number', classNumber);
+                    formData.append('type', type);
+                    formData.append('description', description);
+                    formData.append('file', selectedFile);
+
+                    if (currentMaterialId) {
+                        formData.append('_method', 'PUT');
+                        response = await uploadWithProgress(`/api/v1/assessor/materials/${currentMaterialId}`, formData);
+                    } else {
+                        response = await uploadWithProgress('/api/v1/assessor/materials', formData);
+                    }
+                } else {
+                    // Update without file or with URL
+                    const payload = {
+                        title,
+                        module_id: moduleId,
+                        class_number: classNumber,
+                        type,
+                        description
+                    };
+
+                    if (uploadType === 'url') {
+                        payload.external_url = url;
+                    }
+
+                    const endpoint = currentMaterialId
+                        ? `/api/v1/assessor/materials/${currentMaterialId}`
+                        : '/api/v1/assessor/materials';
+
+                    const method = currentMaterialId ? 'PUT' : 'POST';
+
+                    response = await fetch(endpoint, {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authService.getToken()}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    response = await response.json();
+                }
+
+                if (response.success) {
+                    notificationService.success(currentMaterialId ? 'Material updated successfully' : 'Material uploaded successfully');
+                    closeModal();
+                    loadMaterials();
+                } else {
+                    notificationService.error(response.message || 'Failed to save material');
+                }
+            } catch (error) {
+                console.error('Error saving material:', error);
+                notificationService.error('Failed to save material');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="bx bx-save"></i> Save Material';
+            }
+        }
+
+        // Upload with progress
+        function uploadWithProgress(url, formData) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                const progressDiv = document.getElementById('uploadProgress');
+                const progressBar = document.getElementById('progressBar');
+                const progressText = document.getElementById('progressText');
+
+                progressDiv.classList.add('active');
+
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percentComplete + '%';
+                        progressText.textContent = `Uploading: ${Math.round(percentComplete)}%`;
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    progressDiv.classList.remove('active');
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } catch (e) {
+                            reject(new Error('Invalid response'));
+                        }
+                    } else {
+                        reject(new Error('Upload failed'));
+                    }
+                });
+
+                xhr.addEventListener('error', () => {
+                    progressDiv.classList.remove('active');
+                    reject(new Error('Upload failed'));
+                });
+
+                xhr.open('POST', url);
+                xhr.setRequestHeader('Authorization', `Bearer ${authService.getToken()}`);
+                xhr.send(formData);
+            });
+        }
+
+        // Logout
+        function logout() {
+            modalService.confirm({
+                title: '<i class="bx bx-log-out"></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

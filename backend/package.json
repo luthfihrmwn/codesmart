@@ -8,6 +8,9 @@
     "dev": "nodemon server.js",
     "migrate": "node migrations/migrate.js",
     "seed": "node migrations/seed.js",
+    "seed:base": "node scripts/seed-database.js",
+    "seed:assessor": "node scripts/seed-assessor-data.js",
+    "seed:all": "npm run seed:base && npm run seed:assessor",
     "test": "jest --coverage"
   },
   "keywords": [

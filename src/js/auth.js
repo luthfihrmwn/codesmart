@@ -273,7 +273,7 @@ class AuthService {
         if (this.isAdmin()) {
             window.location.href = '/src/pages/admin/dashboard-sidebar.html';
         } else if (this.isAssessor()) {
-            window.location.href = '/src/pages/assessor/dashboard-new.html';
+            window.location.href = '/src/pages/assessor/dashboard-sidebar.html';
         } else {
             // Check if user needs to take pretest
             if (!this.hasCompletedPretest()) {

@@ -675,4 +675,37 @@ exports.getAssessorStatistics = async (req, res, next) => {
     }
 };
 
+// @desc    Get all assignments (for assessors)
+// @route   GET /api/v1/assessor/assignments
+// @access  Assessor, Admin
+exports.getAllAssignments = async (req, res, next) => {
+    try {
+        const result = await query(
+            `SELECT a.id, a.title, a.description, a.class_number, a.due_date,
+                    a.max_score, a.is_active, a.created_at,
+                    m.id as module_id, m.name as module_name, m.slug as module_slug,
+                    m.level as module_level,
+                    COUNT(DISTINCT s.id) as total_submissions,
+                    COUNT(DISTINCT CASE WHEN s.status = 'submitted' THEN s.id END) as pending_submissions,
+                    COUNT(DISTINCT CASE WHEN s.status = 'graded' THEN s.id END) as graded_submissions
+             FROM assignments a
+             JOIN modules m ON a.module_id = m.id
+             LEFT JOIN submissions s ON a.id = s.assignment_id
+             GROUP BY a.id, m.id
+             ORDER BY m.id, a.class_number, a.created_at DESC`
+        );
+
+        res.json({
+            success: true,
+            data: {
+                assignments: result.rows,
+                count: result.rows.length
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = exports;

@@ -460,9 +460,33 @@
     border-left-width: 5px;
 }
 
+/* Make text more readable on unread notification blue background */
+.notification-item.unread .notification-title {
+    color: #1e3a8a !important;
+    font-weight: 800 !important;
+}
+
+.notification-item.unread .notification-message {
+    color: #1e40af !important;
+    font-weight: 500 !important;
+}
+
+.notification-item.unread .notification-time {
+    color: #3b82f6 !important;
+    font-weight: 600 !important;
+}
+
 .notification-item.success {
     border-left-color: #10b981;
     background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.notification-item.success .notification-title {
+    color: #065f46 !important;
+}
+
+.notification-item.success .notification-message {
+    color: #047857 !important;
 }
 
 .notification-item.warning {
@@ -470,14 +494,38 @@
     background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
 }
 
+.notification-item.warning .notification-title {
+    color: #92400e !important;
+}
+
+.notification-item.warning .notification-message {
+    color: #b45309 !important;
+}
+
 .notification-item.error {
     border-left-color: #ef4444;
     background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
 }
 
+.notification-item.error .notification-title {
+    color: #991b1b !important;
+}
+
+.notification-item.error .notification-message {
+    color: #b91c1c !important;
+}
+
 .notification-item.info {
     border-left-color: #3b82f6;
     background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.notification-item.info .notification-title {
+    color: #1e3a8a !important;
+}
+
+.notification-item.info .notification-message {
+    color: #1e40af !important;
 }
 
 .notification-icon {
@@ -1077,4 +1125,224 @@
         border-color: #3b82f6;
         color: #60a5fa;
     }
+}
+/* Improved Modal Text Contrast - Append to modal-system.css */
+
+/* Enhanced text contrast for modal body */
+.modal-body {
+    color: #1e293b !important; /* Darker text for better readability */
+}
+
+.modal-body p,
+.modal-body div,
+.modal-body span {
+    color: #1e293b !important;
+}
+
+.modal-body strong {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+/* Ensure badges in modals have good contrast */
+.modal-body .badge {
+    font-weight: 600;
+    padding: 6px 12px;
+}
+
+.modal-body .badge-info {
+    background: #3b82f6;
+    color: #ffffff !important;
+}
+
+.modal-body .badge-success {
+    background: #10b981;
+    color: #ffffff !important;
+}
+
+.modal-body .badge-warning {
+    background: #f59e0b;
+    color: #ffffff !important;
+}
+
+.modal-body .badge-danger {
+    background: #ef4444;
+    color: #ffffff !important;
+}
+
+/* Better contrast for notification items */
+.notification-item-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+.notification-item-message {
+    color: #334155 !important;
+}
+
+.notification-item-time {
+    color: #64748b !important;
+}
+
+/* Improve form text contrast in modals */
+.modal-body label {
+    color: #0f172a !important;
+    font-weight: 600 !important;
+}
+
+.modal-body input,
+.modal-body textarea,
+.modal-body select {
+    color: #1e293b !important;
+}
+
+.modal-body input::placeholder,
+.modal-body textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Better contrast for small text */
+.modal-body small {
+    color: #475569 !important;
+}
+
+/* Ensure links are visible */
+.modal-body a {
+    color: #2563eb !important;
+    font-weight: 600 !important;
+}
+
+.modal-body a:hover {
+    color: #1d4ed8 !important;
+    text-decoration: underline;
+}
+
+/* High contrast for important messages */
+.modal-body .text-danger,
+.modal-body .text-error {
+    color: #dc2626 !important;
+    font-weight: 600 !important;
+}
+
+.modal-body .text-success {
+    color: #059669 !important;
+    font-weight: 600 !important;
+}
+
+.modal-body .text-warning {
+    color: #d97706 !important;
+    font-weight: 600 !important;
+}
+
+.modal-body .text-info {
+    color: #0284c7 !important;
+    font-weight: 600 !important;
+}
+/* ============================================
+   NOTIFICATION MODAL - HIGH CONTRAST FIX
+   Ensures all text is readable on all backgrounds
+   ============================================ */
+
+/* Override untuk notification items di dalam modal */
+.notification-modal .notification-item {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.notification-modal .notification-item:hover {
+    background: #f9fafb !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Unread notifications - white background with blue accent */
+.notification-modal .notification-item.unread {
+    background: #ffffff !important;
+    border-left: 4px solid #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.notification-modal .notification-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #3b82f6;
+}
+
+/* Text colors - always dark on white background */
+.notification-modal .notification-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+}
+
+.notification-modal .notification-message {
+    color: #334155 !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+}
+
+.notification-modal .notification-time {
+    color: #64748b !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+}
+
+/* Success notifications */
+.notification-modal .notification-item.success {
+    background: #ffffff !important;
+    border-left-color: #10b981 !important;
+}
+
+/* Warning notifications */
+.notification-modal .notification-item.warning {
+    background: #ffffff !important;
+    border-left-color: #f59e0b !important;
+}
+
+/* Error notifications */
+.notification-modal .notification-item.error {
+    background: #ffffff !important;
+    border-left-color: #ef4444 !important;
+}
+
+/* Info notifications */
+.notification-modal .notification-item.info {
+    background: #ffffff !important;
+    border-left-color: #3b82f6 !important;
+}
+
+/* Icon backgrounds remain colorful */
+.notification-modal .notification-icon {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+}
+
+.notification-modal .notification-item.success .notification-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.notification-modal .notification-item.warning .notification-icon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.notification-modal .notification-item.error .notification-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+}
+
+/* Empty state */
+.notification-modal .notification-empty {
+    background: #ffffff !important;
+    color: #6b7280 !important;
+}
+
+.notification-modal .notification-empty i {
+    color: #9ca3af !important;
+}
+
+.notification-modal .notification-empty p {
+    color: #6b7280 !important;
 }

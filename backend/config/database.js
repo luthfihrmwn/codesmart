@@ -7,7 +7,7 @@ const pool = new Pool({
     port: process.env.DB_PORT || 5432,
     database: process.env.DB_NAME || 'codesmart_db',
     user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD,
+    password: String(process.env.DB_PASSWORD || ''), // Ensure password is a string
     max: 20, // Maximum number of clients in pool
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000, // Increased timeout for cloud DB

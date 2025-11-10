@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Assignments - CodeSmart Assessor</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="assignments-sidebar.html" class="nav-item active">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Grading</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Grade Submissions</span>
+                </a>
+                <a href="students-sidebar.html" class="nav-item">
+                    <i class='bx bx-user-check'></i>
+                    <span>Student Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Manage Assignments</h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" onclick="toggleUserMenu()">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Assessor</div>
+                        <div class="user-role">Assessor</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Modern Toolbar -->
+            <div class="modern-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <i class='bx bx-search'></i>
+                        <input type="text" id="searchInput" placeholder="Search assignments by title..." class="search-input">
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="moduleFilter" class="modern-select">
+                            <option value="">All Modules</option>
+                        </select>
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="classFilter" class="modern-select">
+                            <option value="">All Classes</option>
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                            <option value="3">Class 3</option>
+                            <option value="4">Class 4</option>
+                            <option value="5">Class 5</option>
+                            <option value="6">Class 6</option>
+                            <option value="7">Class 7</option>
+                            <option value="8">Class 8</option>
+                            <option value="9">Class 9</option>
+                            <option value="10">Class 10</option>
+                        </select>
+                    </div>
+                    <div class="filter-dropdown">
+                        <select id="statusFilter" class="modern-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button onclick="openCreateModal()" class="btn-modern btn-primary">
+                        <i class='bx bx-plus-circle'></i>
+                        <span>Create Assignment</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Assignments Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class='bx bx-task'></i> All Assignments</h2>
+                    <span id="assignmentCount" class="badge badge-info">0 assignments</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Module</th>
+                                    <th>Class</th>
+                                    <th>Due Date</th>
+                                    <th>Max Score</th>
+                                    <th>Status</th>
+                                    <th>Submissions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentsTable">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Assignment Modal -->
+    <div id="assignmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Create New Assignment</h2>
+                <button onclick="closeAssignmentModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="assignmentForm" onsubmit="saveAssignment(event)">
+                    <input type="hidden" id="assignmentId">
+
+                    <div class="form-group">
+                        <label for="assignmentTitle">Assignment Title *</label>
+                        <input type="text" id="assignmentTitle" class="form-input" required placeholder="e.g., Variables and Data Types Exercise">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentModule">Module *</label>
+                        <select id="assignmentModule" class="form-input" required>
+                            <option value="">-- Select Module --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentClass">Class Number *</label>
+                        <select id="assignmentClass" class="form-input" required>
+                            <option value="">-- Select Class --</option>
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                            <option value="3">Class 3</option>
+                            <option value="4">Class 4</option>
+                            <option value="5">Class 5</option>
+                            <option value="6">Class 6</option>
+                            <option value="7">Class 7</option>
+                            <option value="8">Class 8</option>
+                            <option value="9">Class 9</option>
+                            <option value="10">Class 10</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentDescription">Description *</label>
+                        <textarea id="assignmentDescription" class="form-input" rows="4" required placeholder="Describe what students need to do in this assignment..."></textarea>
+                        <small>Provide clear instructions for students</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentRequirements">Requirements</label>
+                        <textarea id="assignmentRequirements" class="form-input" rows="4" placeholder="List the specific requirements students must fulfill..."></textarea>
+                        <small>Optional: Detailed list of requirements</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentRubric">Grading Rubric/Criteria</label>
+                        <textarea id="assignmentRubric" class="form-input" rows="4" placeholder="Explain how this assignment will be graded..."></textarea>
+                        <small>Optional: Grading criteria and scoring breakdown</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentMaxScore">Max Score *</label>
+                        <input type="number" id="assignmentMaxScore" class="form-input" min="1" max="1000" required placeholder="100">
+                        <small>Maximum possible score for this assignment</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentDueDate">Due Date *</label>
+                        <input type="datetime-local" id="assignmentDueDate" class="form-input" required>
+                        <small>When students must submit by</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assignmentStatus">Status *</label>
+                        <select id="assignmentStatus" class="form-input" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <small>Active assignments are visible to students</small>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" onclick="closeAssignmentModal()" class="btn btn-outline">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class='bx bx-save'></i> Save Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAssessor()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allAssignments = [];
+        let allModules = [];
+        let editingAssignmentId = null;
+
+        // Load modules for dropdowns
+        async function loadModules() {
+            try {
+                const response = await apiService.getModules();
+                if (response.success) {
+                    allModules = response.data.modules || response.data || [];
+                    populateModuleDropdowns();
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+            }
+        }
+
+        // Populate module dropdowns
+        function populateModuleDropdowns() {
+            // Filter dropdown
+            const filterSelect = document.getElementById('moduleFilter');
+            filterSelect.innerHTML = '<option value="">All Modules</option>';
+            allModules.forEach(module => {
+                const option = document.createElement('option');
+                option.value = module.id;
+                option.textContent = module.title || module.name;
+                filterSelect.appendChild(option);
+            });
+
+            // Modal dropdown
+            const modalSelect = document.getElementById('assignmentModule');
+            modalSelect.innerHTML = '<option value="">-- Select Module --</option>';
+            allModules.forEach(module => {
+                const option = document.createElement('option');
+                option.value = module.id;
+                option.textContent = module.title || module.name;
+                modalSelect.appendChild(option);
+            });
+        }
+
+        // Load assignments
+        async function loadAssignments() {
+            try {
+                console.log('Loading assignments...');
+                const tbody = document.getElementById('assignmentsTable');
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;"><div class="loader"></div></td></tr>';
+
+                // Use assessor-specific endpoint
+                const response = await apiService.getAssessorAssignments();
+                console.log('API Response:', response);
+
+                if (response.success) {
+                    allAssignments = response.data.assignments || response.data || [];
+                    console.log('Assignments loaded:', allAssignments.length);
+                    renderAssignments(allAssignments);
+                } else {
+                    console.error('API returned error:', response);
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#ef4444;">Failed to load assignments: ' + (response.message || 'Unknown error') + '</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading assignments:', error);
+                const tbody = document.getElementById('assignmentsTable');
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#ef4444;">Failed to load assignments. Please try refreshing the page.</td></tr>';
+            }
+        }
+
+        // Render assignments table
+        function renderAssignments(assignments) {
+            console.log('Rendering assignments:', assignments);
+            const tbody = document.getElementById('assignmentsTable');
+            const countEl = document.getElementById('assignmentCount');
+
+            if (!tbody) {
+                console.error('assignmentsTable element not found!');
+                return;
+            }
+
+            if (countEl) {
+                countEl.textContent = `${assignments.length} assignments`;
+            }
+
+            if (assignments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No assignments found</td></tr>';
+                return;
+            }
+
+            const html = assignments.map(assignment => {
+                const module = allModules.find(m => m.id === assignment.module_id);
+                const moduleName = module ? (module.title || module.name) : 'N/A';
+                const dueDate = assignment.due_date ? new Date(assignment.due_date).toLocaleString() : 'No deadline';
+                const status = assignment.is_active || assignment.status === 'active' ? 'active' : 'inactive';
+                const submissionCount = assignment.submission_count || assignment.submissions_count || 0;
+
+                return `
+                    <tr>
+                        <td><strong>${assignment.title}</strong></td>
+                        <td>${moduleName}</td>
+                        <td>${assignment.class_number || '-'}</td>
+                        <td>${dueDate}</td>
+                        <td>${assignment.max_score || 100}</td>
+                        <td><span class="badge badge-${status === 'active' ? 'success' : 'secondary'}">${status}</span></td>
+                        <td><span class="badge badge-info">${submissionCount}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button onclick="viewAssignment(${assignment.id})" class="btn btn-sm btn-info" title="View Details">
+                                    <i class='bx bx-show'></i>
+                                </button>
+                                <button onclick="editAssignment(${assignment.id})" class="btn btn-sm btn-primary" title="Edit">
+                                    <i class='bx bx-edit'></i>
+                                </button>
+                                <button onclick="deleteAssignment(${assignment.id})" class="btn btn-sm btn-danger" title="Delete">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.innerHTML = html;
+            console.log('Table rendered with', assignments.length, 'rows');
+        }
+
+        // Filter assignments
+        function filterAssignments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const moduleFilter = document.getElementById('moduleFilter').value;
+            const classFilter = document.getElementById('classFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = allAssignments.filter(assignment => {
+                const matchesSearch = !searchTerm ||
+                    assignment.title?.toLowerCase().includes(searchTerm) ||
+                    assignment.description?.toLowerCase().includes(searchTerm);
+
+                const matchesModule = !moduleFilter || String(assignment.module_id) === moduleFilter;
+                const matchesClass = !classFilter || String(assignment.class_number) === classFilter;
+
+                const assignmentStatus = assignment.is_active || assignment.status === 'active' ? 'active' : 'inactive';
+                const matchesStatus = !statusFilter || assignmentStatus === statusFilter;
+
+                return matchesSearch && matchesModule && matchesClass && matchesStatus;
+            });
+
+            renderAssignments(filtered);
+        }
+
+        // Open create modal
+        function openCreateModal() {
+            editingAssignmentId = null;
+            document.getElementById('modalTitle').textContent = 'Create New Assignment';
+            document.getElementById('assignmentForm').reset();
+            document.getElementById('assignmentId').value = '';
+            document.getElementById('assignmentStatus').value = 'active';
+            document.getElementById('assignmentModal').style.display = 'flex';
+        }
+
+        // View assignment details
+        function viewAssignment(id) {
+            const assignment = allAssignments.find(a => a.id === id);
+            if (!assignment) return;
+
+            const module = allModules.find(m => m.id === assignment.module_id);
+            const moduleName = module ? (module.title || module.name) : 'N/A';
+            const dueDate = assignment.due_date ? new Date(assignment.due_date).toLocaleString() : 'No deadline';
+            const status = assignment.is_active || assignment.status === 'active' ? 'Active' : 'Inactive';
+            const submissionCount = assignment.submission_count || assignment.submissions_count || 0;
+
+            const detailsHtml = `
+                <div style="text-align: left; margin: 20px 0;">
+                    <div style="background: #f1f5f9; border-left: 4px solid #667eea; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                        <h3 style="margin: 0 0 12px 0; color: #1e293b; font-size: 18px;">${assignment.title}</h3>
+                        <div style="margin-bottom: 8px;">
+                            <strong style="color: #0f172a;">Module:</strong>
+                            <span style="color: #475569; margin-left: 8px;">${moduleName}</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <strong style="color: #0f172a;">Class:</strong>
+                            <span style="color: #475569; margin-left: 8px;">Class ${assignment.class_number || 'N/A'}</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <strong style="color: #0f172a;">Due Date:</strong>
+                            <span style="color: #475569; margin-left: 8px;">${dueDate}</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <strong style="color: #0f172a;">Max Score:</strong>
+                            <span style="color: #475569; margin-left: 8px;">${assignment.max_score || 100}</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <strong style="color: #0f172a;">Status:</strong>
+                            <span class="badge badge-${status === 'Active' ? 'success' : 'secondary'}" style="margin-left: 8px;">${status}</span>
+                        </div>
+                        <div>
+                            <strong style="color: #0f172a;">Submissions:</strong>
+                            <span class="badge badge-info" style="margin-left: 8px;">${submissionCount}</span>
+                        </div>
+                    </div>
+                    ${assignment.description ? `
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 8px;">Description:</strong>
+                            <p style="color: #475569; line-height: 1.6; margin: 0; padding: 12px; background: #f8fafc; border-radius: 8px;">${assignment.description}</p>
+                        </div>
+                    ` : ''}
+                    ${assignment.requirements ? `
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 8px;">Requirements:</strong>
+                            <p style="color: #475569; line-height: 1.6; margin: 0; padding: 12px; background: #f8fafc; border-radius: 8px; white-space: pre-wrap;">${assignment.requirements}</p>
+                        </div>
+                    ` : ''}
+                    ${assignment.rubric || assignment.grading_criteria ? `
+                        <div style="margin-bottom: 16px;">
+                            <strong style="color: #0f172a; display: block; margin-bottom: 8px;">Grading Rubric:</strong>
+                            <p style="color: #475569; line-height: 1.6; margin: 0; padding: 12px; background: #f8fafc; border-radius: 8px; white-space: pre-wrap;">${assignment.rubric || assignment.grading_criteria}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            modalService.alert({
+                title: '<i class="bx bx-task"></i> Assignment Details',
+                message: detailsHtml,
+                confirmText: 'Close'
+            });
+        }
+
+        // Edit assignment
+        async function editAssignment(id) {
+            const assignment = allAssignments.find(a => a.id === id);
+            if (!assignment) return;
+
+            editingAssignmentId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Assignment';
+            document.getElementById('assignmentId').value = assignment.id;
+            document.getElementById('assignmentTitle').value = assignment.title || '';
+            document.getElementById('assignmentModule').value = assignment.module_id || '';
+            document.getElementById('assignmentClass').value = assignment.class_number || '';
+            document.getElementById('assignmentDescription').value = assignment.description || '';
+            document.getElementById('assignmentRequirements').value = assignment.requirements || '';
+            document.getElementById('assignmentRubric').value = assignment.rubric || assignment.grading_criteria || '';
+            document.getElementById('assignmentMaxScore').value = assignment.max_score || 100;
+
+            // Format due date for datetime-local input
+            if (assignment.due_date) {
+                const dueDate = new Date(assignment.due_date);
+                const year = dueDate.getFullYear();
+                const month = String(dueDate.getMonth() + 1).padStart(2, '0');
+                const day = String(dueDate.getDate()).padStart(2, '0');
+                const hours = String(dueDate.getHours()).padStart(2, '0');
+                const minutes = String(dueDate.getMinutes()).padStart(2, '0');
+                document.getElementById('assignmentDueDate').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            const status = assignment.is_active || assignment.status === 'active' ? 'active' : 'inactive';
+            document.getElementById('assignmentStatus').value = status;
+
+            document.getElementById('assignmentModal').style.display = 'flex';
+        }
+
+        // Close modal
+        function closeAssignmentModal() {
+            document.getElementById('assignmentModal').style.display = 'none';
+            document.getElementById('assignmentForm').reset();
+            editingAssignmentId = null;
+        }
+
+        // Save assignment (create or update)
+        async function saveAssignment(event) {
+            event.preventDefault();
+
+            const assignmentId = document.getElementById('assignmentId').value;
+
+            const assignmentData = {
+                title: document.getElementById('assignmentTitle').value,
+                module_id: parseInt(document.getElementById('assignmentModule').value),
+                class_number: parseInt(document.getElementById('assignmentClass').value),
+                description: document.getElementById('assignmentDescription').value,
+                requirements: document.getElementById('assignmentRequirements').value || null,
+                rubric: document.getElementById('assignmentRubric').value || null,
+                max_score: parseInt(document.getElementById('assignmentMaxScore').value),
+                due_date: document.getElementById('assignmentDueDate').value,
+                is_active: document.getElementById('assignmentStatus').value === 'active'
+            };
+
+            try {
+                let response;
+                if (assignmentId) {
+                    // Update existing assignment
+                    response = await apiService.updateAssignment(assignmentId, assignmentData);
+                } else {
+                    // Create new assignment
+                    response = await apiService.createAssignment(assignmentData);
+                }
+
+                if (response.success) {
+                    showSuccess(assignmentId ? 'Assignment updated successfully' : 'Assignment created successfully');
+                    modalService.addNotification({
+                        title: assignmentId ? 'Assignment Updated' : 'Assignment Created',
+                        message: `${assignmentData.title} has been ${assignmentId ? 'updated' : 'created'} successfully`,
+                        type: 'success'
+                    });
+                    closeAssignmentModal();
+                    await loadAssignments();
+                } else {
+                    showError(response.message || 'Failed to save assignment');
+                }
+            } catch (error) {
+                console.error('Error saving assignment:', error);
+                showError('Failed to save assignment: ' + error.message);
+            }
+        }
+
+        // Delete assignment
+        async function deleteAssignment(id) {
+            const assignment = allAssignments.find(a => a.id === id);
+            if (!assignment) return;
+
+            modalService.confirm({
+                title: '<i class="bx bx-trash"></i> Delete Assignment',
+                message: `Are you sure you want to delete "<strong>${assignment.title}</strong>"? This action cannot be undone and will permanently remove the assignment and all associated submissions.`,
+                confirmText: 'Yes, Delete Assignment',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: async () => {
+                    const loadingId = modalService.loading('Deleting assignment...');
+                    try {
+                        const response = await apiService.deleteAssignment(id);
+                        modalService.close(loadingId);
+
+                        if (response.success) {
+                            showSuccess('Assignment deleted successfully!');
+                            modalService.addNotification({
+                                title: 'Assignment Deleted',
+                                message: `${assignment.title} has been permanently removed`,
+                                type: 'success'
+                            });
+                            await loadAssignments();
+                        } else {
+                            showError(response.message || 'Failed to delete assignment');
+                        }
+                    } catch (error) {
+                        modalService.close(loadingId);
+                        console.error('Error deleting assignment:', error);
+                        showError('Failed to delete assignment. Please try again.');
+                    }
+                }
+            });
+        }
+
+        // Helper functions
+        function showSuccess(message) {
+            if (typeof notificationService !== 'undefined') {
+                notificationService.show(message, 'success');
+            }
+        }
+
+        function showError(message) {
+            if (typeof notificationService !== 'undefined') {
+                notificationService.show(message, 'error');
+            }
+        }
+
+        function logout() {
+            modalService.confirm({
+                title: '<i class="bx bx-log-out"></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterAssignments);
+        document.getElementById('moduleFilter').addEventListener('change', filterAssignments);
+        document.getElementById('classFilter').addEventListener('change', filterAssignments);
+        document.getElementById('statusFilter').addEventListener('change', filterAssignments);
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('assignmentModal');
+            if (event.target === modal) {
+                closeAssignmentModal();
+            }
+        };
+
+        // Initialize
+        loadModules();
+        loadAssignments();
+
+        // Add click handler for notification bell
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
+                        modalService.showNotifications();
+                    }
+                });
+            }
+        });
+
+        // Add welcome notification
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Assignments Management',
+                message: 'You can create, edit, and manage all assignments from this page',
+                type: 'info'
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

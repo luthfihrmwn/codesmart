@@ -581,6 +581,51 @@ class APIService {
     async getAssessorStatistics() {
         return this.get('/assessor/statistics');
     }
+
+    async getAssessorAssignments() {
+        return this.get('/assessor/assignments');
+    }
+
+    async getAssessorMaterials() {
+        return this.get('/assessor/materials');
+    }
+
+    async getAssessorMaterial(id) {
+        return this.get(`/assessor/materials/${id}`);
+    }
+
+    async createAssessorMaterial(materialData) {
+        return this.post('/assessor/materials', materialData);
+    }
+
+    async updateAssessorMaterial(id, materialData) {
+        return this.put(`/assessor/materials/${id}`, materialData);
+    }
+
+    async deleteAssessorMaterial(id) {
+        return this.delete(`/assessor/materials/${id}`);
+    }
+
+    // ===== Notifications API =====
+    async getNotifications() {
+        return this.get('/notifications');
+    }
+
+    async getUnreadNotifications() {
+        return this.get('/notifications/unread');
+    }
+
+    async markNotificationAsRead(notificationId) {
+        return this.put(`/notifications/${notificationId}/read`);
+    }
+
+    async markAllNotificationsAsRead() {
+        return this.put('/notifications/mark-all-read');
+    }
+
+    async deleteNotification(notificationId) {
+        return this.delete(`/notifications/${notificationId}`);
+    }
 }
 
 // Create singleton instance
