@@ -626,6 +626,106 @@ class APIService {
     async deleteNotification(notificationId) {
         return this.delete(`/notifications/${notificationId}`);
     }
+
+    // ===== Discussions API =====
+    async getDiscussions(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/discussions${queryString ? '?' + queryString : ''}`);
+    }
+
+    async getDiscussion(id) {
+        return this.get(`/discussions/${id}`);
+    }
+
+    async createDiscussion(discussionData) {
+        return this.post('/discussions', discussionData);
+    }
+
+    async createDiscussionReply(discussionId, replyData) {
+        return this.post(`/discussions/${discussionId}/replies`, replyData);
+    }
+
+    async toggleDiscussionPin(id) {
+        return this.put(`/discussions/${id}/pin`);
+    }
+
+    async toggleDiscussionLock(id) {
+        return this.put(`/discussions/${id}/lock`);
+    }
+
+    async markReplyAsSolution(replyId) {
+        return this.put(`/discussions/replies/${replyId}/solution`);
+    }
+
+    async deleteDiscussion(id) {
+        return this.delete(`/discussions/${id}`);
+    }
+
+    // ===== Announcements API =====
+    async getAnnouncements(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/announcements${queryString ? '?' + queryString : ''}`);
+    }
+
+    async getAnnouncement(id) {
+        return this.get(`/announcements/${id}`);
+    }
+
+    async createAnnouncement(announcementData) {
+        return this.post('/announcements', announcementData);
+    }
+
+    async updateAnnouncement(id, announcementData) {
+        return this.put(`/announcements/${id}`, announcementData);
+    }
+
+    async deleteAnnouncement(id) {
+        return this.delete(`/announcements/${id}`);
+    }
+
+    // ===== Analytics API =====
+    async getDashboardAnalytics(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/analytics/dashboard${queryString ? '?' + queryString : ''}`);
+    }
+
+    async getStudentPerformance(studentId, params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/analytics/student-performance/${studentId}${queryString ? '?' + queryString : ''}`);
+    }
+
+    async getModuleCompletionRates() {
+        return this.get('/analytics/module-completion');
+    }
+
+    async getGradeDistribution(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/analytics/grade-distribution${queryString ? '?' + queryString : ''}`);
+    }
+
+    async getEngagementMetrics(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/analytics/engagement${queryString ? '?' + queryString : ''}`);
+    }
+
+    async getAtRiskStudents() {
+        return this.get('/analytics/at-risk-students');
+    }
+
+    // ===== Exports API =====
+    async exportGrades(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/exports/grades${queryString ? '?' + queryString : ''}`);
+    }
+
+    async exportStudentProgress(studentId) {
+        return this.get(`/exports/student-progress/${studentId}`);
+    }
+
+    async exportClassSummary(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get(`/exports/class-summary${queryString ? '?' + queryString : ''}`);
+    }
 }
 
 // Create singleton instance
@@ -633,3 +733,6 @@ const apiService = new APIService();
 
 // Export for use in other files
 window.apiService = apiService;
+
+// Also export as ES6 module
+export default apiService;

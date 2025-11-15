@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/index.css">
+
+    <style>
+        .dashboard-container {
+            padding: 12rem 7% 4rem;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 7%;
+            background: var(--bg-color);
+            box-shadow: 0 .1rem 1rem rgba(0,0,0,.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            color: var(--main-color);
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            font-size: 1.6rem;
+            color: var(--text-color);
+            transition: .3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--main-color);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: var(--main-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            color: var(--main-color);
+            margin-bottom: 3rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 1.2rem 2.5rem;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, var(--main-color), #9d7bea);
+            color: white;
+            border-color: var(--main-color);
+        }
+
+        .announcements-grid {
+            display: grid;
+            gap: 2.5rem;
+        }
+
+        .announcement-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 .5rem 2rem rgba(0,0,0,.1);
+            border-left: 5px solid var(--main-color);
+            transition: all 0.3s;
+        }
+
+        .announcement-card.urgent {
+            border-left-color: #ef4444;
+            background: linear-gradient(90deg, #fef2f2 0%, white 10%);
+        }
+
+        .announcement-card.high {
+            border-left-color: #f59e0b;
+            background: linear-gradient(90deg, #fffbeb 0%, white 10%);
+        }
+
+        .announcement-card.normal {
+            border-left-color: #3b82f6;
+        }
+
+        .announcement-card.low {
+            border-left-color: #6b7280;
+        }
+
+        .announcement-card:hover {
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.15);
+            transform: translateY(-5px);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 2rem;
+        }
+
+        .announcement-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .priority-badge {
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-badge.urgent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .priority-badge.high {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .priority-badge.normal {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .priority-badge.low {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .announcement-meta {
+            display: flex;
+            gap: 2.5rem;
+            font-size: 1.4rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .announcement-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .announcement-content {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            color: #4b5563;
+            margin-bottom: 2rem;
+            white-space: pre-wrap;
+        }
+
+        .announcement-footer {
+            display: flex;
+            gap: 1rem;
+            padding-top: 2rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .target-badge {
+            padding: 0.6rem 1.2rem;
+            background: #f3f4f6;
+            border-radius: 1rem;
+            font-size: 1.4rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 8rem 2rem;
+            color: #9ca3af;
+            background: white;
+            border-radius: 2rem;
+        }
+
+        .empty-state i {
+            font-size: 8rem;
+            margin-bottom: 2rem;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 2.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 6rem;
+            font-size: 1.8rem;
+            color: #9ca3af;
+        }
+
+        .new-badge {
+            background: #ef4444;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="logo">CodeSmart</div>
+        <nav class="nav-links">
+            <a href="dashboard-new.html">Dashboard</a>
+            <a href="modules-new.html">Modules</a>
+            <a href="assignment-new.html">Assignments</a>
+            <a href="discussions-new.html">Discussions</a>
+            <a href="announcements-new.html" class="active">Announcements</a>
+        </nav>
+        <div class="user-menu">
+            <div class="user-avatar" id="userAvatar">S</div>
+            <span id="userName">Student</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <h1 class="page-title">Announcements</h1>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <div class="filter-tab active" data-filter="all" onclick="setFilter('all')">All</div>
+            <div class="filter-tab" data-filter="urgent" onclick="setFilter('urgent')">Urgent</div>
+            <div class="filter-tab" data-filter="high" onclick="setFilter('high')">High</div>
+            <div class="filter-tab" data-filter="normal" onclick="setFilter('normal')">Normal</div>
+        </div>
+
+        <!-- Announcements Grid -->
+        <div class="announcements-grid" id="announcementsGrid">
+            <div class="loading">
+                <i class='bx bx-loader-alt bx-spin'></i>
+                Loading announcements...
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import apiService from '../../js/api-service.js';
+
+        let announcements = [];
+        let currentFilter = 'all';
+
+        // Initialize
+        async function init() {
+            await loadAnnouncements();
+            setUserInfo();
+        }
+
+        // Load announcements
+        async function loadAnnouncements() {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/announcements', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    announcements = data.data.announcements || [];
+                    renderAnnouncements();
+                }
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+                renderEmptyState();
+            }
+        }
+
+        // Set filter
+        window.setFilter = function(filter) {
+            currentFilter = filter;
+
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.filter === filter) {
+                    tab.classList.add('active');
+                }
+            });
+
+            renderAnnouncements();
+        };
+
+        // Render announcements
+        function renderAnnouncements() {
+            const container = document.getElementById('announcementsGrid');
+
+            let filtered = [...announcements];
+
+            // Apply filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(a => a.priority === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            container.innerHTML = filtered.map(announcement => {
+                const isNew = isAnnouncementNew(announcement.created_at);
+
+                return `
+                    <div class="announcement-card ${announcement.priority}">
+                        <div class="announcement-header">
+                            <div>
+                                <h3 class="announcement-title">
+                                    ${announcement.title}
+                                    ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+                                </h3>
+                                <div class="announcement-meta">
+                                    <span><i class='bx bx-user'></i> ${announcement.author_name || 'System'}</span>
+                                    <span><i class='bx bx-time'></i> ${formatDate(announcement.created_at)}</span>
+                                </div>
+                            </div>
+                            <span class="priority-badge ${announcement.priority}">${announcement.priority}</span>
+                        </div>
+
+                        <div class="announcement-content">${announcement.content}</div>
+
+                        <div class="announcement-footer">
+                            <span class="target-badge">
+                                <i class='bx bx-group'></i>
+                                For: ${formatTargetRole(announcement.target_role)}
+                            </span>
+                            ${announcement.target_level && announcement.target_level !== 'all' ? `
+                                <span class="target-badge">
+                                    <i class='bx bx-layer'></i>
+                                    Level: ${announcement.target_level}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Check if announcement is new (less than 3 days old)
+        function isAnnouncementNew(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = diffMs / (1000 * 60 * 60 * 24);
+            return diffDays < 3;
+        }
+
+        // Format target role
+        function formatTargetRole(role) {
+            const roles = {
+                'all': 'Everyone',
+                'student': 'Students',
+                'assessor': 'Assessors',
+                'admin': 'Admins'
+            };
+            return roles[role] || role;
+        }
+
+        // Render empty state
+        function renderEmptyState() {
+            const container = document.getElementById('announcementsGrid');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class='bx bx-megaphone'></i>
+                    <h3>No Announcements</h3>
+                    <p>There are no announcements at this time</p>
+                </div>
+            `;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffHours < 1) return 'Just now';
+            if (diffHours < 24) return `${diffHours} hours ago`;
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Set user info
+        function setUserInfo() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.name) {
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+            }
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
