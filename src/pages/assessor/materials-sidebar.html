@@ -655,17 +655,8 @@
                 document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
             }
 
-            // Notification bell handler
-            const notificationBell = document.querySelector('.notification-bell');
-            if (notificationBell) {
-                notificationBell.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
-                        modalService.showNotifications();
-                    }
-                });
-            }
+            // Notification bell is now handled by notification-bell.js
+            // Old event listener removed to prevent conflict
         });
 
         // Load modules for dropdown

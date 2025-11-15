@@ -15,9 +15,11 @@ class NotificationBell {
      * Initialize notification bell
      */
     init() {
+        console.log('NotificationBell: Initializing...');
         this.createPanel();
         this.attachEventListeners();
         this.loadNotifications();
+        console.log('NotificationBell: Initialized with', this.notifications.length, 'notifications');
 
         // Auto refresh every 30 seconds
         setInterval(() => {
@@ -129,6 +131,9 @@ class NotificationBell {
      * Load notifications from API
      */
     async loadNotifications() {
+        // For now, use mock data until backend notification API is ready
+        // TODO: Uncomment when backend /api/v1/notifications endpoint is ready
+        /*
         try {
             const response = await apiService.getNotifications();
 
@@ -136,22 +141,22 @@ class NotificationBell {
                 this.notifications = response.data.notifications || response.data || [];
                 this.updateBadge();
                 this.renderNotifications();
-            } else {
-                console.error('Failed to load notifications:', response.message);
-                // Use mock data for demo if API fails
-                this.loadMockNotifications();
+                return;
             }
         } catch (error) {
             console.error('Error loading notifications:', error);
-            // Use mock data for demo if API fails
-            this.loadMockNotifications();
         }
+        */
+
+        // Load mock data for demo
+        this.loadMockNotifications();
     }
 
     /**
      * Load mock notifications for demo
      */
     loadMockNotifications() {
+        console.log('NotificationBell: Loading mock notifications...');
         this.notifications = [
             {
                 id: 1,
@@ -199,6 +204,7 @@ class NotificationBell {
                 link: null
             }
         ];
+        console.log('NotificationBell: Loaded', this.notifications.length, 'mock notifications');
         this.updateBadge();
         this.renderNotifications();
     }
@@ -208,15 +214,20 @@ class NotificationBell {
      */
     updateBadge() {
         const badge = document.getElementById('notificationBadge');
-        if (!badge) return;
+        if (!badge) {
+            console.warn('NotificationBell: Badge element not found');
+            return;
+        }
 
         this.unreadCount = this.notifications.filter(n => !n.is_read).length;
 
         if (this.unreadCount > 0) {
             badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
             badge.style.display = 'flex';
+            console.log('NotificationBell: Badge updated -', this.unreadCount, 'unread');
         } else {
             badge.style.display = 'none';
+            console.log('NotificationBell: No unread notifications');
         }
     }
 
@@ -225,12 +236,18 @@ class NotificationBell {
      */
     renderNotifications() {
         const body = document.getElementById('notificationPanelBody');
-        if (!body) return;
+        if (!body) {
+            console.warn('NotificationBell: Panel body not found, retrying...');
+            setTimeout(() => this.renderNotifications(), 100);
+            return;
+        }
 
         if (this.notifications.length === 0) {
             this.showEmptyState('No notifications yet');
             return;
         }
+
+        console.log('NotificationBell: Rendering', this.notifications.length, 'notifications');
 
         body.innerHTML = this.notifications.map(notification => {
             const isUnread = !notification.is_read;
@@ -329,33 +346,43 @@ class NotificationBell {
      * Mark notification as read
      */
     async markAsRead(notificationId) {
+        // For demo: just update local state
+        // TODO: Uncomment when backend API is ready
+        /*
         try {
             const response = await apiService.markNotificationAsRead(notificationId);
-
             if (response.success) {
-                // Update local state
                 const notification = this.notifications.find(n => n.id === notificationId);
                 if (notification) {
                     notification.is_read = true;
                 }
-
                 this.updateBadge();
                 this.renderNotifications();
             }
         } catch (error) {
             console.error('Error marking notification as read:', error);
         }
+        */
+
+        // Update local state for demo
+        const notification = this.notifications.find(n => n.id === notificationId);
+        if (notification) {
+            notification.is_read = true;
+        }
+        this.updateBadge();
+        this.renderNotifications();
     }
 
     /**
      * Mark all notifications as read
      */
     async markAllAsRead() {
+        // For demo: just update local state
+        // TODO: Uncomment when backend API is ready
+        /*
         try {
             const response = await apiService.markAllNotificationsAsRead();
-
             if (response.success) {
-                // Update all notifications to read
                 this.notifications.forEach(n => n.is_read = true);
                 this.updateBadge();
                 this.renderNotifications();
@@ -365,6 +392,13 @@ class NotificationBell {
             console.error('Error marking all as read:', error);
             notificationService.error('Failed to mark all as read');
         }
+        */
+
+        // Update local state for demo
+        this.notifications.forEach(n => n.is_read = true);
+        this.updateBadge();
+        this.renderNotifications();
+        notificationService.success('All notifications marked as read');
     }
 }
 

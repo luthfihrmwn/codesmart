@@ -669,28 +669,8 @@
         loadModules();
         loadAssignments();
 
-        // Add click handler for notification bell
-        document.addEventListener('DOMContentLoaded', function() {
-            const notificationBell = document.querySelector('.notification-bell');
-            if (notificationBell) {
-                notificationBell.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
-                        modalService.showNotifications();
-                    }
-                });
-            }
-        });
-
-        // Add welcome notification
-        setTimeout(() => {
-            modalService.addNotification({
-                title: 'Assignments Management',
-                message: 'You can create, edit, and manage all assignments from this page',
-                type: 'info'
-            });
-        }, 1000);
+        // Notification bell is now handled by notification-bell.js
+        // Old event listener and welcome toast removed to prevent conflict
     </script>
 </body>
 </html>

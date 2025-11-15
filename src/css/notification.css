@@ -461,22 +461,22 @@
     display: flex;
     align-items: start;
     gap: 12px;
-    background: #f8fafc;
+    background: #f8fafc !important;
     position: relative;
 }
 
 .notification-item:hover {
-    background: #f1f5f9;
+    background: #f1f5f9 !important;
     transform: translateX(-2px);
 }
 
 .notification-item.unread {
-    background: #eff6ff;
+    background: #eff6ff !important;
     border-left: 3px solid #3b82f6;
 }
 
 .notification-item.unread:hover {
-    background: #dbeafe;
+    background: #dbeafe !important;
 }
 
 .notification-item-icon {
@@ -538,7 +538,7 @@
 .notification-item-title {
     font-size: 14px;
     font-weight: 600;
-    color: #0f172a !important;
+    color: #1e293b !important;
     margin-bottom: 4px;
     line-height: 1.4;
 }

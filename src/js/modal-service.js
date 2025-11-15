@@ -12,8 +12,8 @@ class ModalService {
     }
 
     init() {
-        // Create notification bell in header if it doesn't exist
-        this.createNotificationBell();
+        // Notification bell is now handled by notification-bell.js
+        // this.createNotificationBell(); // DISABLED - using new notification-bell.js
 
         // Close modal on ESC key
         document.addEventListener('keydown', (e) => {
@@ -336,8 +336,16 @@ class ModalService {
 
     /**
      * Show notifications modal
+     * DEPRECATED: This method is disabled. Use notification-bell.js instead.
      */
     showNotifications() {
+        // Notification modal is now handled by notification-bell.js
+        // This old modal system is deprecated to prevent conflicts
+        console.warn('modalService.showNotifications() is deprecated. Notification bell is now handled by notification-bell.js');
+        return;
+
+        // Old code commented out below:
+        /*
         const notificationsList = this.notifications.length > 0
             ? this.notifications.map(n => this.renderNotificationItem(n)).join('')
             : `
@@ -422,6 +430,7 @@ class ModalService {
                 });
             }
         }, 100);
+        */
     }
 
     renderNotificationItem(notification) {
