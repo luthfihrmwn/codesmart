@@ -58,6 +58,26 @@
             </div>
 
             <div class="nav-section">
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-megaphone'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="analytics-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
                 <div class="nav-section-title">Account</div>
                 <a href="#" class="nav-item" onclick="logout()">
                     <i class='bx bx-log-out'></i>
@@ -116,6 +136,9 @@
                 <div class="card-header">
                     <h2 class="card-title"><i class='bx bx-file'></i> Submissions</h2>
                     <div class="btn-group">
+                        <button class="btn btn-success btn-sm" onclick="exportGrades()">
+                            <i class='bx bx-download'></i> Export Grades
+                        </button>
                         <button class="btn btn-outline btn-sm" onclick="refreshSubmissions()">
                             <i class='bx bx-refresh'></i> Refresh
                         </button>
@@ -406,6 +429,47 @@
         function refreshSubmissions() {
             loadSubmissions();
             notificationService.show('success', 'Submissions refreshed');
+        }
+
+        function exportGrades() {
+            const moduleFilter = document.getElementById('moduleFilter').value;
+            const params = new URLSearchParams();
+
+            if (moduleFilter && moduleFilter !== 'all') {
+                params.append('module_id', moduleFilter);
+            }
+            params.append('format', 'xlsx');
+
+            const token = localStorage.getItem('token');
+            const url = `http://localhost:5000/api/v1/exports/grades?${params.toString()}`;
+
+            // Create temporary link to download
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('target', '_blank');
+
+            // Add authorization header via fetch and download
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `grades_export_${Date.now()}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                notificationService.show('success', 'Grades exported successfully');
+            })
+            .catch(error => {
+                console.error('Error exporting grades:', error);
+                notificationService.show('error', 'Failed to export grades');
+            });
         }
 
         function logout() {

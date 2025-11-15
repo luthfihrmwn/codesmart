@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion Forum - Assessor Dashboard</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+
+    <style>
+        .discussions-container {
+            padding: 2rem;
+        }
+
+        .filter-bar {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-bar select,
+        .filter-bar input {
+            padding: 1rem 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            background: white;
+            color: #333;
+            min-width: 200px;
+        }
+
+        .btn-new-discussion {
+            margin-left: auto;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-new-discussion:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .discussions-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .discussion-item {
+            padding: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .discussion-item:hover {
+            background: #f8f9ff;
+        }
+
+        .discussion-item:last-child {
+            border-bottom: none;
+        }
+
+        .discussion-icon {
+            font-size: 3rem;
+            color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .discussion-icon.pinned {
+            color: #fbbf24;
+        }
+
+        .discussion-icon.locked {
+            color: #6b7280;
+        }
+
+        .discussion-icon.solved {
+            color: #10b981;
+        }
+
+        .discussion-content {
+            flex: 1;
+        }
+
+        .discussion-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .discussion-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .discussion-badges {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .badge.pinned {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge.locked {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .badge.solved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .discussion-meta {
+            display: flex;
+            gap: 2rem;
+            font-size: 1.3rem;
+            color: #6b7280;
+            margin-top: 1rem;
+        }
+
+        .discussion-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .discussion-preview {
+            color: #6b7280;
+            font-size: 1.4rem;
+            margin-top: 0.5rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .discussion-stats {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            font-size: 1.3rem;
+            color: #6b7280;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 6rem 2rem;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Discussion Detail Modal */
+        .discussion-detail {
+            max-width: 900px;
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .detail-header {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .detail-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 2rem;
+            color: #6b7280;
+            font-size: 1.4rem;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-action {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-action.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .discussion-body {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            color: #374151;
+            margin-bottom: 3rem;
+        }
+
+        .replies-section {
+            margin-top: 3rem;
+        }
+
+        .replies-header {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: #1f2937;
+        }
+
+        .reply-item {
+            background: #f9fafb;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid #e5e7eb;
+        }
+
+        .reply-item.solution {
+            background: #ecfdf5;
+            border-left-color: #10b981;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .reply-author {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.4rem;
+        }
+
+        .reply-time {
+            font-size: 1.2rem;
+            color: #9ca3af;
+        }
+
+        .reply-content {
+            font-size: 1.4rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .reply-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .reply-form {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .reply-form .btn-submit {
+            margin-top: 1rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reply-form .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.6rem;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Sidebar -->
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <h1>Discussion Forum</h1>
+            </div>
+            <div class="header-right">
+                <!-- Notification Bell -->
+                <div class="notification-bell" id="notificationBell">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </div>
+                <!-- Notification Dropdown -->
+                <div class="notification-dropdown" id="notificationDropdown"></div>
+
+                <div class="user-profile">
+                    <img src="../../images/default-avatar.png" alt="User" onerror="this.src='https://ui-avatars.com/api/?name=Assessor&background=667eea&color=fff'">
+                    <span id="userName">Assessor</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Discussions Container -->
+        <div class="discussions-container">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <select id="filterModule">
+                    <option value="">All Modules</option>
+                </select>
+                <select id="filterAssignment">
+                    <option value="">All Assignments</option>
+                </select>
+                <select id="filterStatus">
+                    <option value="">All Discussions</option>
+                    <option value="pinned">Pinned Only</option>
+                    <option value="solved">Solved Only</option>
+                    <option value="unsolved">Unsolved Only</option>
+                    <option value="locked">Locked</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Search discussions...">
+                <button class="btn-new-discussion" id="btnNewDiscussion">
+                    <i class='bx bx-plus'></i>
+                    New Discussion
+                </button>
+            </div>
+
+            <!-- Discussions List -->
+            <div class="discussions-list" id="discussionsList">
+                <div class="loading">
+                    <i class='bx bx-loader-alt bx-spin'></i>
+                    Loading discussions...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discussion Detail Modal -->
+    <div class="modal" id="discussionModal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="discussion-detail" id="discussionDetail">
+            <div class="loading">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../../js/api-service.js"></script>
+    <script type="module" src="../../js/modal-service.js"></script>
+    <script type="module" src="../../js/notification-bell.js"></script>
+    <script type="module">
+        import apiService from '../../js/api-service.js';
+        import { modalService } from '../../js/modal-service.js';
+
+        let discussions = [];
+        let modules = [];
+        let assignments = [];
+        let currentDiscussion = null;
+
+        // Load sidebar
+        async function loadSidebar() {
+            const response = await fetch('discussions-sidebar.html');
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const sidebar = doc.querySelector('.sidebar');
+            if (sidebar) {
+                document.getElementById('sidebar').innerHTML = sidebar.innerHTML;
+
+                // Set active nav
+                const navLinks = document.querySelectorAll('.sidebar .nav-link');
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === 'discussions-sidebar.html') {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        // Initialize
+        async function init() {
+            await loadSidebar();
+            await loadModules();
+            await loadDiscussions();
+            setupEventListeners();
+        }
+
+        // Load modules for filter
+        async function loadModules() {
+            try {
+                const response = await apiService.getModules();
+                if (response.success) {
+                    modules = response.data.modules || response.data || [];
+                    renderModuleFilter();
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+            }
+        }
+
+        // Render module filter
+        function renderModuleFilter() {
+            const filterModule = document.getElementById('filterModule');
+            modules.forEach(module => {
+                const option = document.createElement('option');
+                option.value = module.id;
+                option.textContent = `${module.name} (${module.level.toUpperCase()})`;
+                filterModule.appendChild(option);
+            });
+        }
+
+        // Load discussions
+        async function loadDiscussions() {
+            try {
+                const moduleId = document.getElementById('filterModule').value;
+                const assignmentId = document.getElementById('filterAssignment').value;
+
+                const params = new URLSearchParams();
+                if (moduleId) params.append('module_id', moduleId);
+                if (assignmentId) params.append('assignment_id', assignmentId);
+
+                const response = await fetch(`http://localhost:5000/api/v1/discussions?${params}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    discussions = data.data.discussions || [];
+                    applyFilters();
+                }
+            } catch (error) {
+                console.error('Error loading discussions:', error);
+                renderEmptyState();
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const filterStatus = document.getElementById('filterStatus').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            let filtered = [...discussions];
+
+            // Status filter
+            if (filterStatus === 'pinned') {
+                filtered = filtered.filter(d => d.is_pinned);
+            } else if (filterStatus === 'solved') {
+                filtered = filtered.filter(d => d.is_solved);
+            } else if (filterStatus === 'unsolved') {
+                filtered = filtered.filter(d => !d.is_solved);
+            } else if (filterStatus === 'locked') {
+                filtered = filtered.filter(d => d.is_locked);
+            }
+
+            // Search filter
+            if (searchTerm) {
+                filtered = filtered.filter(d =>
+                    d.title.toLowerCase().includes(searchTerm) ||
+                    d.content.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            renderDiscussions(filtered);
+        }
+
+        // Render discussions
+        function renderDiscussions(data) {
+            const container = document.getElementById('discussionsList');
+
+            if (data.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            container.innerHTML = data.map(discussion => `
+                <div class="discussion-item" data-id="${discussion.id}">
+                    <i class='bx ${getDiscussionIcon(discussion)} discussion-icon ${getDiscussionClass(discussion)}'></i>
+                    <div class="discussion-content">
+                        <div class="discussion-header">
+                            <h3 class="discussion-title">${discussion.title}</h3>
+                            <div class="discussion-badges">
+                                ${discussion.is_pinned ? '<span class="badge pinned"><i class="bx bxs-pin"></i> Pinned</span>' : ''}
+                                ${discussion.is_solved ? '<span class="badge solved"><i class="bx bx-check-circle"></i> Solved</span>' : ''}
+                                ${discussion.is_locked ? '<span class="badge locked"><i class="bx bx-lock"></i> Locked</span>' : ''}
+                            </div>
+                        </div>
+                        <p class="discussion-preview">${discussion.content}</p>
+                        <div class="discussion-meta">
+                            <span><i class='bx bx-user'></i> ${discussion.author_name || 'Unknown'}</span>
+                            <span><i class='bx bx-time'></i> ${formatDate(discussion.created_at)}</span>
+                            <span><i class='bx bx-comment'></i> ${discussion.reply_count || 0} replies</span>
+                            <span><i class='bx bx-show'></i> ${discussion.views || 0} views</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click listeners
+            container.querySelectorAll('.discussion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.dataset.id;
+                    showDiscussionDetail(id);
+                });
+            });
+        }
+
+        // Get discussion icon
+        function getDiscussionIcon(discussion) {
+            if (discussion.is_pinned) return 'bxs-pin';
+            if (discussion.is_locked) return 'bx-lock';
+            if (discussion.is_solved) return 'bx-check-circle';
+            return 'bx-message-square-dots';
+        }
+
+        // Get discussion class
+        function getDiscussionClass(discussion) {
+            if (discussion.is_pinned) return 'pinned';
+            if (discussion.is_locked) return 'locked';
+            if (discussion.is_solved) return 'solved';
+            return '';
+        }
+
+        // Render empty state
+        function renderEmptyState() {
+            const container = document.getElementById('discussionsList');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class='bx bx-message-square-x'></i>
+                    <h3>No Discussions Found</h3>
+                    <p>Start a new discussion to engage with students</p>
+                </div>
+            `;
+        }
+
+        // Show discussion detail
+        async function showDiscussionDetail(id) {
+            const modal = document.getElementById('discussionModal');
+            const detail = document.getElementById('discussionDetail');
+
+            modal.style.display = 'flex';
+            detail.innerHTML = '<div class="loading"><i class="bx bx-loader-alt bx-spin"></i> Loading...</div>';
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    currentDiscussion = data.data.discussion;
+                    renderDiscussionDetail(currentDiscussion);
+                }
+            } catch (error) {
+                console.error('Error loading discussion:', error);
+                detail.innerHTML = '<div class="loading">Error loading discussion</div>';
+            }
+        }
+
+        // Render discussion detail
+        function renderDiscussionDetail(discussion) {
+            const detail = document.getElementById('discussionDetail');
+            detail.innerHTML = `
+                <div class="detail-header">
+                    <div class="discussion-badges" style="margin-bottom: 1rem;">
+                        ${discussion.is_pinned ? '<span class="badge pinned"><i class="bx bxs-pin"></i> Pinned</span>' : ''}
+                        ${discussion.is_solved ? '<span class="badge solved"><i class="bx bx-check-circle"></i> Solved</span>' : ''}
+                        ${discussion.is_locked ? '<span class="badge locked"><i class="bx bx-lock"></i> Locked</span>' : ''}
+                    </div>
+                    <h2 class="detail-title">${discussion.title}</h2>
+                    <div class="detail-meta">
+                        <span><i class='bx bx-user'></i> ${discussion.author_name}</span>
+                        <span><i class='bx bx-time'></i> ${formatDate(discussion.created_at)}</span>
+                        <span><i class='bx bx-show'></i> ${discussion.views || 0} views</span>
+                    </div>
+                    <div class="detail-actions">
+                        <button class="btn-action ${discussion.is_pinned ? 'active' : ''}" onclick="togglePin(${discussion.id})">
+                            <i class='bx bxs-pin'></i> ${discussion.is_pinned ? 'Unpin' : 'Pin'}
+                        </button>
+                        <button class="btn-action ${discussion.is_locked ? 'active' : ''}" onclick="toggleLock(${discussion.id})">
+                            <i class='bx bx-lock'></i> ${discussion.is_locked ? 'Unlock' : 'Lock'}
+                        </button>
+                        <button class="btn-action" onclick="closeDiscussionModal()">
+                            <i class='bx bx-x'></i> Close
+                        </button>
+                    </div>
+                </div>
+
+                <div class="discussion-body">
+                    ${discussion.content.replace(/\n/g, '<br>')}
+                </div>
+
+                <div class="replies-section">
+                    <h3 class="replies-header">
+                        <i class='bx bx-comment'></i> ${discussion.replies ? discussion.replies.length : 0} Replies
+                    </h3>
+                    <div id="repliesList">
+                        ${discussion.replies && discussion.replies.length > 0 ? renderReplies(discussion.replies) : '<p style="color: #9ca3af; text-align: center; padding: 2rem;">No replies yet</p>'}
+                    </div>
+                </div>
+
+                ${!discussion.is_locked ? `
+                    <div class="reply-form">
+                        <h4 style="margin-bottom: 1rem; font-size: 1.6rem;">Add Reply</h4>
+                        <textarea id="replyContent" placeholder="Write your reply..."></textarea>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 1.4rem;">
+                            <input type="checkbox" id="markAsSolution">
+                            Mark as solution
+                        </label>
+                        <button class="btn-submit" onclick="submitReply()">
+                            <i class='bx bx-send'></i> Submit Reply
+                        </button>
+                    </div>
+                ` : '<p style="color: #9ca3af; text-align: center; padding: 2rem; background: #f9fafb; border-radius: 8px; margin-top: 2rem;"><i class="bx bx-lock"></i> This discussion is locked</p>'}
+            `;
+        }
+
+        // Render replies
+        function renderReplies(replies) {
+            return replies.map(reply => `
+                <div class="reply-item ${reply.is_solution ? 'solution' : ''}">
+                    <div class="reply-header">
+                        <div>
+                            <span class="reply-author">${reply.author_name || 'Unknown'}</span>
+                            ${reply.is_solution ? '<span class="badge solved" style="margin-left: 0.5rem;"><i class="bx bx-check-circle"></i> Solution</span>' : ''}
+                        </div>
+                        <span class="reply-time">${formatDate(reply.created_at)}</span>
+                    </div>
+                    <div class="reply-content">${reply.content.replace(/\n/g, '<br>')}</div>
+                    ${!reply.is_solution ? `
+                        <div class="reply-actions">
+                            <button class="btn-action" onclick="markReplyAsSolution(${reply.id})">
+                                <i class='bx bx-check-circle'></i> Mark as Solution
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Submit reply
+        window.submitReply = async function() {
+            const content = document.getElementById('replyContent').value.trim();
+            const isSolution = document.getElementById('markAsSolution').checked;
+
+            if (!content) {
+                modalService.showNotification('Please write a reply', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${currentDiscussion.id}/replies`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ content, is_solution: isSolution })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    modalService.showNotification('Reply added successfully', 'success');
+                    showDiscussionDetail(currentDiscussion.id);
+                } else {
+                    modalService.showNotification(data.message || 'Error adding reply', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding reply:', error);
+                modalService.showNotification('Error adding reply', 'error');
+            }
+        };
+
+        // Toggle pin
+        window.togglePin = async function(id) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}/pin`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    modalService.showNotification(data.message, 'success');
+                    showDiscussionDetail(id);
+                    loadDiscussions();
+                }
+            } catch (error) {
+                console.error('Error toggling pin:', error);
+                modalService.showNotification('Error updating discussion', 'error');
+            }
+        };
+
+        // Toggle lock
+        window.toggleLock = async function(id) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}/lock`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    modalService.showNotification(data.message, 'success');
+                    showDiscussionDetail(id);
+                    loadDiscussions();
+                }
+            } catch (error) {
+                console.error('Error toggling lock:', error);
+                modalService.showNotification('Error updating discussion', 'error');
+            }
+        };
+
+        // Mark reply as solution
+        window.markReplyAsSolution = async function(replyId) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/replies/${replyId}/solution`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    modalService.showNotification('Marked as solution', 'success');
+                    showDiscussionDetail(currentDiscussion.id);
+                    loadDiscussions();
+                }
+            } catch (error) {
+                console.error('Error marking solution:', error);
+                modalService.showNotification('Error marking solution', 'error');
+            }
+        };
+
+        // Close modal
+        window.closeDiscussionModal = function() {
+            document.getElementById('discussionModal').style.display = 'none';
+            currentDiscussion = null;
+        };
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minutes ago`;
+            if (diffHours < 24) return `${diffHours} hours ago`;
+            if (diffDays < 7) return `${diffDays} days ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Menu toggle
+            document.getElementById('menuToggle')?.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+
+            // Filters
+            document.getElementById('filterModule')?.addEventListener('change', loadDiscussions);
+            document.getElementById('filterAssignment')?.addEventListener('change', loadDiscussions);
+            document.getElementById('filterStatus')?.addEventListener('change', applyFilters);
+            document.getElementById('searchInput')?.addEventListener('input', applyFilters);
+
+            // Modal overlay
+            document.querySelector('.modal-overlay')?.addEventListener('click', closeDiscussionModal);
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>

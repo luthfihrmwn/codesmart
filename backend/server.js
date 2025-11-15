@@ -14,6 +14,11 @@ const assignmentRoutes = require('./routes/assignments');
 const submissionRoutes = require('./routes/submissions');
 const adminRoutes = require('./routes/admin');
 const assessorRoutes = require('./routes/assessor');
+const notificationRoutes = require('./routes/notifications');
+const announcementRoutes = require('./routes/announcements');
+const discussionRoutes = require('./routes/discussions');
+const exportRoutes = require('./routes/exports');
+const analyticsRoutes = require('./routes/analytics');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -91,6 +96,11 @@ app.use(`/api/${API_VERSION}/assignments`, assignmentRoutes);
 app.use(`/api/${API_VERSION}/submissions`, submissionRoutes);
 app.use(`/api/${API_VERSION}/admin`, adminRoutes);
 app.use(`/api/${API_VERSION}/assessor`, assessorRoutes);
+app.use(`/api/${API_VERSION}/notifications`, notificationRoutes);
+app.use(`/api/${API_VERSION}/announcements`, announcementRoutes);
+app.use(`/api/${API_VERSION}/discussions`, discussionRoutes);
+app.use(`/api/${API_VERSION}/exports`, exportRoutes);
+app.use(`/api/${API_VERSION}/analytics`, analyticsRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {

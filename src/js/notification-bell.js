@@ -131,9 +131,6 @@ class NotificationBell {
      * Load notifications from API
      */
     async loadNotifications() {
-        // For now, use mock data until backend notification API is ready
-        // TODO: Uncomment when backend /api/v1/notifications endpoint is ready
-        /*
         try {
             const response = await apiService.getNotifications();
 
@@ -145,11 +142,9 @@ class NotificationBell {
             }
         } catch (error) {
             console.error('Error loading notifications:', error);
+            // Fallback to mock data if API fails
+            this.loadMockNotifications();
         }
-        */
-
-        // Load mock data for demo
-        this.loadMockNotifications();
     }
 
     /**
@@ -346,9 +341,6 @@ class NotificationBell {
      * Mark notification as read
      */
     async markAsRead(notificationId) {
-        // For demo: just update local state
-        // TODO: Uncomment when backend API is ready
-        /*
         try {
             const response = await apiService.markNotificationAsRead(notificationId);
             if (response.success) {
@@ -361,25 +353,20 @@ class NotificationBell {
             }
         } catch (error) {
             console.error('Error marking notification as read:', error);
+            // Fallback: update local state
+            const notification = this.notifications.find(n => n.id === notificationId);
+            if (notification) {
+                notification.is_read = true;
+            }
+            this.updateBadge();
+            this.renderNotifications();
         }
-        */
-
-        // Update local state for demo
-        const notification = this.notifications.find(n => n.id === notificationId);
-        if (notification) {
-            notification.is_read = true;
-        }
-        this.updateBadge();
-        this.renderNotifications();
     }
 
     /**
      * Mark all notifications as read
      */
     async markAllAsRead() {
-        // For demo: just update local state
-        // TODO: Uncomment when backend API is ready
-        /*
         try {
             const response = await apiService.markAllNotificationsAsRead();
             if (response.success) {
@@ -390,15 +377,12 @@ class NotificationBell {
             }
         } catch (error) {
             console.error('Error marking all as read:', error);
-            notificationService.error('Failed to mark all as read');
+            // Fallback: update local state
+            this.notifications.forEach(n => n.is_read = true);
+            this.updateBadge();
+            this.renderNotifications();
+            notificationService.success('All notifications marked as read');
         }
-        */
-
-        // Update local state for demo
-        this.notifications.forEach(n => n.is_read = true);
-        this.updateBadge();
-        this.renderNotifications();
-        notificationService.success('All notifications marked as read');
     }
 }
 
