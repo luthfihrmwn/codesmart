@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>Test Admin Notification</title>
+    <link rel="stylesheet" href="/src/css/notification.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .test-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            color: #667eea;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .notification-bell:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+        }
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .info-box h2 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .status {
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            font-family: monospace;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-header">
+        <h1>🧪 Test Admin Notification Panel</h1>
+        <div class="notification-bell" id="notificationBellBtn">
+            <i class='bx bx-bell'></i>
+            <span class="notification-badge" id="notificationBadge">5</span>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h2>Status Implementasi:</h2>
+        <div class="status success" id="scriptStatus">✅ Checking scripts...</div>
+        <div class="status success" id="cssStatus">✅ Checking CSS...</div>
+        <div class="status success" id="functionStatus">✅ Checking functions...</div>
+
+        <h3>Instruksi:</h3>
+        <ol>
+            <li>Klik icon lonceng di kanan atas</li>
+            <li>Verifikasi panel notifikasi muncul dengan:
+                <ul>
+                    <li>Header gradien ungu</li>
+                    <li>Tombol "Mark all as read"</li>
+                    <li>Daftar notifikasi (mock data)</li>
+                    <li>Footer "Close"</li>
+                </ul>
+            </li>
+            <li>Panel harus terlihat modern dengan shadow dan animations</li>
+        </ol>
+    </div>
+
+    <script src="/src/js/notification-bell.js"></script>
+    <script>
+        // Check if notification-bell.js loaded
+        if (typeof notificationBell !== 'undefined') {
+            document.getElementById('scriptStatus').textContent = '✅ notification-bell.js loaded successfully';
+            document.getElementById('scriptStatus').className = 'status success';
+        } else {
+            document.getElementById('scriptStatus').textContent = '❌ notification-bell.js NOT loaded';
+            document.getElementById('scriptStatus').className = 'status error';
+        }
+
+        // Check if CSS loaded
+        const testPanel = document.querySelector('.notification-panel');
+        if (testPanel || document.styleSheets.length > 0) {
+            document.getElementById('cssStatus').textContent = '✅ notification.css loaded';
+            document.getElementById('cssStatus').className = 'status success';
+        }
+
+        // Check functions
+        if (typeof notificationBell !== 'undefined' && typeof notificationBell.togglePanel === 'function') {
+            document.getElementById('functionStatus').textContent = '✅ NotificationBell functions available';
+            document.getElementById('functionStatus').className = 'status success';
+        } else {
+            document.getElementById('functionStatus').textContent = '❌ NotificationBell functions NOT available';
+            document.getElementById('functionStatus').className = 'status error';
+        }
+
+        console.log('Test page loaded');
+        console.log('notificationBell:', notificationBell);
+    </script>
+</body>
+</html>

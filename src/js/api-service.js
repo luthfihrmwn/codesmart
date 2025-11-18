@@ -343,7 +343,7 @@ class APIService {
     }
 
     async getAllAssignments() {
-        return this.get('/admin/assignments');
+        return this.get('/assignments');
     }
 
     async getAssignment(id) {
@@ -464,7 +464,7 @@ class APIService {
         // createAssignment(formData) - with file upload
         if (moduleSlugOrData instanceof FormData) {
             // FormData upload pattern
-            return this.upload('/admin/assignments', moduleSlugOrData);
+            return this.upload('/assignments', moduleSlugOrData);
         } else if (typeof moduleSlugOrData === 'string') {
             // Get module ID from slug
             const module = await this.getModuleBySlug(moduleSlugOrData);
@@ -475,15 +475,15 @@ class APIService {
 
             // Check if assignmentData has file
             if (assignmentData instanceof FormData) {
-                return this.upload('/admin/assignments', assignmentData);
+                return this.upload('/assignments', assignmentData);
             }
-            return this.post('/admin/assignments', assignmentData);
+            return this.post('/assignments', assignmentData);
         } else {
             // Old pattern - data is in first parameter
             if (moduleSlugOrData instanceof FormData) {
-                return this.upload('/admin/assignments', moduleSlugOrData);
+                return this.upload('/assignments', moduleSlugOrData);
             }
-            return this.post('/admin/assignments', moduleSlugOrData);
+            return this.post('/assignments', moduleSlugOrData);
         }
     }
 
@@ -495,15 +495,15 @@ class APIService {
         if (assignmentData) {
             // New pattern with 3 parameters
             if (assignmentData instanceof FormData) {
-                return this.upload(`/admin/assignments/${idOrData}`, assignmentData, { method: 'PUT' });
+                return this.upload(`/assignments/${idOrData}`, assignmentData, { method: 'PUT' });
             }
-            return this.put(`/admin/assignments/${idOrData}`, assignmentData);
+            return this.put(`/assignments/${idOrData}`, assignmentData);
         } else {
             // Old pattern with 2 parameters
             if (idOrData instanceof FormData) {
-                return this.upload(`/admin/assignments/${moduleSlugOrId}`, idOrData, { method: 'PUT' });
+                return this.upload(`/assignments/${moduleSlugOrId}`, idOrData, { method: 'PUT' });
             }
-            return this.put(`/admin/assignments/${moduleSlugOrId}`, idOrData);
+            return this.put(`/assignments/${moduleSlugOrId}`, idOrData);
         }
     }
 
@@ -511,10 +511,10 @@ class APIService {
         // Support both patterns
         if (id) {
             // New pattern: deleteAssignment(moduleSlug, id)
-            return this.delete(`/admin/assignments/${id}`);
+            return this.delete(`/assignments/${id}`);
         } else {
             // Old pattern: deleteAssignment(id)
-            return this.delete(`/admin/assignments/${moduleSlugOrId}`);
+            return this.delete(`/assignments/${moduleSlugOrId}`);
         }
     }
 
@@ -726,6 +726,16 @@ class APIService {
         const queryString = new URLSearchParams(params).toString();
         return this.get(`/exports/class-summary${queryString ? '?' + queryString : ''}`);
     }
+
+    /**
+     * Generic authenticated fetch method
+     * Used by SVM analytics and other pages
+     * @param {string} endpoint - API endpoint (e.g., '/ml/stats')
+     * @param {object} options - Fetch options (method, body, etc.)
+     */
+    async fetchWithAuth(endpoint, options = {}) {
+        return this.request(endpoint, options);
+    }
 }
 
 // Create singleton instance
@@ -733,6 +743,3 @@ const apiService = new APIService();
 
 // Export for use in other files
 window.apiService = apiService;
-
-// Also export as ES6 module
-export default apiService;

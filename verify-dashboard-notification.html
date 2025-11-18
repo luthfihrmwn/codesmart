@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Notification Verification</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/src/css/notification.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h1 i {
+            font-size: 36px;
+        }
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .test-section {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid #667eea;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #1e293b;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .status-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .status-item .label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .status-item .value {
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        .status-item.success .value {
+            color: #10b981;
+        }
+        .status-item.error .value {
+            color: #ef4444;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn i {
+            font-size: 20px;
+        }
+        .notification-bell-test {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 28px;
+            color: #667eea;
+            padding: 12px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: #f1f5f9;
+        }
+        .notification-bell:hover {
+            background: #e2e8f0;
+            transform: scale(1.1);
+        }
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 12px;
+            padding: 3px 7px;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 12px;
+            overflow-x: auto;
+        }
+        .instructions {
+            background: #fff7ed;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 24px;
+        }
+        .instructions h3 {
+            color: #f59e0b;
+            margin-top: 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .instructions ol {
+            margin: 12px 0 0 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+            color: #78350f;
+        }
+        .instructions kbd {
+            background: #fef3c7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class='bx bx-check-shield'></i>
+            Dashboard Notification Verification
+        </h1>
+        <p class="subtitle">Testing notification bell functionality on admin dashboard</p>
+
+        <!-- Status Checks -->
+        <div class="test-section">
+            <h2>📋 System Status</h2>
+            <div class="status-grid">
+                <div class="status-item" id="cssStatus">
+                    <div class="label">CSS Loaded</div>
+                    <div class="value">Checking...</div>
+                </div>
+                <div class="status-item" id="jsStatus">
+                    <div class="label">JavaScript Loaded</div>
+                    <div class="value">Checking...</div>
+                </div>
+                <div class="status-item" id="functionStatus">
+                    <div class="label">Functions Available</div>
+                    <div class="value">Checking...</div>
+                </div>
+                <div class="status-item" id="panelStatus">
+                    <div class="label">Panel Created</div>
+                    <div class="value">Checking...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Notification Bell -->
+        <div class="test-section">
+            <h2>🔔 Test Notification Bell</h2>
+            <p style="margin-bottom: 20px; color: #64748b;">Click the bell icon to test the notification panel:</p>
+            
+            <div class="notification-bell-test">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge">5</span>
+                </div>
+                <span style="color: #64748b; font-size: 14px;">← Click here to test</span>
+            </div>
+        </div>
+
+        <!-- Expected Result -->
+        <div class="test-section">
+            <h2>✅ Expected Result</h2>
+            <p style="color: #64748b; margin-bottom: 16px;">When you click the bell, you should see:</p>
+            <ul style="color: #475569; line-height: 1.8;">
+                <li>✅ Modern notification panel with purple gradient header</li>
+                <li>✅ "Mark all as read" button in header</li>
+                <li>✅ List of mock notifications</li>
+                <li>✅ Smooth slide-in animation</li>
+                <li>✅ "Close" link in footer</li>
+                <li>✅ Panel closes when clicking outside</li>
+            </ul>
+        </div>
+
+        <!-- Dashboard Files Check -->
+        <div class="test-section">
+            <h2>📁 Dashboard Files Check</h2>
+            <p style="color: #64748b; margin-bottom: 12px;">Verify dashboard-sidebar.html has these includes:</p>
+            <div class="code-block">
+&lt;link rel="stylesheet" href="../../css/notification.css"&gt;
+&lt;script src="/src/js/notification-bell.js"&gt;&lt;/script&gt;
+            </div>
+        </div>
+
+        <!-- Clear Cache Instructions -->
+        <div class="instructions">
+            <h3><i class='bx bx-info-circle'></i> If Modal Still Looks Old</h3>
+            <p style="margin: 8px 0 12px 0; color: #92400e; font-size: 14px;">
+                Your browser might be caching the old version. Try these steps:
+            </p>
+            <ol>
+                <li><strong>Hard Refresh:</strong> Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> (Windows/Linux) or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> (Mac)</li>
+                <li><strong>Clear Cache:</strong> Open DevTools (F12) → Right-click refresh → "Empty Cache and Hard Reload"</li>
+                <li><strong>Incognito Mode:</strong> Test in a new incognito/private window</li>
+                <li><strong>Force Reload CSS:</strong> In DevTools Console, run: <code>location.reload(true)</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Load notification bell script -->
+    <script src="/src/js/notification-bell.js"></script>
+    
+    <script>
+        // Status checks
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check CSS
+            setTimeout(() => {
+                const testPanel = document.querySelector('.notification-panel');
+                const cssLoaded = testPanel || document.styleSheets.length > 0;
+                
+                const cssStatus = document.getElementById('cssStatus');
+                if (cssLoaded) {
+                    cssStatus.classList.add('success');
+                    cssStatus.querySelector('.value').innerHTML = '✅ notification.css loaded';
+                } else {
+                    cssStatus.classList.add('error');
+                    cssStatus.querySelector('.value').innerHTML = '❌ CSS not loaded';
+                }
+
+                // Check JS
+                const jsStatus = document.getElementById('jsStatus');
+                if (typeof notificationBell !== 'undefined') {
+                    jsStatus.classList.add('success');
+                    jsStatus.querySelector('.value').innerHTML = '✅ notification-bell.js loaded';
+                } else {
+                    jsStatus.classList.add('error');
+                    jsStatus.querySelector('.value').innerHTML = '❌ JS not loaded';
+                }
+
+                // Check functions
+                const functionStatus = document.getElementById('functionStatus');
+                if (typeof notificationBell !== 'undefined' && typeof notificationBell.togglePanel === 'function') {
+                    functionStatus.classList.add('success');
+                    functionStatus.querySelector('.value').innerHTML = '✅ All functions available';
+                } else {
+                    functionStatus.classList.add('error');
+                    functionStatus.querySelector('.value').innerHTML = '❌ Functions missing';
+                }
+
+                // Check panel created
+                const panelStatus = document.getElementById('panelStatus');
+                const panel = document.getElementById('notificationPanel');
+                if (panel) {
+                    panelStatus.classList.add('success');
+                    panelStatus.querySelector('.value').innerHTML = '✅ Panel DOM created';
+                } else {
+                    panelStatus.classList.add('error');
+                    panelStatus.querySelector('.value').innerHTML = '❌ Panel not created';
+                }
+            }, 500);
+
+            console.log('Verification page loaded');
+            console.log('notificationBell:', notificationBell);
+        });
+    </script>
+</body>
+</html>

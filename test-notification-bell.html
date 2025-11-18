@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notification Bell - Admin Dashboard</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/src/css/admin-sidebar.css">
+    <link rel="stylesheet" href="/src/css/notification.css">
+    <link rel="stylesheet" href="/src/css/modal-system.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 4px solid #667eea;
+        }
+        .test-section h2 {
+            margin-top: 0;
+            color: #1e293b;
+            font-size: 18px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .status-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .status-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .status-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .status-item.success .status-value {
+            color: #10b981;
+        }
+        .status-item.error .status-value {
+            color: #ef4444;
+        }
+        .status-item.warning .status-value {
+            color: #f59e0b;
+        }
+        .bell-demo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+            background: white;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 32px;
+            color: #667eea;
+            padding: 16px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            transition: all 0.2s;
+        }
+        .notification-bell:hover {
+            background: #e2e8f0;
+            transform: scale(1.1);
+        }
+        .notification-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ef4444;
+            color: white;
+            border-radius: 12px;
+            padding: 3px 8px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 22px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+        }
+        .instruction {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .console-output {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .console-line {
+            margin: 4px 0;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .console-line.success { color: #10b981; }
+        .console-line.error { color: #ef4444; }
+        .console-line.info { color: #3b82f6; }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 12px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>
+            <i class='bx bx-test-tube'></i>
+            Notification Bell Diagnostic Test
+        </h1>
+        <p class="subtitle">Testing notification bell functionality on admin dashboard</p>
+
+        <!-- Status Checks -->
+        <div class="test-section">
+            <h2>System Status</h2>
+            <div class="status-grid">
+                <div class="status-item" id="status-css">
+                    <div class="status-label">CSS Loaded</div>
+                    <div class="status-value">Checking...</div>
+                </div>
+                <div class="status-item" id="status-js">
+                    <div class="status-label">JS Loaded</div>
+                    <div class="status-value">Checking...</div>
+                </div>
+                <div class="status-item" id="status-bell">
+                    <div class="status-label">Bell Element</div>
+                    <div class="status-value">Checking...</div>
+                </div>
+                <div class="status-item" id="status-init">
+                    <div class="status-label">Initialization</div>
+                    <div class="status-value">Checking...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bell Test -->
+        <div class="test-section">
+            <h2>Interactive Test</h2>
+            <p class="instruction">Click the bell icon below to test the notification panel:</p>
+            <div class="bell-demo">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge">5</span>
+                </div>
+                <div>
+                    <strong style="display: block; margin-bottom: 8px;">Click the bell icon</strong>
+                    <span class="instruction">The modern notification panel should appear</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console Output -->
+        <div class="test-section">
+            <h2>Diagnostic Console</h2>
+            <div class="console-output" id="consoleOutput">
+                <div class="console-line info">Starting diagnostic tests...</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="test-section">
+            <h2>Actions</h2>
+            <button class="btn" onclick="runFullDiagnostic()">
+                <i class='bx bx-refresh'></i> Run Full Diagnostic
+            </button>
+            <button class="btn" onclick="testClickBell()">
+                <i class='bx bx-bell'></i> Test Bell Click
+            </button>
+            <button class="btn" onclick="clearConsole()">
+                <i class='bx bx-trash'></i> Clear Console
+            </button>
+        </div>
+    </div>
+
+    <!-- Load Scripts -->
+    <script src="/src/js/notification-bell.js"></script>
+    
+    <script>
+        const consoleOutput = document.getElementById('consoleOutput');
+        
+        function log(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            console.log(`[TEST] ${message}`);
+        }
+
+        function updateStatus(id, text, status) {
+            const element = document.getElementById(id);
+            element.className = `status-item ${status}`;
+            element.querySelector('.status-value').textContent = text;
+        }
+
+        function clearConsole() {
+            consoleOutput.innerHTML = '<div class="console-line info">Console cleared.</div>';
+        }
+
+        function testClickBell() {
+            log('Testing bell click...', 'info');
+            const bell = document.getElementById('notificationBellBtn');
+            if (bell) {
+                bell.click();
+                log('Bell clicked programmatically', 'success');
+            } else {
+                log('ERROR: Bell element not found!', 'error');
+            }
+        }
+
+        function runFullDiagnostic() {
+            clearConsole();
+            log('Running full diagnostic...', 'info');
+            
+            // Check 1: CSS
+            setTimeout(() => {
+                const cssLoaded = document.styleSheets.length > 0;
+                log(`CSS Files Loaded: ${document.styleSheets.length}`, cssLoaded ? 'success' : 'error');
+                updateStatus('status-css', cssLoaded ? '✅ Loaded' : '❌ Not loaded', cssLoaded ? 'success' : 'error');
+                
+                // Check specifically for notification.css
+                let notifCssFound = false;
+                for (let i = 0; i < document.styleSheets.length; i++) {
+                    const sheet = document.styleSheets[i];
+                    if (sheet.href && sheet.href.includes('notification.css')) {
+                        notifCssFound = true;
+                        log('✓ notification.css found', 'success');
+                        break;
+                    }
+                }
+                if (!notifCssFound) {
+                    log('⚠ notification.css not found in stylesheets', 'warning');
+                }
+            }, 100);
+
+            // Check 2: JS
+            setTimeout(() => {
+                const jsLoaded = typeof notificationBell !== 'undefined';
+                log(`NotificationBell Object: ${jsLoaded ? 'Found' : 'Not found'}`, jsLoaded ? 'success' : 'error');
+                updateStatus('status-js', jsLoaded ? '✅ Loaded' : '❌ Not loaded', jsLoaded ? 'success' : 'error');
+                
+                if (jsLoaded) {
+                    log(`NotificationBell Type: ${typeof notificationBell}`, 'info');
+                    log(`Has togglePanel: ${typeof notificationBell.togglePanel === 'function' ? 'Yes' : 'No'}`, 'info');
+                    log(`Has init: ${typeof notificationBell.init === 'function' ? 'Yes' : 'No'}`, 'info');
+                }
+            }, 200);
+
+            // Check 3: Bell Element
+            setTimeout(() => {
+                const bell = document.getElementById('notificationBellBtn');
+                const bellExists = bell !== null;
+                log(`Bell Element (#notificationBellBtn): ${bellExists ? 'Found' : 'Not found'}`, bellExists ? 'success' : 'error');
+                updateStatus('status-bell', bellExists ? '✅ Found' : '❌ Not found', bellExists ? 'success' : 'error');
+                
+                if (bellExists) {
+                    log(`Bell classList: ${bell.className}`, 'info');
+                    log(`Bell has click listener: ${bell.onclick ? 'Yes' : 'Via addEventListener'}`, 'info');
+                }
+            }, 300);
+
+            // Check 4: Initialization
+            setTimeout(() => {
+                const panel = document.getElementById('notificationPanel');
+                const panelExists = panel !== null;
+                log(`Notification Panel Created: ${panelExists ? 'Yes' : 'No'}`, panelExists ? 'success' : 'warning');
+                updateStatus('status-init', panelExists ? '✅ Initialized' : '⚠ Not yet', panelExists ? 'success' : 'warning');
+                
+                if (panelExists) {
+                    log(`Panel display: ${panel.style.display}`, 'info');
+                    log(`Panel className: ${panel.className}`, 'info');
+                } else {
+                    log('Panel will be created on first click', 'info');
+                }
+            }, 400);
+
+            // Final summary
+            setTimeout(() => {
+                log('─────────────────────────────────', 'info');
+                log('Diagnostic complete!', 'success');
+                log('Click the bell icon above to test', 'info');
+            }, 500);
+        }
+
+        // Auto-run on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runFullDiagnostic, 500);
+        });
+    </script>
+</body>
+</html>

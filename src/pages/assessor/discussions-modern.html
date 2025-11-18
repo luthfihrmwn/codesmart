@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion Forum - CodeSmart LMS</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-hover: #f1f3f5;
+
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Modern Container */
+        .discussions-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header Section */
+        .discussions-header {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discussions-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title i {
+            font-size: 32px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Modern Button */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Search and Filters */
+        .filters-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: all var(--transition-base);
+            background: var(--bg-primary);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        /* Discussions Grid */
+        .discussions-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .discussion-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+            transition: all var(--transition-base);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discussion-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            transform: scaleY(0);
+            transition: transform var(--transition-base);
+        }
+
+        .discussion-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .discussion-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .discussion-card.pinned {
+            background: linear-gradient(135deg, #fff5f5 0%, #fef5ff 100%);
+            border-color: #f093fb;
+        }
+
+        .discussion-card.pinned::before {
+            background: var(--secondary-gradient);
+            transform: scaleY(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .discussion-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pinned {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .badge-locked {
+            background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
+            color: white;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .discussion-card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .action-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .discussion-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .meta-item i {
+            font-size: 16px;
+        }
+
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+        }
+
+        .modal-close:hover {
+            background: #f5576c;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all var(--transition-base);
+            background: var(--bg-primary);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Replies Section */
+        .replies-section {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .reply-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid transparent;
+            transition: all var(--transition-base);
+        }
+
+        .reply-card:hover {
+            border-left-color: #667eea;
+            background: white;
+        }
+
+        .reply-card.solution {
+            border-left-color: #4facfe;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .reply-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .reply-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .reply-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading i {
+            font-size: 48px;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .discussions-container {
+                padding: 16px;
+            }
+
+            .discussions-header {
+                padding: 20px;
+            }
+
+            .header-title h1 {
+                font-size: 22px;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .discussion-card {
+                padding: 16px;
+            }
+
+            .card-actions {
+                opacity: 1;
+            }
+
+            .modal-content {
+                margin: 0;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid #667eea;
+            transition: all var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all var(--transition-base);
+            z-index: 999;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Discussions Container -->
+    <div class="discussions-container">
+        <!-- Header -->
+        <div class="discussions-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <i class='bx bx-message-square-detail'></i>
+                    <div>
+                        <h1>Discussion Forum</h1>
+                        <p>Diskusi dan tanya jawab dengan sesama peserta</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="location.reload()">
+                        <i class='bx bx-refresh'></i>
+                        Refresh
+                    </button>
+                    <button class="btn btn-primary" onclick="openCreateModal()">
+                        <i class='bx bx-plus'></i>
+                        Buat Diskusi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDiscussions">0</div>
+                <div class="stat-label">Total Diskusi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalReplies">0</div>
+                <div class="stat-label">Total Balasan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalViews">0</div>
+                <div class="stat-label">Total Dilihat</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pinnedCount">0</div>
+                <div class="stat-label">Diskusi Disematkan</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="search-box">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="searchInput" placeholder="Cari diskusi..." onkeyup="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <select id="filterModule" onchange="loadDiscussions()">
+                        <option value="">Semua Modul</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="filterStatus" onchange="applyFilters()">
+                        <option value="all">Semua Status</option>
+                        <option value="pinned">Disematkan</option>
+                        <option value="locked">Terkunci</option>
+                        <option value="active">Aktif</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="sortBy" onchange="applyFilters()">
+                        <option value="newest">Terbaru</option>
+                        <option value="oldest">Terlama</option>
+                        <option value="most_replies">Paling Banyak Balasan</option>
+                        <option value="most_views">Paling Banyak Dilihat</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discussions List -->
+        <div id="discussionsList" class="discussions-grid">
+            <div class="loading">
+                <i class='bx bx-loader-alt bx-spin'></i>
+                <p style="margin-top: 16px; color: var(--text-muted);">Memuat diskusi...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="openCreateModal()" title="Buat Diskusi Baru">
+        <i class='bx bx-plus'></i>
+    </button>
+
+    <!-- Create Discussion Modal -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Buat Diskusi Baru</h2>
+                <button class="modal-close" onclick="closeCreateModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createForm" onsubmit="handleCreateDiscussion(event)">
+                    <div class="form-group">
+                        <label class="form-label">Modul</label>
+                        <select id="createModule" class="form-select" required>
+                            <option value="">Pilih Modul...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Judul Diskusi</label>
+                        <input type="text" id="createTitle" class="form-input" placeholder="Tulis judul diskusi..." required maxlength="200">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea id="createContent" class="form-textarea" placeholder="Tulis pertanyaan atau topik diskusi..." required></textarea>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">
+                            Batal
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class='bx bx-send'></i>
+                            Posting Diskusi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Discussion Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="viewTitle">Discussion Detail</h2>
+                <button class="modal-close" onclick="closeViewModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            <div class="modal-body" id="viewBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/modal-service.js"></script>
+    <script type="module" src="../../js/notification-bell.js"></script>
+    <script type="module">
+        import { modalService } from '../../js/modal-service.js';
+
+        let discussions = [];
+        let modules = [];
+        let currentDiscussion = null;
+
+        // Initialize
+        async function init() {
+            console.log('Initializing discussions page...');
+
+            // Load modules in parallel
+            loadModules().catch(err => console.error('Modules load failed:', err));
+
+            // Load discussions
+            await loadDiscussions();
+
+            console.log('Initialization complete');
+        }
+
+        // Load modules
+        async function loadModules() {
+            try {
+                console.log('Loading modules...');
+                const response = await fetch('http://localhost:5000/api/v1/modules', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    modules = data.data.modules || data.data || [];
+                    console.log('Loaded modules:', modules.length);
+                    renderModuleFilters();
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+            }
+        }
+
+        // Render module filters
+        function renderModuleFilters() {
+            const filterModule = document.getElementById('filterModule');
+            const createModule = document.getElementById('createModule');
+
+            modules.forEach(module => {
+                const option1 = document.createElement('option');
+                option1.value = module.id;
+                option1.textContent = `${module.name} (${module.level.toUpperCase()})`;
+                filterModule.appendChild(option1);
+
+                const option2 = option1.cloneNode(true);
+                createModule.appendChild(option2);
+            });
+        }
+
+        // Load discussions
+        window.loadDiscussions = async function() {
+            try {
+                const filterModule = document.getElementById('filterModule')?.value || '';
+
+                const params = new URLSearchParams();
+                if (filterModule) params.append('module_id', filterModule);
+
+                console.log('Loading discussions from API...');
+                const response = await fetch(`http://localhost:5000/api/v1/discussions?${params}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+                console.log('API Response:', data);
+
+                if (data.success) {
+                    discussions = data.data.discussions || [];
+                    console.log('Loaded discussions:', discussions.length);
+                    updateStats();
+                    applyFilters();
+                } else {
+                    discussions = [];
+                    renderEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading discussions:', error);
+                discussions = [];
+                renderEmptyState();
+            }
+        };
+
+        // Update stats
+        function updateStats() {
+            const totalReplies = discussions.reduce((sum, d) => sum + parseInt(d.replies_count || 0), 0);
+            const totalViews = discussions.reduce((sum, d) => sum + parseInt(d.views_count || 0), 0);
+            const pinnedCount = discussions.filter(d => d.is_pinned).length;
+
+            document.getElementById('totalDiscussions').textContent = discussions.length;
+            document.getElementById('totalReplies').textContent = totalReplies;
+            document.getElementById('totalViews').textContent = totalViews;
+            document.getElementById('pinnedCount').textContent = pinnedCount;
+        }
+
+        // Apply filters and sorting
+        window.applyFilters = function() {
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const filterStatus = document.getElementById('filterStatus')?.value || 'all';
+            const sortBy = document.getElementById('sortBy')?.value || 'newest';
+
+            let filtered = [...discussions];
+
+            // Search filter
+            if (searchTerm) {
+                filtered = filtered.filter(d =>
+                    d.title.toLowerCase().includes(searchTerm) ||
+                    d.content.toLowerCase().includes(searchTerm) ||
+                    (d.author_name || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Status filter
+            if (filterStatus === 'pinned') {
+                filtered = filtered.filter(d => d.is_pinned);
+            } else if (filterStatus === 'locked') {
+                filtered = filtered.filter(d => d.is_locked);
+            } else if (filterStatus === 'active') {
+                filtered = filtered.filter(d => !d.is_locked);
+            }
+
+            // Sorting
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'oldest':
+                        return new Date(a.created_at) - new Date(b.created_at);
+                    case 'most_replies':
+                        return (b.replies_count || 0) - (a.replies_count || 0);
+                    case 'most_views':
+                        return (b.views_count || 0) - (a.views_count || 0);
+                    case 'newest':
+                    default:
+                        return new Date(b.created_at) - new Date(a.created_at);
+                }
+            });
+
+            renderDiscussions(filtered);
+        };
+
+        // Render discussions
+        function renderDiscussions(data) {
+            const container = document.getElementById('discussionsList');
+
+            if (data.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            container.innerHTML = data.map(discussion => `
+                <div class="discussion-card ${discussion.is_pinned ? 'pinned' : ''}" onclick="viewDiscussion(${discussion.id})">
+                    <div class="card-header">
+                        <div class="discussion-title">
+                            ${discussion.title}
+                            ${discussion.is_pinned ? '<span class="badge badge-pinned">Disematkan</span>' : ''}
+                            ${discussion.is_locked ? '<span class="badge badge-locked">Terkunci</span>' : ''}
+                        </div>
+                        <div class="card-actions" onclick="event.stopPropagation()">
+                            <button class="action-btn" onclick="togglePin(${discussion.id}, ${discussion.is_pinned})" title="${discussion.is_pinned ? 'Lepas Pin' : 'Sematkan'}">
+                                <i class='bx ${discussion.is_pinned ? 'bxs-pin' : 'bx-pin'}'></i>
+                            </button>
+                            <button class="action-btn" onclick="toggleLock(${discussion.id}, ${discussion.is_locked})" title="${discussion.is_locked ? 'Buka Kunci' : 'Kunci'}">
+                                <i class='bx ${discussion.is_locked ? 'bxs-lock' : 'bx-lock-open'}'></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="discussion-content">${discussion.content}</div>
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <div class="author-avatar">${(discussion.author_name || 'U').charAt(0).toUpperCase()}</div>
+                            <span>${discussion.author_name || 'Unknown'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class='bx bx-time'></i>
+                            ${formatDate(discussion.created_at)}
+                        </div>
+                        <div class="meta-item">
+                            <i class='bx bx-comment'></i>
+                            ${discussion.replies_count || 0} balasan
+                        </div>
+                        <div class="meta-item">
+                            <i class='bx bx-show'></i>
+                            ${discussion.views_count || 0} dilihat
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render empty state
+        function renderEmptyState() {
+            const container = document.getElementById('discussionsList');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class='bx bx-message-square-x'></i>
+                    <h3>Belum Ada Diskusi</h3>
+                    <p>Data diskusi belum tersedia saat ini.</p>
+                    <p>Diskusi dari siswa akan muncul di sini.</p>
+                    <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 20px;">
+                        <i class='bx bx-refresh'></i> Refresh Halaman
+                    </button>
+                </div>
+            `;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Baru saja';
+            if (diffMins < 60) return `${diffMins} menit lalu`;
+            if (diffHours < 24) return `${diffHours} jam lalu`;
+            if (diffDays < 7) return `${diffDays} hari lalu`;
+            return date.toLocaleDateString('id-ID');
+        }
+
+        // Open create modal
+        window.openCreateModal = function() {
+            document.getElementById('createModal').classList.add('active');
+        };
+
+        // Close create modal
+        window.closeCreateModal = function() {
+            document.getElementById('createModal').classList.remove('active');
+            document.getElementById('createForm').reset();
+        };
+
+        // Handle create discussion
+        window.handleCreateDiscussion = async function(event) {
+            event.preventDefault();
+
+            const moduleId = document.getElementById('createModule').value;
+            const title = document.getElementById('createTitle').value;
+            const content = document.getElementById('createContent').value;
+
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/discussions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        module_id: moduleId,
+                        title: title,
+                        content: content
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    modalService.showNotification('Diskusi berhasil dibuat!', 'success');
+                    closeCreateModal();
+                    loadDiscussions();
+                } else {
+                    modalService.showNotification(data.message || 'Gagal membuat diskusi', 'error');
+                }
+            } catch (error) {
+                console.error('Error creating discussion:', error);
+                modalService.showNotification('Terjadi kesalahan', 'error');
+            }
+        };
+
+        // View discussion
+        window.viewDiscussion = async function(id) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentDiscussion = data.data.discussion;
+                    currentDiscussion.replies = data.data.replies || [];
+                    renderDiscussionDetail(currentDiscussion);
+                    document.getElementById('viewModal').classList.add('active');
+                }
+            } catch (error) {
+                console.error('Error loading discussion:', error);
+                modalService.showNotification('Gagal memuat diskusi', 'error');
+            }
+        };
+
+        // Render discussion detail
+        function renderDiscussionDetail(discussion) {
+            document.getElementById('viewTitle').textContent = discussion.title;
+
+            const body = document.getElementById('viewBody');
+            body.innerHTML = `
+                <div style="margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div class="author-avatar" style="width: 48px; height: 48px; font-size: 20px;">
+                            ${(discussion.author_name || 'U').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">${discussion.author_name || 'Unknown'}</div>
+                            <div style="font-size: 13px; color: var(--text-muted);">${formatDate(discussion.created_at)}</div>
+                        </div>
+                    </div>
+                    <div style="color: var(--text-secondary); line-height: 1.8;">
+                        ${discussion.content}
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); font-size: 13px; color: var(--text-muted);">
+                        <div><i class='bx bx-comment'></i> ${discussion.replies_count || 0} balasan</div>
+                        <div><i class='bx bx-show'></i> ${discussion.views_count || 0} dilihat</div>
+                    </div>
+                </div>
+
+                <div class="replies-section">
+                    <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-message-detail'></i>
+                        Balasan (${discussion.replies?.length || 0})
+                    </h3>
+
+                    ${discussion.replies?.length > 0 ? discussion.replies.map(reply => `
+                        <div class="reply-card ${reply.is_solution ? 'solution' : ''}">
+                            <div class="reply-header">
+                                <div class="reply-author">
+                                    <div class="author-avatar" style="width: 32px; height: 32px; font-size: 14px;">
+                                        ${(reply.author_name || 'U').charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 14px;">${reply.author_name || 'Unknown'}</div>
+                                        ${reply.is_solution ? '<span class="badge badge-pinned" style="font-size: 10px;">Solusi</span>' : ''}
+                                    </div>
+                                </div>
+                                <div style="font-size: 12px; color: var(--text-muted);">${formatDate(reply.created_at)}</div>
+                            </div>
+                            <div class="reply-content">${reply.content}</div>
+                        </div>
+                    `).join('') : '<p style="text-align: center; color: var(--text-muted); padding: 40px 20px;">Belum ada balasan</p>'}
+
+                    ${!discussion.is_locked ? `
+                    <div class="form-group" style="margin-top: 24px;">
+                        <label class="form-label">Tambah Balasan</label>
+                        <textarea id="replyContent" class="form-textarea" placeholder="Tulis balasan Anda..."></textarea>
+                        <button class="btn btn-primary" onclick="submitReply()" style="margin-top: 12px;">
+                            <i class='bx bx-send'></i>
+                            Kirim Balasan
+                        </button>
+                    </div>
+                    ` : '<p style="text-align: center; color: var(--text-muted); padding: 20px; background: var(--bg-hover); border-radius: var(--radius-sm);"><i class="bx bx-lock"></i> Diskusi ini telah dikunci</p>'}
+                </div>
+            `;
+        }
+
+        // Close view modal
+        window.closeViewModal = function() {
+            document.getElementById('viewModal').classList.remove('active');
+            currentDiscussion = null;
+        };
+
+        // Submit reply
+        window.submitReply = async function() {
+            const content = document.getElementById('replyContent').value.trim();
+
+            if (!content) {
+                modalService.showNotification('Balasan tidak boleh kosong', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${currentDiscussion.id}/replies`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    modalService.showNotification('Balasan berhasil ditambahkan!', 'success');
+                    document.getElementById('replyContent').value = '';
+                    viewDiscussion(currentDiscussion.id);
+                } else {
+                    modalService.showNotification(data.message || 'Gagal menambahkan balasan', 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting reply:', error);
+                modalService.showNotification('Terjadi kesalahan', 'error');
+            }
+        };
+
+        // Toggle pin
+        window.togglePin = async function(id, isPinned) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}/pin`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ is_pinned: !isPinned })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    modalService.showNotification(isPinned ? 'Pin dilepas' : 'Diskusi disematkan', 'success');
+                    loadDiscussions();
+                }
+            } catch (error) {
+                console.error('Error toggling pin:', error);
+            }
+        };
+
+        // Toggle lock
+        window.toggleLock = async function(id, isLocked) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}/lock`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ is_locked: !isLocked })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    modalService.showNotification(isLocked ? 'Diskusi dibuka' : 'Diskusi dikunci', 'success');
+                    loadDiscussions();
+                }
+            } catch (error) {
+                console.error('Error toggling lock:', error);
+            }
+        };
+
+        // Close modal on outside click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>

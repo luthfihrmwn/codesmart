@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
     <link rel="stylesheet" href="../../css/assessor-modern.css">
+    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
     <style>
         /* File Upload Styles */
         .file-upload-container {
@@ -410,7 +411,9 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">Learning Materials</h1>
+                <h1 class="page-title-header">
+                    <i class='bx bx-folder'></i> Learning Materials
+                </h1>
             </div>
             <div class="header-right">
                 <div class="notification-bell" id="notificationBellBtn">
@@ -429,18 +432,6 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <!-- Page Header -->
-            <div class="page-header">
-                <h1>
-                    <i class='bx bx-folder'></i>
-                    Learning Materials
-                </h1>
-                <button class="btn btn-primary" onclick="openUploadModal()">
-                    <i class='bx bx-upload'></i>
-                    Upload Material
-                </button>
-            </div>
-
             <!-- Filters -->
             <div class="filters-row">
                 <div class="filter-group" style="flex: 2;">
@@ -483,6 +474,10 @@
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title"><i class='bx bx-folder-open'></i> Materials Library</h2>
+                    <button class="btn btn-primary" onclick="openUploadModal()">
+                        <i class='bx bx-upload'></i>
+                        Upload Material
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

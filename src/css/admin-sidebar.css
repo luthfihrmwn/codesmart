@@ -119,6 +119,25 @@ body {
     font-size: 20px;
     margin-right: 12px;
     width: 24px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Ensure all boxicons are visible */
+.nav-item i[class*='bx-'] {
+    font-family: 'boxicons' !important;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+}
+
+/* Specific fix for megaphone icon */
+.nav-item .bx-megaphone::before {
+    content: "\eda5";
+    font-family: 'boxicons' !important;
 }
 
 .nav-item span {
@@ -170,6 +189,15 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-title-header i {
+    -webkit-text-fill-color: #667eea;
+    background: none;
+    font-size: 32px;
 }
 
 .breadcrumb {

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVM Integration Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .test-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+        }
+        .info {
+            background: #bee3f8;
+            color: #2c5282;
+            border-left: 4px solid #3182ce;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 SVM Integration Test Dashboard</h1>
+
+        <div class="test-section">
+            <h2>Quick Tests</h2>
+            <button onclick="testAll()">🚀 Run All Tests</button>
+            <button onclick="testBackend()">🔧 Test Backend</button>
+            <button onclick="testSVM()">🧠 Test SVM</button>
+            <button onclick="testDatabase()">💾 Test Database</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api/v1';
+        let token = '';
+
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function login() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    token = data.data.token;
+                    addResult('✅ Login successful as ' + data.data.user.role, 'success');
+                    return true;
+                } else {
+                    addResult('❌ Login failed: ' + data.message, 'error');
+                    return false;
+                }
+            } catch (error) {
+                addResult('❌ Login error: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function testBackend() {
+            clearResults();
+            addResult('<h3>🔧 Testing Backend Connection</h3>', 'info');
+
+            const loggedIn = await login();
+            if (!loggedIn) return;
+
+            // Test ML Info
+            try {
+                const response = await fetch(`${API_BASE}/ml/info`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    addResult('✅ ML Info endpoint working', 'success');
+                    addResult(`📊 Model exists: ${data.model_exists}`, 'info');
+                    addResult(`📊 Model type: ${data.model_type}`, 'info');
+                    addResult(`📊 Features: ${data.n_features}`, 'info');
+                    addResult(`📊 Classes: ${data.n_classes}`, 'info');
+                } else {
+                    addResult('❌ ML Info failed: ' + data.message, 'error');
+                }
+            } catch (error) {
+                addResult('❌ ML Info error: ' + error.message, 'error');
+            }
+        }
+
+        async function testSVM() {
+            clearResults();
+            addResult('<h3>🧠 Testing SVM Prediction</h3>', 'info');
+
+            const loggedIn = await login();
+            if (!loggedIn) return;
+
+            // Test Prediction
+            try {
+                const response = await fetch(`${API_BASE}/ml/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        score: 85,
+                        correct_answers: 17,
+                        time_spent: 28
+                    })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    addResult('✅ SVM Prediction successful', 'success');
+                    addResult(`🎯 Predicted Level: <strong>${data.predicted_level}</strong>`, 'success');
+                    addResult(`📊 Confidence: <strong>${data.confidence.toFixed(2)}%</strong>`, 'info');
+                    addResult(`📈 Probabilities:<pre>${JSON.stringify(data.probabilities, null, 2)}</pre>`, 'info');
+                } else {
+                    addResult('❌ Prediction failed: ' + data.message, 'error');
+                }
+            } catch (error) {
+                addResult('❌ Prediction error: ' + error.message, 'error');
+            }
+        }
+
+        async function testDatabase() {
+            clearResults();
+            addResult('<h3>💾 Testing Database Integration</h3>', 'info');
+
+            const loggedIn = await login();
+            if (!loggedIn) return;
+
+            // Test Stats (requires DB)
+            try {
+                const response = await fetch(`${API_BASE}/ml/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    addResult('✅ Database queries working', 'success');
+                    const stats = data.data.statistics;
+                    addResult(`📊 Total Predictions: ${stats.total_predictions}`, 'info');
+                    addResult(`📊 Fundamental: ${stats.fundamental_count}`, 'info');
+                    addResult(`📊 Intermediate: ${stats.intermediate_count}`, 'info');
+                    addResult(`📊 Advance: ${stats.advance_count}`, 'info');
+                    addResult(`📊 Avg Confidence: ${stats.avg_confidence.toFixed(2)}%`, 'info');
+                    addResult(`📊 Matching: ${stats.matching_predictions}`, 'info');
+
+                    if (data.data.predictions && data.data.predictions.length > 0) {
+                        addResult(`✅ Found ${data.data.predictions.length} predictions in database`, 'success');
+                    }
+                } else {
+                    addResult('❌ Stats failed: ' + data.message, 'error');
+                }
+            } catch (error) {
+                addResult('❌ Stats error: ' + error.message, 'error');
+            }
+        }
+
+        async function testAll() {
+            clearResults();
+            addResult('<h2>🚀 Running Complete Integration Test</h2>', 'info');
+
+            await testBackend();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            await testSVM();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            await testDatabase();
+
+            addResult('<h3>✅ All Tests Complete!</h3>', 'success');
+        }
+    </script>
+</body>
+</html>

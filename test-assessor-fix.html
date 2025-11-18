@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Assessor SVM Fix</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .test-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2d3748;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+        }
+        .info {
+            background: #bee3f8;
+            color: #2c5282;
+            border-left: 4px solid #3182ce;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🧪 Test: Assessor SVM Analytics Fix</h1>
+        <p>This test verifies that the <code>apiService.fetchWithAuth</code> method now exists and works properly.</p>
+        <button onclick="runTests()">🚀 Run Tests</button>
+        <div id="results"></div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function runTests() {
+            clearResults();
+            addResult('<h3>🔍 Running Tests...</h3>', 'info');
+
+            // Test 1: Check if apiService exists
+            if (typeof apiService !== 'undefined') {
+                addResult('✅ Test 1: apiService object exists', 'success');
+            } else {
+                addResult('❌ Test 1: apiService object NOT found', 'error');
+                return;
+            }
+
+            // Test 2: Check if fetchWithAuth method exists
+            if (typeof apiService.fetchWithAuth === 'function') {
+                addResult('✅ Test 2: fetchWithAuth method exists', 'success');
+            } else {
+                addResult('❌ Test 2: fetchWithAuth method NOT found', 'error');
+                return;
+            }
+
+            // Test 3: Login first
+            try {
+                const loginResponse = await fetch('http://localhost:5000/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                const loginData = await loginResponse.json();
+
+                if (loginData.success) {
+                    localStorage.setItem('codesmart_token', loginData.data.token);
+                    addResult('✅ Test 3: Login successful', 'success');
+                } else {
+                    addResult('❌ Test 3: Login failed', 'error');
+                    return;
+                }
+            } catch (error) {
+                addResult('❌ Test 3: Login error - ' + error.message, 'error');
+                return;
+            }
+
+            // Test 4: Test fetchWithAuth with GET request
+            try {
+                const response = await apiService.fetchWithAuth('/ml/info');
+                if (response.success) {
+                    addResult('✅ Test 4: fetchWithAuth GET request works', 'success');
+                    addResult(`📊 Model exists: ${response.model_exists}`, 'info');
+                } else {
+                    addResult('❌ Test 4: fetchWithAuth GET failed - ' + response.message, 'error');
+                }
+            } catch (error) {
+                addResult('❌ Test 4: fetchWithAuth GET error - ' + error.message, 'error');
+            }
+
+            // Test 5: Test fetchWithAuth with POST request
+            try {
+                const response = await apiService.fetchWithAuth('/ml/predict', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        score: 85,
+                        correct_answers: 17,
+                        time_spent: 28
+                    })
+                });
+
+                if (response.success) {
+                    addResult('✅ Test 5: fetchWithAuth POST request works', 'success');
+                    addResult(`🎯 Predicted Level: ${response.predicted_level}`, 'info');
+                    addResult(`📊 Confidence: ${response.confidence.toFixed(2)}%`, 'info');
+                } else {
+                    addResult('❌ Test 5: fetchWithAuth POST failed - ' + response.message, 'error');
+                }
+            } catch (error) {
+                addResult('❌ Test 5: fetchWithAuth POST error - ' + error.message, 'error');
+            }
+
+            // Test 6: Test fetchWithAuth with stats endpoint
+            try {
+                const response = await apiService.fetchWithAuth('/ml/stats');
+                if (response.success) {
+                    addResult('✅ Test 6: fetchWithAuth can get SVM stats', 'success');
+                    const stats = response.data.statistics;
+                    addResult(`📊 Total Predictions: ${stats.total_predictions}`, 'info');
+                    addResult(`📊 Fundamental: ${stats.fundamental_count}`, 'info');
+                    addResult(`📊 Intermediate: ${stats.intermediate_count}`, 'info');
+                    addResult(`📊 Advance: ${stats.advance_count}`, 'info');
+                } else {
+                    addResult('❌ Test 6: fetchWithAuth stats failed - ' + response.message, 'error');
+                }
+            } catch (error) {
+                addResult('❌ Test 6: fetchWithAuth stats error - ' + error.message, 'error');
+            }
+
+            addResult('<h3>✅ All Tests Complete!</h3>', 'success');
+            addResult('🎉 The assessor analytics page should now work correctly!', 'success');
+        }
+    </script>
+</body>
+</html>

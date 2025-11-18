@@ -272,12 +272,72 @@
                     </div>
                 </div>
             </div>
+
+            <!-- SVM Predictions Analytics Section -->
+            <div class="card" style="margin-top: 32px;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <h2 class="card-title">
+                        <i class='bx bx-brain'></i>
+                        SVM Predictions Analytics
+                    </h2>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="loadSVMData()" class="btn btn-primary btn-sm">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                        <button onclick="runSVMBatchPrediction()" class="btn btn-success btn-sm">
+                            <i class='bx bx-play-circle'></i> Run Batch
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- SVM Stats Grid -->
+                    <div id="svmStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        <div style="text-align: center; padding: 20px;">
+                            <i class='bx bx-loader-alt bx-spin' style="font-size: 32px; color: #667eea;"></i>
+                            <p style="margin-top: 12px; color: #6b7280;">Loading SVM data...</p>
+                        </div>
+                    </div>
+
+                    <!-- SVM Table -->
+                    <div id="svmTableContainer" style="display: none;">
+                        <h3 style="font-size: 16px; font-weight: 600; color: #2d3748; margin: 24px 0 16px 0;">Top 10 Recent Predictions</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                    <tr>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px;">Student</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px;">Score</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px;">Rule-Based</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px;">SVM</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px;">Confidence</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px;">Match</th>
+                                        <th style="padding: 12px; text-align: left; font-size: 13px;">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="svmPredictionsBody" style="background: white;">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="svmEmptyState" style="display: none; text-align: center; padding: 40px;">
+                        <i class='bx bx-brain' style="font-size: 64px; color: #cbd5e0;"></i>
+                        <h4 style="color: #4a5568; margin-top: 16px;">No SVM Predictions Yet</h4>
+                        <p style="color: #718096; margin: 8px 0 24px 0;">Run batch prediction to generate SVM predictions</p>
+                        <button onclick="runSVMBatchPrediction()" class="btn btn-success">
+                            <i class='bx bx-play-circle'></i> Run Batch Prediction
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="/src/js/auth.js"></script>
     <script src="/src/js/api-service.js"></script>
     <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
     <script>
         // Auth check
@@ -683,6 +743,130 @@
 
         // Initialize
         loadAllData();
+
+        // ========================================
+        // SVM Analytics Functions
+        // ========================================
+        let svmPredictionsData = [];
+
+        // Load SVM data
+        async function loadSVMData() {
+            try {
+                const response = await apiService.fetchWithAuth('/ml/stats');
+
+                if (response.success && response.data.statistics.total_predictions > 0) {
+                    const stats = response.data.statistics;
+                    const predictions = response.data.predictions || [];
+
+                    // Update stats grid
+                    const statsHTML = `
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${stats.total_predictions}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Total Predictions</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #fa709a;">${stats.fundamental_count}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Fundamental</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #4facfe;">${stats.intermediate_count}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Intermediate</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #43e97b;">${stats.advance_count}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Advance</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #10b981;">${stats.matching_predictions}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Matching</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #667eea;">${(stats.avg_confidence || 0).toFixed(1)}%</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Avg Confidence</div>
+                        </div>
+                    `;
+                    document.getElementById('svmStatsGrid').innerHTML = statsHTML;
+
+                    // Render table
+                    renderSVMTable(predictions);
+                    svmPredictionsData = predictions;
+
+                    // Show table
+                    document.getElementById('svmTableContainer').style.display = 'block';
+                    document.getElementById('svmEmptyState').style.display = 'none';
+                } else {
+                    showSVMEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading SVM data:', error);
+                showSVMEmptyState();
+            }
+        }
+
+        // Render SVM table
+        function renderSVMTable(predictions) {
+            const tbody = document.getElementById('svmPredictionsBody');
+            tbody.innerHTML = '';
+
+            predictions.slice(0, 10).forEach(pred => {
+                const match = pred.current_level === pred.svm_predicted_level;
+                const matchText = match ? '✅ Match' : '❌ Different';
+                const matchColor = match ? '#10b981' : '#ef4444';
+
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #e5e7eb';
+                row.innerHTML = `
+                    <td style="padding: 12px; font-size: 13px;"><strong>${pred.name || 'Unknown'}</strong></td>
+                    <td style="padding: 12px; font-size: 13px;">${pred.pretest_score || 0}</td>
+                    <td style="padding: 12px; font-size: 13px;"><span style="padding: 4px 8px; border-radius: 6px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; font-size: 11px; font-weight: 600;">${pred.current_level || '-'}</span></td>
+                    <td style="padding: 12px; font-size: 13px;"><span style="padding: 4px 8px; border-radius: 6px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; font-size: 11px; font-weight: 600;">${pred.svm_predicted_level || '-'}</span></td>
+                    <td style="padding: 12px; font-size: 13px;">
+                        <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                            <div style="width: ${pred.svm_confidence || 0}%; height: 100%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                        </div>
+                        <div style="font-size: 11px; color: #718096; margin-top: 4px;">${(pred.svm_confidence || 0).toFixed(1)}%</div>
+                    </td>
+                    <td style="padding: 12px; font-size: 13px; color: ${matchColor}; font-weight: 600;">${matchText}</td>
+                    <td style="padding: 12px; font-size: 13px; color: #6b7280;">${pred.prediction_date ? new Date(pred.prediction_date).toLocaleDateString() : '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Run SVM batch prediction
+        async function runSVMBatchPrediction() {
+            if (!confirm('Run batch prediction untuk semua siswa dengan pretest?')) return;
+
+            try {
+                document.getElementById('svmStatsGrid').innerHTML = '<div style="text-align: center; padding: 20px;"><i class="bx bx-loader-alt bx-spin" style="font-size: 32px; color: #667eea;"></i><p style="margin-top: 12px; color: #6b7280;">Running batch prediction...</p></div>';
+
+                const response = await apiService.fetchWithAuth('/ml/batch-predict', { method: 'POST' });
+
+                if (response.success) {
+                    alert(`✅ Batch prediction berhasil!\n\nTotal: ${response.data.total_users}\nSuccess: ${response.data.successful_predictions}\nFailed: ${response.data.failed_predictions}`);
+                    loadSVMData();
+                } else {
+                    alert('❌ Batch prediction gagal: ' + (response.error || 'Unknown error'));
+                    showSVMEmptyState();
+                }
+            } catch (error) {
+                console.error('Error running batch prediction:', error);
+                alert('❌ Error: ' + error.message);
+                showSVMEmptyState();
+            }
+        }
+
+        // Show empty state
+        function showSVMEmptyState() {
+            document.getElementById('svmStatsGrid').innerHTML = '';
+            document.getElementById('svmTableContainer').style.display = 'none';
+            document.getElementById('svmEmptyState').style.display = 'block';
+        }
+
+        // Load SVM data on page load
+        setTimeout(() => {
+            loadSVMData();
+        }, 1500);
     </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 /**
- * Notification Bell System for Assessor Dashboard
+ * Notification Bell System for Assessor Dashboard - Standalone Version
  * Handles notification bell panel, fetching, and interactions
+ * Uses mock data - no apiService dependency
  */
 
 class NotificationBell {
@@ -11,17 +12,13 @@ class NotificationBell {
         this.isOpen = false;
     }
 
-    /**
-     * Initialize notification bell
-     */
     init() {
         console.log('NotificationBell: Initializing...');
         this.createPanel();
         this.attachEventListeners();
         this.loadNotifications();
-        console.log('NotificationBell: Initialized with', this.notifications.length, 'notifications');
+        console.log('NotificationBell: Initialized');
 
-        // Auto refresh every 30 seconds
         setInterval(() => {
             if (!this.isOpen) {
                 this.loadNotifications();
@@ -29,11 +26,7 @@ class NotificationBell {
         }, 30000);
     }
 
-    /**
-     * Create notification panel HTML
-     */
     createPanel() {
-        // Check if panel already exists
         if (document.getElementById('notificationPanel')) {
             this.panel = document.getElementById('notificationPanel');
             return;
@@ -66,9 +59,6 @@ class NotificationBell {
         this.panel = panel;
     }
 
-    /**
-     * Attach event listeners
-     */
     attachEventListeners() {
         const bellBtn = document.getElementById('notificationBellBtn');
         if (bellBtn) {
@@ -78,7 +68,6 @@ class NotificationBell {
             });
         }
 
-        // Close panel when clicking outside
         document.addEventListener('click', (e) => {
             if (this.isOpen && this.panel && !this.panel.contains(e.target) && !e.target.closest('#notificationBellBtn')) {
                 this.closePanel();
@@ -86,9 +75,6 @@ class NotificationBell {
         });
     }
 
-    /**
-     * Toggle notification panel
-     */
     togglePanel() {
         if (this.isOpen) {
             this.closePanel();
@@ -97,16 +83,12 @@ class NotificationBell {
         }
     }
 
-    /**
-     * Open notification panel
-     */
     openPanel() {
         if (!this.panel) return;
 
         this.panel.style.display = 'block';
         this.isOpen = true;
 
-        // Position panel below bell icon
         const bellBtn = document.getElementById('notificationBellBtn');
         if (bellBtn) {
             const rect = bellBtn.getBoundingClientRect();
@@ -114,42 +96,19 @@ class NotificationBell {
             this.panel.style.right = '20px';
         }
 
-        // Refresh notifications when opening
         this.loadNotifications();
     }
 
-    /**
-     * Close notification panel
-     */
     closePanel() {
         if (!this.panel) return;
         this.panel.style.display = 'none';
         this.isOpen = false;
     }
 
-    /**
-     * Load notifications from API
-     */
     async loadNotifications() {
-        try {
-            const response = await apiService.getNotifications();
-
-            if (response.success) {
-                this.notifications = response.data.notifications || response.data || [];
-                this.updateBadge();
-                this.renderNotifications();
-                return;
-            }
-        } catch (error) {
-            console.error('Error loading notifications:', error);
-            // Fallback to mock data if API fails
-            this.loadMockNotifications();
-        }
+        this.loadMockNotifications();
     }
 
-    /**
-     * Load mock notifications for demo
-     */
     loadMockNotifications() {
         console.log('NotificationBell: Loading mock notifications...');
         this.notifications = [
@@ -159,7 +118,7 @@ class NotificationBell {
                 title: 'New Submission',
                 message: 'A student submitted Assignment 3 - JavaScript Basics',
                 is_read: false,
-                created_at: new Date(Date.now() - 5 * 60000).toISOString(), // 5 minutes ago
+                created_at: new Date(Date.now() - 5 * 60000).toISOString(),
                 link: 'submissions-sidebar.html'
             },
             {
@@ -168,7 +127,7 @@ class NotificationBell {
                 title: 'Assignment Deadline',
                 message: 'Assignment "Functions & Scope" is due in 2 days',
                 is_read: false,
-                created_at: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+                created_at: new Date(Date.now() - 3600000).toISOString(),
                 link: 'assignments-sidebar.html'
             },
             {
@@ -177,17 +136,17 @@ class NotificationBell {
                 title: 'Grading Complete',
                 message: 'You have completed grading 15 submissions today',
                 is_read: true,
-                created_at: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+                created_at: new Date(Date.now() - 7200000).toISOString(),
                 link: null
             },
             {
                 id: 4,
                 type: 'comment',
-                title: 'Student Comment',
-                message: 'A student asked a question on their submission',
-                is_read: true,
-                created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-                link: 'submissions-sidebar.html'
+                title: 'New Discussion Reply',
+                message: 'Someone replied to your discussion post',
+                is_read: false,
+                created_at: new Date(Date.now() - 14400000).toISOString(),
+                link: 'discussions-sidebar.html'
             },
             {
                 id: 5,
@@ -195,7 +154,7 @@ class NotificationBell {
                 title: 'System Update',
                 message: 'New grading features are now available',
                 is_read: true,
-                created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                created_at: new Date(Date.now() - 172800000).toISOString(),
                 link: null
             }
         ];
@@ -204,9 +163,6 @@ class NotificationBell {
         this.renderNotifications();
     }
 
-    /**
-     * Update notification badge
-     */
     updateBadge() {
         const badge = document.getElementById('notificationBadge');
         if (!badge) {
@@ -226,9 +182,6 @@ class NotificationBell {
         }
     }
 
-    /**
-     * Render notifications in panel
-     */
     renderNotifications() {
         const body = document.getElementById('notificationPanelBody');
         if (!body) {
@@ -269,9 +222,6 @@ class NotificationBell {
         }).join('');
     }
 
-    /**
-     * Show empty state
-     */
     showEmptyState(message) {
         const body = document.getElementById('notificationPanelBody');
         if (!body) return;
@@ -284,9 +234,6 @@ class NotificationBell {
         `;
     }
 
-    /**
-     * Get icon based on notification type
-     */
     getNotificationIcon(type) {
         const icons = {
             'submission': 'bx-file',
@@ -301,9 +248,6 @@ class NotificationBell {
         return icons[type] || 'bx-bell';
     }
 
-    /**
-     * Format time ago
-     */
     formatTimeAgo(dateString) {
         if (!dateString) return 'Just now';
 
@@ -319,77 +263,30 @@ class NotificationBell {
         return date.toLocaleDateString();
     }
 
-    /**
-     * Handle notification click
-     */
-    async handleNotificationClick(notificationId) {
+    handleNotificationClick(notificationId) {
         const notification = this.notifications.find(n => n.id === notificationId);
         if (!notification) return;
 
-        // Mark as read
         if (!notification.is_read) {
-            await this.markAsRead(notificationId);
+            notification.is_read = true;
+            this.updateBadge();
+            this.renderNotifications();
         }
 
-        // Handle navigation based on type
         if (notification.link) {
             window.location.href = notification.link;
         }
     }
 
-    /**
-     * Mark notification as read
-     */
-    async markAsRead(notificationId) {
-        try {
-            const response = await apiService.markNotificationAsRead(notificationId);
-            if (response.success) {
-                const notification = this.notifications.find(n => n.id === notificationId);
-                if (notification) {
-                    notification.is_read = true;
-                }
-                this.updateBadge();
-                this.renderNotifications();
-            }
-        } catch (error) {
-            console.error('Error marking notification as read:', error);
-            // Fallback: update local state
-            const notification = this.notifications.find(n => n.id === notificationId);
-            if (notification) {
-                notification.is_read = true;
-            }
-            this.updateBadge();
-            this.renderNotifications();
-        }
-    }
-
-    /**
-     * Mark all notifications as read
-     */
-    async markAllAsRead() {
-        try {
-            const response = await apiService.markAllNotificationsAsRead();
-            if (response.success) {
-                this.notifications.forEach(n => n.is_read = true);
-                this.updateBadge();
-                this.renderNotifications();
-                notificationService.success('All notifications marked as read');
-            }
-        } catch (error) {
-            console.error('Error marking all as read:', error);
-            // Fallback: update local state
-            this.notifications.forEach(n => n.is_read = true);
-            this.updateBadge();
-            this.renderNotifications();
-            notificationService.success('All notifications marked as read');
-        }
+    markAllAsRead() {
+        this.notifications.forEach(n => n.is_read = true);
+        this.updateBadge();
+        this.renderNotifications();
     }
 }
 
-// Create singleton instance
 const notificationBell = new NotificationBell();
 
-// Auto-initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         notificationBell.init();
@@ -398,5 +295,4 @@ if (document.readyState === 'loading') {
     notificationBell.init();
 }
 
-// Export for global use
 window.notificationBell = notificationBell;

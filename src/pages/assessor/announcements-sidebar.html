@@ -3,64 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcements - Assessor Dashboard</title>
+    <title>Announcements - CodeSmart Assessor</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         .announcements-container {
-            padding: 2rem;
+            padding: 0;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
         }
 
         .action-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            gap: 2rem;
+            flex-wrap: wrap;
         }
 
         .btn-new-announcement {
-            padding: 1.2rem 2.5rem;
+            padding: 1.3rem 2.8rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1.5rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.8rem;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-new-announcement::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-new-announcement:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-new-announcement:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-new-announcement:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-new-announcement i {
+            font-size: 2rem;
+            transition: transform 0.3s;
+        }
+
+        .btn-new-announcement:hover i {
+            transform: rotate(90deg);
         }
 
         .filter-tabs {
             display: flex;
             gap: 1rem;
-            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .filter-tab {
             padding: 1rem 2rem;
             background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+            border: 2px solid transparent;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 1.4rem;
-            transition: all 0.2s;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            border-color: #e5e7eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .filter-tab.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-color: #667eea;
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .filter-tab.active::before {
+            width: 100%;
         }
 
         .announcements-grid {
@@ -68,23 +180,90 @@
             gap: 2rem;
         }
 
-        .announcement-card {
+        /* Skeleton loading animation */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 12px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .skeleton-card {
             background: white;
             padding: 2.5rem;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid #667eea;
-            transition: all 0.3s;
+        }
+
+        .skeleton-title {
+            height: 24px;
+            width: 70%;
+            margin-bottom: 1rem;
+        }
+
+        .skeleton-meta {
+            height: 16px;
+            width: 40%;
+            margin-bottom: 1.5rem;
+        }
+
+        .skeleton-content {
+            height: 60px;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .skeleton-badge {
+            height: 30px;
+            width: 100px;
+            display: inline-block;
+            margin-right: 1rem;
+        }
+
+        .announcement-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-left: 5px solid #667eea;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.4s ease-out;
+        }
+
+        .announcement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.03), transparent);
+            transition: left 0.5s;
+        }
+
+        .announcement-card:hover::before {
+            left: 100%;
         }
 
         .announcement-card.urgent {
             border-left-color: #ef4444;
-            background: linear-gradient(90deg, #fef2f2 0%, white 10%);
+            background: linear-gradient(90deg, #fef2f2 0%, white 8%);
         }
 
         .announcement-card.high {
             border-left-color: #f59e0b;
-            background: linear-gradient(90deg, #fffbeb 0%, white 10%);
+            background: linear-gradient(90deg, #fffbeb 0%, white 8%);
         }
 
         .announcement-card.normal {
@@ -96,8 +275,8 @@
         }
 
         .announcement-card:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+            transform: translateY(-4px) scale(1.01);
         }
 
         .announcement-header {
@@ -105,41 +284,55 @@
             justify-content: space-between;
             align-items: start;
             margin-bottom: 1.5rem;
+            gap: 1.5rem;
         }
 
         .announcement-title {
-            font-size: 1.8rem;
-            font-weight: 600;
+            font-size: 1.9rem;
+            font-weight: 700;
             color: #1f2937;
             margin-bottom: 0.5rem;
+            line-height: 1.4;
+            transition: color 0.3s;
+        }
+
+        .announcement-card:hover .announcement-title {
+            color: #667eea;
         }
 
         .priority-badge {
-            padding: 0.5rem 1.2rem;
-            border-radius: 20px;
+            padding: 0.6rem 1.4rem;
+            border-radius: 24px;
             font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .priority-badge:hover {
+            transform: scale(1.05);
         }
 
         .priority-badge.urgent {
-            background: #fee2e2;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #991b1b;
         }
 
         .priority-badge.high {
-            background: #fed7aa;
+            background: linear-gradient(135deg, #fed7aa 0%, #fbbf24 100%);
             color: #92400e;
         }
 
         .priority-badge.normal {
-            background: #dbeafe;
+            background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%);
             color: #1e40af;
         }
 
         .priority-badge.low {
-            background: #e5e7eb;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
             color: #374151;
         }
 
@@ -149,17 +342,32 @@
             font-size: 1.3rem;
             color: #6b7280;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .announcement-meta span {
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .announcement-meta span:hover {
+            color: #374151;
+        }
+
+        .announcement-meta i {
+            font-size: 1.6rem;
+            transition: transform 0.3s;
+        }
+
+        .announcement-meta span:hover i {
+            transform: scale(1.2);
         }
 
         .announcement-content {
             font-size: 1.5rem;
-            line-height: 1.7;
+            line-height: 1.8;
             color: #4b5563;
             margin-bottom: 1.5rem;
         }
@@ -171,14 +379,27 @@
         }
 
         .target-badge {
-            padding: 0.5rem 1rem;
-            background: #f3f4f6;
-            border-radius: 8px;
+            padding: 0.7rem 1.3rem;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-radius: 10px;
             font-size: 1.3rem;
             color: #374151;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .target-badge:hover {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-color: #93c5fd;
+            color: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        .target-badge i {
+            font-size: 1.6rem;
         }
 
         .announcement-actions {
@@ -187,66 +408,145 @@
             margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid #f0f0f0;
+            flex-wrap: wrap;
         }
 
         .btn-action {
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            padding: 0.9rem 1.7rem;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
             background: white;
             cursor: pointer;
             font-size: 1.3rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
+            gap: 0.6rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.1;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .btn-action:hover::before {
+            width: 200px;
+            height: 200px;
         }
 
         .btn-action:hover {
-            background: #f3f4f6;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-action:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-action i {
+            transition: transform 0.3s;
+        }
+
+        .btn-action:hover i {
+            transform: scale(1.2);
         }
 
         .btn-action.edit {
             color: #3b82f6;
-            border-color: #3b82f6;
+            border-color: #93c5fd;
         }
 
         .btn-action.edit:hover {
             background: #eff6ff;
+            border-color: #3b82f6;
         }
 
         .btn-action.delete {
             color: #ef4444;
-            border-color: #ef4444;
+            border-color: #fca5a5;
         }
 
         .btn-action.delete:hover {
             background: #fef2f2;
+            border-color: #ef4444;
         }
 
         .btn-action.deactivate {
             color: #6b7280;
+            border-color: #d1d5db;
+        }
+
+        .btn-action.deactivate:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
         }
 
         /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
         .announcement-modal {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 3rem;
             max-width: 700px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
+            position: relative;
+            z-index: 1001;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .modal-header {
+        .announcement-modal .modal-header {
             font-size: 2.4rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             display: flex;
             align-items: center;
             gap: 1rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .announcement-modal .modal-header i {
+            color: #667eea;
+            font-size: 2.8rem;
         }
 
         .form-group {
@@ -256,20 +556,36 @@
         .form-group label {
             display: block;
             font-size: 1.4rem;
-            font-weight: 500;
+            font-weight: 600;
             color: #374151;
             margin-bottom: 0.8rem;
+        }
+
+        .form-group label::after {
+            content: ' *';
+            color: #ef4444;
         }
 
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 1.2rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 1.3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
             font-size: 1.4rem;
             font-family: inherit;
+            transition: all 0.3s;
+            background: #f9fafb;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-group textarea {
@@ -288,36 +604,50 @@
             gap: 1rem;
             justify-content: flex-end;
             margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f3f4f6;
         }
 
         .btn-cancel {
-            padding: 1rem 2rem;
+            padding: 1.2rem 2.4rem;
             background: #f3f4f6;
-            border: none;
-            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
             font-size: 1.4rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-cancel:hover {
-            background: #e5e7eb;
-        }
-
-        .btn-submit {
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.4rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
 
+        .btn-cancel:hover {
+            background: #e5e7eb;
+            border-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .btn-submit {
+            padding: 1.2rem 2.4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-submit i {
+            font-size: 1.8rem;
         }
 
         .empty-state {
@@ -325,80 +655,291 @@
             padding: 6rem 2rem;
             color: #9ca3af;
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .empty-state i {
-            font-size: 6rem;
+            font-size: 8rem;
             margin-bottom: 2rem;
-            opacity: 0.3;
+            opacity: 0.2;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .empty-state h3 {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #374151;
             margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 1.5rem;
+            color: #6b7280;
         }
 
         .loading {
             text-align: center;
-            padding: 4rem;
+            padding: 6rem 2rem;
             font-size: 1.6rem;
             color: #9ca3af;
+            background: white;
+            border-radius: 16px;
+        }
+
+        .loading i {
+            font-size: 4rem;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-tabs {
+                order: -1;
+                justify-content: center;
+            }
+
+            .btn-new-announcement {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .announcement-card {
+                padding: 2rem;
+            }
+
+            .announcement-header {
+                flex-direction: column;
+                align-items: start;
+            }
+
+            .priority-badge {
+                align-self: flex-start;
+            }
+
+            .announcement-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .announcement-modal {
+                padding: 2rem;
+                width: 95%;
+            }
+
+            .announcement-modal .modal-header {
+                font-size: 2rem;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn-cancel,
+            .btn-submit {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filter-tab {
+                font-size: 1.3rem;
+                padding: 0.9rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-new-announcement {
+                padding: 1.2rem 2rem;
+                font-size: 1.4rem;
+            }
+
+            .announcement-title {
+                font-size: 1.7rem;
+            }
+
+            .announcement-content {
+                font-size: 1.4rem;
+            }
+
+            .announcement-actions {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Smooth scrollbar */
+        .announcement-modal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .announcement-modal::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 10px;
+        }
+
+        .announcement-modal::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .announcement-modal::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
         }
     </style>
 </head>
 <body>
-    <!-- Include Sidebar -->
-    <nav class="sidebar" id="sidebar"></nav>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Grading</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Grade Submissions</span>
+                </a>
+                <a href="students-sidebar.html" class="nav-item">
+                    <i class='bx bx-user-check'></i>
+                    <span>Student Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item active">
+                    <i class='bx bx-megaphone'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="analytics-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <i class='bx bx-log-out'></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="admin-main">
         <!-- Header -->
-        <header class="top-header">
+        <header class="admin-header">
             <div class="header-left">
-                <button class="menu-toggle" id="menuToggle">
-                    <i class='bx bx-menu'></i>
-                </button>
-                <h1>Announcements</h1>
+                <h1 class="page-title-header">
+                    <i class='bx bx-megaphone'></i> Announcements
+                </h1>
             </div>
             <div class="header-right">
-                <!-- Notification Bell -->
-                <div class="notification-bell" id="notificationBell">
+                <div class="notification-bell" id="notificationBellBtn">
                     <i class='bx bx-bell'></i>
-                    <span class="notification-badge" id="notificationBadge">0</span>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <!-- Notification Dropdown -->
-                <div class="notification-dropdown" id="notificationDropdown"></div>
-
-                <div class="user-profile">
-                    <img src="../../images/default-avatar.png" alt="User" onerror="this.src='https://ui-avatars.com/api/?name=Assessor&background=667eea&color=fff'">
-                    <span id="userName">Assessor</span>
+                <div class="user-menu" onclick="toggleUserMenu()">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Assessor</div>
+                        <div class="user-role">Assessor</div>
+                    </div>
                 </div>
             </div>
         </header>
 
-        <!-- Announcements Container -->
-        <div class="announcements-container">
-            <!-- Action Bar -->
-            <div class="action-bar">
-                <div class="filter-tabs">
-                    <div class="filter-tab active" data-filter="all">All</div>
-                    <div class="filter-tab" data-filter="urgent">Urgent</div>
-                    <div class="filter-tab" data-filter="high">High</div>
-                    <div class="filter-tab" data-filter="normal">Normal</div>
-                    <div class="filter-tab" data-filter="active">Active Only</div>
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Announcements Container -->
+            <div class="announcements-container">
+                <!-- Action Bar -->
+                <div class="action-bar">
+                    <div class="filter-tabs">
+                        <div class="filter-tab active" data-filter="all">All</div>
+                        <div class="filter-tab" data-filter="urgent">Urgent</div>
+                        <div class="filter-tab" data-filter="high">High</div>
+                        <div class="filter-tab" data-filter="normal">Normal</div>
+                        <div class="filter-tab" data-filter="active">Active Only</div>
+                    </div>
+                    <button class="btn-new-announcement" id="btnNewAnnouncement">
+                        <i class='bx bx-plus'></i>
+                        New Announcement
+                    </button>
                 </div>
-                <button class="btn-new-announcement" id="btnNewAnnouncement">
-                    <i class='bx bx-plus'></i>
-                    New Announcement
-                </button>
-            </div>
 
-            <!-- Announcements Grid -->
-            <div class="announcements-grid" id="announcementsGrid">
-                <div class="loading">
-                    <i class='bx bx-loader-alt bx-spin'></i>
-                    Loading announcements...
+                <!-- Announcements Grid -->
+                <div class="announcements-grid" id="announcementsGrid">
+                    <div class="loading">
+                        <i class='bx bx-loader-alt bx-spin'></i>
+                        Loading announcements...
+                    </div>
                 </div>
             </div>
         </div>
@@ -408,10 +949,10 @@
     <div class="modal" id="announcementModal" style="display: none;">
         <div class="modal-overlay" onclick="closeAnnouncementModal()"></div>
         <div class="announcement-modal">
-            <h2 class="modal-header">
+            <div class="modal-header">
                 <i class='bx bx-megaphone'></i>
                 <span id="modalTitle">New Announcement</span>
-            </h2>
+            </div>
             <form id="announcementForm">
                 <input type="hidden" id="announcementId">
 
@@ -469,60 +1010,68 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="../../js/api-service.js"></script>
-    <script type="module" src="../../js/modal-service.js"></script>
-    <script type="module" src="../../js/notification-bell.js"></script>
-    <script type="module">
-        import apiService from '../../js/api-service.js';
-        import { modalService } from '../../js/modal-service.js';
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAssessor()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
 
         let announcements = [];
         let currentFilter = 'all';
         let editingId = null;
 
-        // Load sidebar
-        async function loadSidebar() {
-            const response = await fetch('announcements-sidebar.html');
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const sidebar = doc.querySelector('.sidebar');
-            if (sidebar) {
-                document.getElementById('sidebar').innerHTML = sidebar.innerHTML;
-
-                // Set active nav
-                const navLinks = document.querySelectorAll('.sidebar .nav-link');
-                navLinks.forEach(link => {
-                    if (link.getAttribute('href') === 'announcements-sidebar.html') {
-                        link.classList.add('active');
-                    }
-                });
-            }
-        }
-
-        // Initialize
-        async function init() {
-            await loadSidebar();
-            await loadAnnouncements();
-            setupEventListeners();
-        }
-
         // Load announcements
         async function loadAnnouncements() {
             try {
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
                 const response = await fetch('http://localhost:5000/api/v1/announcements', {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
                 const data = await response.json();
+
+                // Check for authentication errors
+                if (response.status === 401) {
+                    console.warn('Auth error - Status 401:', data);
+
+                    // Show error in announcements area instead of redirect
+                    const container = document.getElementById('announcementsGrid');
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; margin-top: 20px;">
+                            <i class='bx bx-error-circle' style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
+                            <h3 style="color: #374151; margin-bottom: 10px;">Session Expired</h3>
+                            <p style="color: #6b7280; margin-bottom: 30px;">Your session has expired. Please login again to continue.</p>
+                            <button onclick="window.location.href='/src/pages/auth/login.html'"
+                                    style="background: #667eea; color: white; border: none; padding: 12px 32px;
+                                           border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;
+                                           transition: all 0.3s;">
+                                <i class='bx bx-log-in'></i> Login Again
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
                 if (data.success) {
                     announcements = data.data.announcements || [];
                     renderAnnouncements();
+                } else {
+                    // If API fails, show empty state
+                    console.log('API response:', data);
+                    announcements = [];
+                    renderEmptyState();
                 }
             } catch (error) {
                 console.error('Error loading announcements:', error);
+                // Show empty state instead of staying in loading
+                announcements = [];
                 renderEmptyState();
             }
         }
@@ -680,30 +1229,66 @@
                     : 'http://localhost:5000/api/v1/announcements';
 
                 const method = editingId ? 'PUT' : 'POST';
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
 
                 const response = await fetch(url, {
                     method: method,
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(formData)
                 });
 
                 const data = await response.json();
+
+                // Check for authentication errors
+                if (response.status === 401) {
+                    console.warn('Auth error - Status 401:', data);
+
+                    // Close modal immediately
+                    closeAnnouncementModal();
+
+                    // Show session expired in main area
+                    const container = document.getElementById('announcementsGrid');
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; margin-top: 20px;">
+                            <i class='bx bx-error-circle' style="font-size: 64px; color: #dc3545; margin-bottom: 20px;"></i>
+                            <h3 style="color: #374151; margin-bottom: 10px;">Session Expired</h3>
+                            <p style="color: #6b7280; margin-bottom: 30px;">Your session has expired. Please login again to continue.</p>
+                            <button onclick="window.location.href='/src/pages/auth/login.html'"
+                                    style="background: #667eea; color: white; border: none; padding: 12px 32px;
+                                           border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;
+                                           transition: all 0.3s;">
+                                <i class='bx bx-log-in'></i> Login Again
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
                 if (data.success) {
-                    modalService.showNotification(
-                        editingId ? 'Announcement updated successfully' : 'Announcement created successfully',
-                        'success'
-                    );
+                    if (typeof notificationService !== 'undefined') {
+                        notificationService.show(
+                            editingId ? 'Announcement updated successfully' : 'Announcement created successfully',
+                            'success'
+                        );
+                    }
                     closeAnnouncementModal();
                     await loadAnnouncements();
                 } else {
-                    modalService.showNotification(data.message || 'Error saving announcement', 'error');
+                    console.error('API Error:', data);
+                    if (typeof notificationService !== 'undefined') {
+                        notificationService.show(data.message || 'Error saving announcement', 'error');
+                    } else {
+                        alert(data.message || 'Error saving announcement');
+                    }
                 }
             } catch (error) {
                 console.error('Error saving announcement:', error);
-                modalService.showNotification('Error saving announcement', 'error');
+                if (typeof notificationService !== 'undefined') {
+                    notificationService.show('Error saving announcement', 'error');
+                }
             }
         }
 
@@ -723,12 +1308,16 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    modalService.showNotification('Announcement deactivated', 'success');
+                    if (typeof notificationService !== 'undefined') {
+                        notificationService.show('Announcement deactivated', 'success');
+                    }
                     await loadAnnouncements();
                 }
             } catch (error) {
                 console.error('Error deactivating announcement:', error);
-                modalService.showNotification('Error deactivating announcement', 'error');
+                if (typeof notificationService !== 'undefined') {
+                    notificationService.show('Error deactivating announcement', 'error');
+                }
             }
         };
 
@@ -750,12 +1339,16 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    modalService.showNotification('Announcement activated', 'success');
+                    if (typeof notificationService !== 'undefined') {
+                        notificationService.show('Announcement activated', 'success');
+                    }
                     await loadAnnouncements();
                 }
             } catch (error) {
                 console.error('Error activating announcement:', error);
-                modalService.showNotification('Error activating announcement', 'error');
+                if (typeof notificationService !== 'undefined') {
+                    notificationService.show('Error activating announcement', 'error');
+                }
             }
         };
 
@@ -773,41 +1366,72 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    modalService.showNotification('Announcement deleted', 'success');
+                    if (typeof notificationService !== 'undefined') {
+                        notificationService.show('Announcement deleted', 'success');
+                    }
                     await loadAnnouncements();
                 }
             } catch (error) {
                 console.error('Error deleting announcement:', error);
-                modalService.showNotification('Error deleting announcement', 'error');
+                if (typeof notificationService !== 'undefined') {
+                    notificationService.show('Error deleting announcement', 'error');
+                }
             }
         };
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Menu toggle
-            document.getElementById('menuToggle')?.addEventListener('click', () => {
-                document.getElementById('sidebar').classList.toggle('active');
-            });
-
-            // New announcement button
-            document.getElementById('btnNewAnnouncement')?.addEventListener('click', openNewAnnouncementModal);
-
-            // Form submit
-            document.getElementById('announcementForm')?.addEventListener('submit', submitAnnouncement);
-
-            // Filter tabs
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    currentFilter = tab.dataset.filter;
-                    renderAnnouncements();
+        // Logout function
+        window.logout = function() {
+            if (typeof modalService !== 'undefined') {
+                modalService.confirm({
+                    title: '<i class="bx bx-log-out"></i> Confirm Logout',
+                    message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
+                    confirmText: 'Yes, Logout',
+                    cancelText: 'Cancel',
+                    danger: true,
+                    onConfirm: function() {
+                        localStorage.clear();
+                        window.location.href = '../auth/login.html';
+                    }
                 });
-            });
+            } else {
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.clear();
+                    window.location.href = '../auth/login.html';
+                }
+            }
+        };
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
         }
 
-        // Start
-        init();
+        // Event listeners
+        document.getElementById('btnNewAnnouncement').addEventListener('click', openNewAnnouncementModal);
+        document.getElementById('announcementForm').addEventListener('submit', submitAnnouncement);
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderAnnouncements();
+            });
+        });
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('announcementModal');
+            if (event.target === modal) {
+                closeAnnouncementModal();
+            }
+        };
+
+        // Initialize
+        loadAnnouncements();
     </script>
 </body>
 </html>

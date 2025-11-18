@@ -194,6 +194,7 @@
     <script src="/src/js/auth.js"></script>
     <script src="/src/js/api-service.js"></script>
     <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
     <script>
         // Auth check
@@ -294,49 +295,7 @@
         // Initialize
         loadDashboardData();
 
-        // Add click handler for notification bell - make sure it works
-        document.addEventListener('DOMContentLoaded', function() {
-            const notificationBell = document.querySelector('.notification-bell');
-            if (notificationBell) {
-                notificationBell.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Notification bell clicked');
-                    if (typeof modalService !== 'undefined' && modalService.showNotifications) {
-                        modalService.showNotifications();
-                    } else {
-                        console.error('modalService not found');
-                    }
-                });
-                console.log('Notification bell event listener attached');
-            }
-        });
-
-        // Add welcome notification after 1 second
-        setTimeout(() => {
-            modalService.addNotification({
-                title: 'Welcome Back!',
-                message: 'You have successfully logged in to CodeSmart Admin Dashboard',
-                type: 'success'
-            });
-        }, 1000);
-
-        // Add sample notifications for demo
-        setTimeout(() => {
-            modalService.addNotification({
-                title: 'New User Registration',
-                message: '3 new users have registered and are waiting for approval',
-                type: 'info'
-            });
-        }, 2500);
-
-        setTimeout(() => {
-            modalService.addNotification({
-                title: 'Assignment Deadline',
-                message: 'Assignment "JavaScript Basics" deadline is approaching in 2 days',
-                type: 'warning'
-            });
-        }, 4000);
+        // Notification bell is now handled by notification-bell.js
     </script>
 </body>
 </html>

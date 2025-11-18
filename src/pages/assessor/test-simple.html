@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Discussions Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .discussion { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Discussions Test</h1>
+    <button onclick="loadData()">Load Discussions</button>
+    <div id="output"></div>
+
+    <script>
+        async function loadData() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const token = localStorage.getItem('codesmart_token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTc2Mjc1Mzg4MiwiZXhwIjoxNzYzMzU4NjgyfQ.pMOEuzVtyxxIofxZmSWgTH--at3rlbQaZScpcesbFN0';
+                
+                console.log('Using token:', token.substring(0, 20) + '...');
+                
+                const response = await fetch('http://localhost:5000/api/v1/discussions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                console.log('Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('Data:', data);
+
+                if (data.success && data.data.discussions) {
+                    output.innerHTML = '<h2>Found ' + data.data.discussions.length + ' discussions:</h2>';
+                    
+                    data.data.discussions.forEach(d => {
+                        output.innerHTML += `
+                            <div class="discussion">
+                                <h3>${d.title}</h3>
+                                <p>${d.content}</p>
+                                <small>By: ${d.author_name} | Replies: ${d.replies_count} | Views: ${d.views_count}</small>
+                            </div>
+                        `;
+                    });
+                } else {
+                    output.innerHTML = '<p style="color:red;">No discussions found or API error</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                output.innerHTML = '<p style="color:red;">Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Auto-load
+        window.onload = loadData;
+    </script>
+</body>
+</html>
