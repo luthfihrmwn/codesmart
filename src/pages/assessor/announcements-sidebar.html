@@ -868,7 +868,7 @@
                     <span>Discussions</span>
                 </a>
                 <a href="announcements-sidebar.html" class="nav-item active">
-                    <i class='bx bx-megaphone'></i>
+                    <i class='bx bx-broadcast'></i>
                     <span>Announcements</span>
                 </a>
             </div>
@@ -897,7 +897,7 @@
         <header class="admin-header">
             <div class="header-left">
                 <h1 class="page-title-header">
-                    <i class='bx bx-megaphone'></i> Announcements
+                    <i class='bx bx-broadcast'></i> Announcements
                 </h1>
             </div>
             <div class="header-right">
@@ -950,7 +950,7 @@
         <div class="modal-overlay" onclick="closeAnnouncementModal()"></div>
         <div class="announcement-modal">
             <div class="modal-header">
-                <i class='bx bx-megaphone'></i>
+                <i class='bx bx-broadcast'></i>
                 <span id="modalTitle">New Announcement</span>
             </div>
             <form id="announcementForm">
@@ -1149,7 +1149,7 @@
             const container = document.getElementById('announcementsGrid');
             container.innerHTML = `
                 <div class="empty-state">
-                    <i class='bx bx-megaphone'></i>
+                    <i class='bx bx-broadcast'></i>
                     <h3>No Announcements Found</h3>
                     <p>Create your first announcement to communicate with students</p>
                 </div>
@@ -1161,6 +1161,7 @@
             const roles = {
                 'all': 'All Users',
                 'student': 'Students',
+                'user': 'Students',
                 'assessor': 'Assessors',
                 'admin': 'Admins'
             };

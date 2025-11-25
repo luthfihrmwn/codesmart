@@ -7,7 +7,8 @@ exports.getUserProfile = async (req, res, next) => {
     try {
         const result = await query(
             `SELECT id, username, email, name, phone, photo_url, role, status,
-                    pretest_score, current_level, created_at
+                    pretest_score, current_level, bio, address, last_login,
+                    email_verified, created_at, updated_at
              FROM users WHERE id = $1`,
             [req.user.id]
         );
@@ -21,9 +22,7 @@ exports.getUserProfile = async (req, res, next) => {
 
         res.json({
             success: true,
-            data: {
-                user: result.rows[0]
-            }
+            data: result.rows[0]
         });
 
     } catch (error) {
@@ -36,13 +35,15 @@ exports.getUserProfile = async (req, res, next) => {
 // @access  Private
 exports.updateUserProfile = async (req, res, next) => {
     try {
-        const { name, email, phone, photo_url } = req.body;
+        const { name, email, phone, photo_url, bio, address } = req.body;
 
         const fieldsToUpdate = {};
         if (name) fieldsToUpdate.name = name;
         if (email) fieldsToUpdate.email = email;
         if (phone) fieldsToUpdate.phone = phone;
         if (photo_url) fieldsToUpdate.photo_url = photo_url;
+        if (bio !== undefined) fieldsToUpdate.bio = bio;
+        if (address !== undefined) fieldsToUpdate.address = address;
 
         if (Object.keys(fieldsToUpdate).length === 0) {
             return res.status(400).json({
@@ -58,8 +59,8 @@ exports.updateUserProfile = async (req, res, next) => {
         const values = [...Object.values(fieldsToUpdate), req.user.id];
 
         const result = await query(
-            `UPDATE users SET ${setClause} WHERE id = $${values.length}
-             RETURNING id, username, email, name, phone, photo_url, role, current_level, pretest_score`,
+            `UPDATE users SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = $${values.length}
+             RETURNING id, username, email, name, phone, photo_url, bio, address, role, current_level, pretest_score, status, email_verified, last_login, created_at, updated_at`,
             values
         );
 
@@ -429,6 +430,110 @@ exports.requestPromotion = async (req, res, next) => {
         res.json({
             success: true,
             message: 'Promotion request submitted successfully'
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Upload profile photo
+// @route   POST /api/v1/users/profile/photo
+// @access  Private
+exports.uploadProfilePhoto = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please upload a photo'
+            });
+        }
+
+        // Get file path
+        const photoUrl = `/uploads/${req.file.filename}`;
+
+        // Update user photo_url
+        const result = await query(
+            `UPDATE users SET photo_url = $1, updated_at = CURRENT_TIMESTAMP
+             WHERE id = $2
+             RETURNING id, username, email, name, photo_url`,
+            [photoUrl, req.user.id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Profile photo uploaded successfully',
+            data: {
+                user: result.rows[0],
+                photo_url: photoUrl
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Update password
+// @route   PUT /api/v1/users/profile/password
+// @access  Private
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current password and new password are required'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password must be at least 6 characters'
+            });
+        }
+
+        // Get user with password
+        const userResult = await query(
+            'SELECT id, password FROM users WHERE id = $1',
+            [req.user.id]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const user = userResult.rows[0];
+
+        // Verify current password
+        const bcrypt = require('bcryptjs');
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Current password is incorrect'
+            });
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password
+        await query(
+            'UPDATE users SET password = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+            [hashedPassword, req.user.id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Password updated successfully'
         });
 
     } catch (error) {

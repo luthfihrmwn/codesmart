@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements Management - CodeSmart Admin</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>Classes</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder-open'></i>
+                    <span>Materials</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Submissions</span>
+                </a>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item active">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">
+                    <i class='bx bx-broadcast'></i> Announcements Management
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Administrator</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">admin@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-broadcast'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalAnnouncements">0</h3>
+                        <p>Total Announcements</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeAnnouncements">0</h3>
+                        <p>Active</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-globe'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="systemWideAnnouncements">0</h3>
+                        <p>System-Wide</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-user-check'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalReach">0</h3>
+                        <p>Total Reach</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <select id="targetFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 150px;">
+                            <option value="all">All Targets</option>
+                            <option value="system">System-Wide</option>
+                            <option value="students">Students Only</option>
+                            <option value="assessors">Assessors Only</option>
+                            <option value="class">Specific Class</option>
+                        </select>
+                        <select id="typeFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 120px;">
+                            <option value="all">All Types</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="info">Info</option>
+                            <option value="event">Event</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="refreshAnnouncements()" style="padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                        <button onclick="openCreateAnnouncementModal()" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            <i class='bx bx-plus'></i> New Announcement
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Announcements List -->
+            <div id="announcementsList" style="margin-top: 24px;">
+                <div style="text-align: center; padding: 60px;">
+                    <div class="loader"></div>
+                    <p style="margin-top: 16px; color: #94a3b8;">Loading announcements...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Announcement Modal -->
+    <div id="announcementModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
+        <div style="min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: white; border-radius: 16px; max-width: 700px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                <div style="padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1e293b;" id="announcementModalTitle">Create New Announcement</h3>
+                    <button onclick="closeAnnouncementModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8;">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <div style="padding: 24px;">
+                    <form id="announcementForm" onsubmit="saveAnnouncement(event)">
+                        <input type="hidden" id="announcementId" value="">
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Title *</label>
+                            <input type="text" id="announcementTitle" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Message *</label>
+                            <textarea id="announcementMessage" required rows="5" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Type *</label>
+                                <select id="announcementType" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                    <option value="">Select Type</option>
+                                    <option value="urgent">🔴 Urgent</option>
+                                    <option value="info">ℹ️ Information</option>
+                                    <option value="event">📅 Event</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Priority</label>
+                                <select id="announcementPriority" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                    <option value="normal">Normal</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Target Audience *</label>
+                            <select id="announcementTarget" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                <option value="">Select Target</option>
+                                <option value="system">🌐 System-Wide (Everyone)</option>
+                                <option value="students">👨‍🎓 All Students</option>
+                                <option value="assessors">👨‍🏫 All Assessors</option>
+                                <option value="class">📚 Specific Class</option>
+                            </select>
+                        </div>
+
+                        <div id="classSelectionDiv" style="margin-bottom: 20px; display: none;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Select Class</label>
+                            <select id="announcementClass" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                <option value="">Select Class</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Publish Date</label>
+                            <input type="datetime-local" id="announcementPublishDate" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 6px;">Leave empty to publish immediately</p>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="announcementActive" checked style="width: 18px; height: 18px; margin-right: 8px;">
+                                <span style="font-size: 14px; font-weight: 600; color: #475569;">Active</span>
+                            </label>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                            <button type="button" onclick="closeAnnouncementModal()" style="padding: 10px 20px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                                Cancel
+                            </button>
+                            <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                                <i class='bx bx-send'></i> Publish
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allAnnouncements = [];
+        let allClasses = [];
+
+        // Load data on page load
+        async function loadAllData() {
+            await Promise.all([
+                loadAnnouncements(),
+                loadClasses()
+            ]);
+        }
+
+        // Load announcements
+        async function loadAnnouncements() {
+            try {
+                // Use real backend API
+                const response = await apiService.getAnnouncements();
+
+                if (response.success && response.data) {
+                    // API returns data.announcements, not just data
+                    // Map database fields to frontend expected fields
+                    const rawAnnouncements = response.data.announcements || [];
+                    allAnnouncements = rawAnnouncements.map(ann => {
+                        // Map target_role from DB to match filter values
+                        let targetMapped = ann.target_role || 'system';
+                        if (targetMapped === 'student') targetMapped = 'students';
+                        if (targetMapped === 'assessor') targetMapped = 'assessors';
+
+                        return {
+                            id: ann.id,
+                            title: ann.title,
+                            message: ann.content, // Map content to message
+                            type: ann.priority || 'info', // Map priority to type
+                            target: targetMapped, // Map target_role to target (with plural)
+                            priority: ann.priority || 'normal',
+                            status: ann.is_active ? 'active' : 'inactive', // Map is_active to status
+                            views: 0, // Not in API response
+                            created_by: ann.author_name || 'Admin', // Map author_name to created_by
+                            publish_date: ann.published_at || ann.created_at, // Use published_at or created_at
+                            created_at: ann.created_at
+                        };
+                    });
+
+                    console.log('✅ Loaded', allAnnouncements.length, 'announcements from database');
+                    renderAnnouncements();
+                    updateStats();
+                    return;
+                }
+
+                // Fallback to mock data if API fails
+                console.warn('API failed, using mock data');
+                // Mock data
+                const mockAnnouncements = [
+                    {
+                        id: 1,
+                        title: 'System Maintenance Scheduled',
+                        message: 'The system will be undergoing maintenance on Sunday, 2AM-6AM. Please save your work.',
+                        type: 'urgent',
+                        priority: 'high',
+                        target: 'system',
+                        class_id: null,
+                        publish_date: '2025-11-20T08:00:00',
+                        status: 'active',
+                        views: 156,
+                        created_by: 'Admin',
+                        created_at: '2025-11-20T08:00:00'
+                    },
+                    {
+                        id: 2,
+                        title: 'New Module Available: Advanced Python',
+                        message: 'We are excited to announce a new advanced Python module is now available for all students.',
+                        type: 'info',
+                        priority: 'normal',
+                        target: 'students',
+                        class_id: null,
+                        publish_date: '2025-11-21T10:00:00',
+                        status: 'active',
+                        views: 89,
+                        created_by: 'Admin',
+                        created_at: '2025-11-21T10:00:00'
+                    },
+                    {
+                        id: 3,
+                        title: 'Assessor Workshop Next Week',
+                        message: 'All assessors are invited to attend the workshop on grading best practices.',
+                        type: 'event',
+                        priority: 'normal',
+                        target: 'assessors',
+                        class_id: null,
+                        publish_date: '2025-11-19T14:00:00',
+                        status: 'active',
+                        views: 23,
+                        created_by: 'Admin',
+                        created_at: '2025-11-19T14:00:00'
+                    }
+                ];
+
+                allAnnouncements = mockAnnouncements;
+                updateStats();
+                renderAnnouncements();
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+            }
+        }
+
+        // Load classes for dropdown
+        async function loadClasses() {
+            try {
+                // Load modules from API
+                const response = await apiService.getAllModules();
+                if (response.success && response.data && Array.isArray(response.data)) {
+                    allClasses = response.data.map(module => ({
+                        id: module.id,
+                        name: module.name,
+                        code: module.slug ? module.slug.toUpperCase() : module.name.substring(0, 3).toUpperCase()
+                    }));
+                } else if (response.success && response.data && response.data.modules && Array.isArray(response.data.modules)) {
+                    // Handle nested structure
+                    allClasses = response.data.modules.map(module => ({
+                        id: module.id,
+                        name: module.name,
+                        code: module.slug ? module.slug.toUpperCase() : module.name.substring(0, 3).toUpperCase()
+                    }));
+                } else {
+                    // Fallback to empty array
+                    console.warn('No modules data found:', response);
+                    allClasses = [];
+                }
+                populateClassDropdown();
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                allClasses = [];
+                populateClassDropdown();
+            }
+        }
+
+        // Populate class dropdown
+        function populateClassDropdown() {
+            const select = document.getElementById('announcementClass');
+            select.innerHTML = '<option value="">Select Class</option>';
+
+            allClasses.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = `${cls.name} (${cls.code})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            const activeAnnouncements = allAnnouncements.filter(a => a.status === 'active');
+            const systemWide = allAnnouncements.filter(a => a.target === 'system');
+            const totalReach = allAnnouncements.reduce((sum, a) => sum + (a.views || 0), 0);
+
+            document.getElementById('totalAnnouncements').textContent = allAnnouncements.length;
+            document.getElementById('activeAnnouncements').textContent = activeAnnouncements.length;
+            document.getElementById('systemWideAnnouncements').textContent = systemWide.length;
+            document.getElementById('totalReach').textContent = totalReach;
+        }
+
+        // Render announcements
+        function renderAnnouncements() {
+            const container = document.getElementById('announcementsList');
+            const targetFilter = document.getElementById('targetFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            let filteredAnnouncements = allAnnouncements.filter(ann => {
+                const matchTarget = targetFilter === 'all' || ann.target === targetFilter;
+                const matchType = typeFilter === 'all' || ann.type === typeFilter;
+                return matchTarget && matchType;
+            });
+
+            if (filteredAnnouncements.length === 0) {
+                container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 60px;">
+                        <i class='bx bx-broadcast' style="font-size: 64px; color: #cbd5e0;"></i>
+                        <p style="margin-top: 16px; color: #94a3b8; font-size: 16px;">No announcements found</p>
+                        <button onclick="openCreateAnnouncementModal()" style="margin-top: 16px; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            <i class='bx bx-plus'></i> Create First Announcement
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredAnnouncements.map(ann => {
+                const typeIcons = { urgent: '🔴', info: 'ℹ️', event: '📅' };
+                const typeColors = {
+                    urgent: { bg: '#fef2f2', border: '#fecaca', text: '#dc2626' },
+                    info: { bg: '#eff6ff', border: '#bfdbfe', text: '#2563eb' },
+                    event: { bg: '#f0fdf4', border: '#bbf7d0', text: '#16a34a' }
+                };
+
+                const targetIcons = {
+                    system: '🌐 System-Wide',
+                    students: '👨‍🎓 Students',
+                    assessors: '👨‍🏫 Assessors',
+                    class: '📚 Class'
+                };
+
+                const color = typeColors[ann.type] || typeColors.info;
+
+                return `
+                    <div class="card" style="margin-bottom: 16px; border-left: 4px solid ${color.text};">
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                                        <span style="padding: 4px 12px; background: ${color.bg}; color: ${color.text}; border: 1px solid ${color.border}; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                            ${typeIcons[ann.type] || ''} ${ann.type.toUpperCase()}
+                                        </span>
+                                        <span style="padding: 4px 12px; background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                            ${targetIcons[ann.target] || ann.target}
+                                        </span>
+                                        ${ann.priority === 'high' || ann.priority === 'critical' ? `
+                                            <span style="padding: 4px 12px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                ⚠️ ${ann.priority.toUpperCase()}
+                                            </span>
+                                        ` : ''}
+                                    </div>
+                                    <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #1e293b;">${ann.title}</h3>
+                                    <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">${ann.message}</p>
+                                    <div style="display: flex; gap: 20px; font-size: 13px; color: #94a3b8;">
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class='bx bx-user'></i>
+                                            <span>${ann.created_by}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class='bx bx-calendar'></i>
+                                            <span>${new Date(ann.publish_date).toLocaleDateString()}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class='bx bx-show'></i>
+                                            <span>${ann.views || 0} views</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button onclick="editAnnouncement(${ann.id})" style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 14px; color: #475569;" title="Edit">
+                                        <i class='bx bx-edit-alt'></i>
+                                    </button>
+                                    <button onclick="deleteAnnouncement(${ann.id})" style="padding: 8px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; font-size: 14px; color: #dc2626;" title="Delete">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Open create modal
+        function openCreateAnnouncementModal() {
+            document.getElementById('announcementModalTitle').textContent = 'Create New Announcement';
+            document.getElementById('announcementForm').reset();
+            document.getElementById('announcementId').value = '';
+            document.getElementById('announcementActive').checked = true;
+            document.getElementById('classSelectionDiv').style.display = 'none';
+            document.getElementById('announcementModal').style.display = 'block';
+        }
+
+        // Edit announcement
+        function editAnnouncement(announcementId) {
+            const ann = allAnnouncements.find(a => a.id === announcementId);
+            if (!ann) return;
+
+            document.getElementById('announcementModalTitle').textContent = 'Edit Announcement';
+            document.getElementById('announcementId').value = ann.id;
+            document.getElementById('announcementTitle').value = ann.title;
+            document.getElementById('announcementMessage').value = ann.message;
+            document.getElementById('announcementType').value = ann.type;
+            document.getElementById('announcementPriority').value = ann.priority || 'normal';
+            document.getElementById('announcementTarget').value = ann.target;
+            document.getElementById('announcementClass').value = ann.class_id || '';
+            document.getElementById('announcementActive').checked = ann.status === 'active';
+
+            if (ann.target === 'class') {
+                document.getElementById('classSelectionDiv').style.display = 'block';
+            }
+
+            if (ann.publish_date) {
+                const date = new Date(ann.publish_date);
+                const formattedDate = date.toISOString().slice(0, 16);
+                document.getElementById('announcementPublishDate').value = formattedDate;
+            }
+
+            document.getElementById('announcementModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeAnnouncementModal() {
+            document.getElementById('announcementModal').style.display = 'none';
+        }
+
+        // Save announcement
+        async function saveAnnouncement(event) {
+            event.preventDefault();
+
+            const announcementId = document.getElementById('announcementId').value;
+            const announcementData = {
+                title: document.getElementById('announcementTitle').value,
+                message: document.getElementById('announcementMessage').value,
+                type: document.getElementById('announcementType').value,
+                priority: document.getElementById('announcementPriority').value,
+                target: document.getElementById('announcementTarget').value,
+                class_id: document.getElementById('announcementTarget').value === 'class' ?
+                         parseInt(document.getElementById('announcementClass').value) : null,
+                publish_date: document.getElementById('announcementPublishDate').value || new Date().toISOString(),
+                status: document.getElementById('announcementActive').checked ? 'active' : 'inactive'
+            };
+
+            try {
+                // Convert to backend API format
+                const apiData = {
+                    title: announcementData.title,
+                    content: announcementData.message,
+                    target_role: announcementData.target,
+                    target_level: announcementData.target === 'class' ? announcementData.class_id : null,
+                    priority: announcementData.priority,
+                    is_active: announcementData.status === 'active',
+                    published_at: announcementData.publish_date
+                };
+
+                let response;
+
+                if (announcementId) {
+                    // Update existing announcement
+                    response = await apiService.updateAnnouncement(announcementId, apiData);
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Announcement updated successfully',
+                        type: 'success'
+                    });
+                } else {
+                    // Create new announcement
+                    response = await apiService.createAnnouncement(apiData);
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Announcement published successfully',
+                        type: 'success'
+                    });
+                }
+
+                // Reload announcements from backend
+                await loadAnnouncements();
+                closeAnnouncementModal();
+            } catch (error) {
+                console.error('Error saving announcement:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to save announcement',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Delete announcement
+        async function deleteAnnouncement(announcementId) {
+            if (!confirm('Are you sure you want to delete this announcement?')) return;
+
+            try {
+                // Use real backend API
+                const response = await apiService.deleteAnnouncement(announcementId);
+
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to delete announcement');
+                }
+
+                // Update local data
+                // TODO: Replace with actual API call
+
+                allAnnouncements = allAnnouncements.filter(a => a.id !== announcementId);
+                updateStats();
+                renderAnnouncements();
+
+                modalService.addNotification({
+                    title: 'Success',
+                    message: 'Announcement deleted successfully',
+                    type: 'success'
+                });
+            } catch (error) {
+                console.error('Error deleting announcement:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Failed to delete announcement',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Refresh announcements
+        function refreshAnnouncements() {
+            loadAnnouncements();
+            modalService.addNotification({
+                title: 'Refreshed',
+                message: 'Announcements data refreshed',
+                type: 'info'
+            });
+        }
+
+        // Event listeners
+        document.getElementById('targetFilter').addEventListener('change', renderAnnouncements);
+        document.getElementById('typeFilter').addEventListener('change', renderAnnouncements);
+
+        document.getElementById('announcementTarget').addEventListener('change', function() {
+            const classDiv = document.getElementById('classSelectionDiv');
+            classDiv.style.display = this.value === 'class' ? 'block' : 'none';
+        });
+
+        // Close modal on outside click
+        document.getElementById('announcementModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAnnouncementModal();
+            }
+        });
+
+        // Initialize
+        loadAllData();
+
+        // Logout function
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Admin';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -776,7 +776,7 @@
                     <span>Discussions</span>
                 </a>
                 <a href="announcements-sidebar.html" class="nav-item">
-                    <i class='bx bx-megaphone'></i>
+                    <i class='bx bx-broadcast'></i>
                     <span>Announcements</span>
                 </a>
             </div>
@@ -1020,6 +1020,7 @@
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/svm-modal.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAssessor()) {
@@ -1644,6 +1645,27 @@
 
                 const row = document.createElement('tr');
                 row.style.borderBottom = '1px solid #e5e7eb';
+                row.style.cursor = 'pointer';
+                row.style.transition = 'all 0.2s';
+
+                // Add hover effect
+                row.addEventListener('mouseenter', function() {
+                    this.style.background = '#f8fafc';
+                    this.style.transform = 'scale(1.01)';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                });
+
+                row.addEventListener('mouseleave', function() {
+                    this.style.background = '';
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                });
+
+                // Add click handler to show modal
+                row.addEventListener('click', function() {
+                    svmModal.show(pred);
+                });
+
                 row.innerHTML = `
                     <td style="padding: 12px; font-size: 13px;"><strong>${pred.name || 'Unknown'}</strong></td>
                     <td style="padding: 12px; font-size: 13px;">${pred.pretest_score || 0}</td>

@@ -8,6 +8,109 @@
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
+    <style>
+        /* Stats Grid - now 6 cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-icon.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #9775fa 0%, #7048e8 100%);
+        }
+
+        /* Quick Actions */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: #fff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .quick-action-btn:hover {
+            border-color: #4CAF50;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+        }
+
+        .quick-action-btn i {
+            font-size: 32px;
+            color: #4CAF50;
+        }
+
+        /* Submissions Stats */
+        .submissions-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .submission-stat {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .submission-stat-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .submission-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .submission-stat-value.pending {
+            color: #ffc107;
+        }
+
+        .submission-stat-value.graded {
+            color: #4CAF50;
+        }
+
+        .submission-stat-value.returned {
+            color: #2196F3;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .submissions-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Sidebar -->
@@ -34,13 +137,37 @@
                     <i class='bx bx-user'></i>
                     <span>Users</span>
                 </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>Classes</span>
+                </a>
                 <a href="modules-sidebar.html" class="nav-item">
                     <i class='bx bx-book'></i>
                     <span>Modules</span>
                 </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder-open'></i>
+                    <span>Materials</span>
+                </a>
                 <a href="assignments-sidebar.html" class="nav-item">
                     <i class='bx bx-task'></i>
                     <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Submissions</span>
+                </a>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
                 </a>
             </div>
 
@@ -52,13 +179,7 @@
                 </a>
             </div>
 
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
+            
         </nav>
     </div>
 
@@ -74,11 +195,30 @@
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu" onclick="toggleUserMenu()">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Admin</div>
                         <div class="user-role">Administrator</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Administrator</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">admin@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,6 +265,85 @@
                     <div class="stat-info">
                         <h3 id="activeUsers">0</h3>
                         <p>Active Users</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class='bx bx-file'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingSubmissions">0</h3>
+                        <p>Pending Submissions</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class='bx bx-user-plus'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingUsers">0</h3>
+                        <p>Pending Users</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Quick Actions</h2>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions-grid">
+                        <button class="quick-action-btn" onclick="window.location.href='users-sidebar.html'">
+                            <i class='bx bx-user-plus'></i>
+                            <span>Add User</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='modules-sidebar.html'">
+                            <i class='bx bx-book'></i>
+                            <span>Create Module</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='assignments-sidebar.html'">
+                            <i class='bx bx-task'></i>
+                            <span>New Assignment</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='announcements-sidebar.html'">
+                            <i class='bx bx-broadcast'></i>
+                            <span>Make Announcement</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='submissions-sidebar.html'">
+                            <i class='bx bx-file'></i>
+                            <span>View Submissions</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="window.location.href='reports-sidebar.html'">
+                            <i class='bx bx-bar-chart-alt-2'></i>
+                            <span>SVM Analytics</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submissions Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Submissions Overview</h2>
+                    <a href="submissions-sidebar.html" class="btn btn-outline btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="submissions-stats">
+                        <div class="submission-stat">
+                            <div class="submission-stat-label">Pending</div>
+                            <div class="submission-stat-value pending" id="submissionsPending">0</div>
+                        </div>
+                        <div class="submission-stat">
+                            <div class="submission-stat-label">Graded</div>
+                            <div class="submission-stat-value graded" id="submissionsGraded">0</div>
+                        </div>
+                        <div class="submission-stat">
+                            <div class="submission-stat-label">Returned</div>
+                            <div class="submission-stat-value returned" id="submissionsReturned">0</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -191,8 +410,8 @@
         </div>
     </div>
 
-    <script src="/src/js/auth.js"></script>
     <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
@@ -213,6 +432,19 @@
                     document.getElementById('totalModules').textContent = stats.total_modules || 0;
                     document.getElementById('totalAssignments').textContent = stats.total_assignments || 0;
                     document.getElementById('activeUsers').textContent = stats.active_users || 0;
+                    document.getElementById('pendingUsers').textContent = stats.pending_users || 0;
+
+                    // Load submissions data
+                    if (stats.submissions && Array.isArray(stats.submissions)) {
+                        const pending = stats.submissions.find(s => s.status === 'pending');
+                        const graded = stats.submissions.find(s => s.status === 'graded');
+                        const returned = stats.submissions.find(s => s.status === 'returned');
+
+                        document.getElementById('pendingSubmissions').textContent = pending ? pending.count : 0;
+                        document.getElementById('submissionsPending').textContent = pending ? pending.count : 0;
+                        document.getElementById('submissionsGraded').textContent = graded ? graded.count : 0;
+                        document.getElementById('submissionsReturned').textContent = returned ? returned.count : 0;
+                    }
                 }
 
                 // Load recent users - filter only role 'user'
@@ -220,7 +452,7 @@
                 if (usersResponse.success) {
                     const allUsers = usersResponse.data.users || usersResponse.data || [];
                     // Filter only users with role 'user'
-                    const users = allUsers.filter(user => user.role === 'user').slice(0, 5); // Latest 5 users
+                    const users = allUsers.filter(user => user.role === 'student').slice(0, 5); // Latest 5 users
                     renderRecentUsers(users);
                 }
 
@@ -247,7 +479,7 @@
                 <tr>
                     <td><strong>${user.name || 'N/A'}</strong></td>
                     <td>${user.email}</td>
-                    <td><span class="badge badge-info">${user.role}</span></td>
+                    <td><span class="badge badge-info">${user.role === 'user' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
                     <td><span class="badge badge-${user.status === 'active' ? 'success' : 'warning'}">${user.status}</span></td>
                     <td>${new Date(user.created_at).toLocaleDateString()}</td>
                 </tr>
@@ -296,6 +528,37 @@
         loadDashboardData();
 
         // Notification bell is now handled by notification-bell.js
+    </script>
+
+    <script>
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Admin';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
     </script>
 </body>
 </html>

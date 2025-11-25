@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 
 // Import routes
@@ -36,12 +37,17 @@ const API_VERSION = process.env.API_VERSION || 'v1';
 // Security headers
 app.use(helmet({
     contentSecurityPolicy: false, // Disable for development, enable in production
-    crossOriginEmbedderPolicy: false
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" } // Allow cross-origin resource sharing
 }));
 
 // CORS configuration
 const corsOptions = {
-    origin: process.env.FRONTEND_URL || 'http://localhost:8000',
+    origin: [
+        'http://localhost:8000',
+        'http://localhost:8080',
+        process.env.FRONTEND_URL
+    ].filter(Boolean),
     credentials: true,
     optionsSuccessStatus: 200
 };
@@ -72,7 +78,7 @@ const limiter = rateLimit({
 app.use(`/api/${API_VERSION}/`, limiter);
 
 // Static files (for uploaded files)
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ===========================================
 // ROUTES

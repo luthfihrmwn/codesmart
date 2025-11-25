@@ -51,7 +51,7 @@ exports.register = async (req, res, next) => {
             `INSERT INTO users (username, email, password, name, phone, role, status)
              VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING id, username, email, name, role, status, created_at`,
-            [username, email, hashedPassword, name, phone, 'user', 'pending']
+            [username, email, hashedPassword, name, phone, 'student', 'pending']
         );
 
         const user = result.rows[0];

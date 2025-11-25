@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materials Management - CodeSmart Admin</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>Classes</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item active">
+                    <i class='bx bx-folder-open'></i>
+                    <span>Materials</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Submissions</span>
+                </a>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">
+                    <i class='bx bx-folder'></i> Materials Management
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Administrator</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">admin@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-folder'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalMaterials">0</h3>
+                        <p>Total Materials</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-time'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingMaterials">0</h3>
+                        <p>Pending Approval</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="approvedMaterials">0</h3>
+                        <p>Approved</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-data'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="storageUsed">0</h3>
+                        <p>Storage Used (MB)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1;">
+                        <div style="position: relative; flex: 1; min-width: 200px;">
+                            <input type="text" id="searchInput" placeholder="Search materials..." style="width: 100%; padding: 8px 36px 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            <i class='bx bx-search' style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        </div>
+                        <select id="statusFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 120px;">
+                            <option value="all">All Status</option>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <select id="typeFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 120px;">
+                            <option value="all">All Types</option>
+                            <option value="pdf">PDF</option>
+                            <option value="video">Video</option>
+                            <option value="document">Document</option>
+                            <option value="code">Code</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="refreshMaterials()" style="padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                        <button onclick="openUploadModal()" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            <i class='bx bx-upload'></i> Upload Material
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials Grid -->
+            <div id="materialsGrid" style="margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
+                    <div class="loader"></div>
+                    <p style="margin-top: 16px; color: #94a3b8;">Loading materials...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
+        <div style="min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: white; border-radius: 16px; max-width: 600px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                <div style="padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1e293b;">Upload Material</h3>
+                    <button onclick="closeUploadModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8;">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <div style="padding: 24px;">
+                    <form id="uploadForm" onsubmit="uploadMaterial(event)">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Title *</label>
+                            <input type="text" id="materialTitle" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Description</label>
+                            <textarea id="materialDescription" rows="3" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Type *</label>
+                                <select id="materialType" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                    <option value="">Select Type</option>
+                                    <option value="pdf">📄 PDF</option>
+                                    <option value="video">🎥 Video</option>
+                                    <option value="document">📝 Document</option>
+                                    <option value="code">💻 Code</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Category</label>
+                                <select id="materialCategory" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                    <option value="lecture">Lecture</option>
+                                    <option value="tutorial">Tutorial</option>
+                                    <option value="reference">Reference</option>
+                                    <option value="example">Example</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">File Upload *</label>
+                            <div style="border: 2px dashed #e2e8f0; border-radius: 8px; padding: 32px; text-align: center; background: #f8fafc;">
+                                <i class='bx bx-upload' style="font-size: 48px; color: #cbd5e0;"></i>
+                                <p style="margin: 12px 0 8px 0; color: #64748b; font-size: 14px;">Drag and drop file here or click to browse</p>
+                                <input type="file" id="materialFile" required style="display: none;">
+                                <button type="button" onclick="document.getElementById('materialFile').click()" style="padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 13px; color: #64748b; margin-top: 8px;">
+                                    Choose File
+                                </button>
+                                <p id="fileName" style="margin-top: 12px; font-size: 13px; color: #667eea; font-weight: 600;"></p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                            <button type="button" onclick="closeUploadModal()" style="padding: 10px 20px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                                Cancel
+                            </button>
+                            <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                                <i class='bx bx-upload'></i> Upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js">
+        // Approve material
+        async function approveMaterial(materialId) {
+            if (!confirm('Approve this material?')) return;
+
+            try {
+                const response = await apiService.approveMaterial(materialId);
+
+                if (response.success) {
+                    await loadMaterials();
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Material approved',
+                        type: 'success'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to approve');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to approve material',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Reject material
+        async function rejectMaterial(materialId) {
+            const reason = prompt('Enter rejection reason:');
+            if (!reason) return;
+
+            try {
+                const response = await apiService.rejectMaterial(materialId, reason);
+
+                if (response.success) {
+                    await loadMaterials();
+                    modalService.addNotification({
+                        title: 'Material Rejected',
+                        message: 'Material has been rejected',
+                        type: 'info'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to reject');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to reject material',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Download material
+        async function downloadMaterial(materialId) {
+            try {
+                const response = await apiService.downloadMaterial(materialId);
+
+                if (response.success && response.data.download_url) {
+                    window.open(response.data.download_url, '_blank');
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Download started',
+                        type: 'success'
+                    });
+                } else {
+                    throw new Error('Download URL not available');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to download material',
+                    type: 'error'
+                });
+            }
+        }
+</script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allMaterials = [];
+
+        // Load materials
+        async function loadMaterials() {
+            try {
+                // Use backend API (admin can access assessor endpoints)
+                // Use admin materials endpoint with filters
+                const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+                const params = statusFilter !== 'all' ? { status: statusFilter } : {};
+                const response = await apiService.getAdminMaterials(params);
+
+                if (response.success && response.data) {
+                    allMaterials = response.data;
+                    renderMaterials();
+                    updateStats();
+                    return;
+                }
+
+                // Fallback to mock data if API fails
+                console.warn('API failed, using mock data');
+                // Mock data
+                const mockMaterials = [
+                    {
+                        id: 1,
+                        title: 'Python Basics - Introduction to Variables',
+                        description: 'Comprehensive guide to Python variables',
+                        type: 'pdf',
+                        category: 'lecture',
+                        file_url: '/uploads/python-variables.pdf',
+                        file_size: 2.5,
+                        uploaded_by: 'John Doe',
+                        uploaded_at: '2025-11-20T10:00:00',
+                        status: 'approved',
+                        downloads: 45
+                    },
+                    {
+                        id: 2,
+                        title: 'JavaScript Functions Tutorial',
+                        description: 'Video tutorial on JavaScript functions',
+                        type: 'video',
+                        category: 'tutorial',
+                        file_url: '/uploads/js-functions.mp4',
+                        file_size: 125.3,
+                        uploaded_by: 'Jane Smith',
+                        uploaded_at: '2025-11-21T14:30:00',
+                        status: 'approved',
+                        downloads: 32
+                    },
+                    {
+                        id: 3,
+                        title: 'CSS Grid Layout Examples',
+                        description: 'Code examples for CSS Grid',
+                        type: 'code',
+                        category: 'example',
+                        file_url: '/uploads/css-grid-examples.zip',
+                        file_size: 0.8,
+                        uploaded_by: 'Bob Johnson',
+                        uploaded_at: '2025-11-22T09:15:00',
+                        status: 'pending',
+                        downloads: 0
+                    },
+                    {
+                        id: 4,
+                        title: 'HTML5 Reference Guide',
+                        description: 'Complete HTML5 tag reference',
+                        type: 'document',
+                        category: 'reference',
+                        file_url: '/uploads/html5-reference.docx',
+                        file_size: 1.2,
+                        uploaded_by: 'Admin',
+                        uploaded_at: '2025-11-19T16:00:00',
+                        status: 'approved',
+                        downloads: 67
+                    }
+                ];
+
+                allMaterials = mockMaterials;
+                updateStats();
+                renderMaterials();
+            } catch (error) {
+                console.error('Error loading materials:', error);
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            const pending = allMaterials.filter(m => m.status === 'pending');
+            const approved = allMaterials.filter(m => m.status === 'approved');
+            const totalSize = allMaterials.reduce((sum, m) => sum + m.file_size, 0);
+
+            document.getElementById('totalMaterials').textContent = allMaterials.length;
+            document.getElementById('pendingMaterials').textContent = pending.length;
+            document.getElementById('approvedMaterials').textContent = approved.length;
+            document.getElementById('storageUsed').textContent = totalSize.toFixed(1);
+        }
+
+        // Render materials
+        function renderMaterials() {
+            const grid = document.getElementById('materialsGrid');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            let filteredMaterials = allMaterials.filter(mat => {
+                const matchSearch = mat.title.toLowerCase().includes(searchTerm);
+                const matchStatus = statusFilter === 'all' || mat.status === statusFilter;
+                const matchType = typeFilter === 'all' || mat.type === typeFilter;
+                return matchSearch && matchStatus && matchType;
+            });
+
+            if (filteredMaterials.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
+                        <i class='bx bx-folder' style="font-size: 64px; color: #cbd5e0;"></i>
+                        <p style="margin-top: 16px; color: #94a3b8; font-size: 16px;">No materials found</p>
+                        <button onclick="openUploadModal()" style="margin-top: 16px; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            <i class='bx bx-upload'></i> Upload First Material
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const typeIcons = {
+                pdf: { icon: 'bx-file-blank', color: '#dc2626' },
+                video: { icon: 'bx-video', color: '#7c3aed' },
+                document: { icon: 'bx-file', color: '#2563eb' },
+                code: { icon: 'bx-code-alt', color: '#059669' }
+            };
+
+            grid.innerHTML = filteredMaterials.map(mat => {
+                const typeIcon = typeIcons[mat.type] || typeIcons.document;
+
+                const statusColors = {
+                    approved: { bg: '#d1fae5', text: '#10b981' },
+                    pending: { bg: '#fef3c7', text: '#f59e0b' },
+                    rejected: { bg: '#fef2f2', text: '#dc2626' }
+                };
+                const statusColor = statusColors[mat.status] || statusColors.pending;
+
+                return `
+                    <div class="card" style="height: 100%;">
+                        <div class="card-body" style="display: flex; flex-direction: column; height: 100%;">
+                            <!-- Icon -->
+                            <div style="width: 64px; height: 64px; border-radius: 12px; background: ${typeIcon.color}15; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                                <i class='bx ${typeIcon.icon}' style="font-size: 32px; color: ${typeIcon.color};"></i>
+                            </div>
+
+                            <!-- Title -->
+                            <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700; color: #1e293b; line-height: 1.4;">${mat.title}</h4>
+
+                            <!-- Description -->
+                            <p style="margin: 0 0 12px 0; font-size: 13px; color: #64748b; line-height: 1.5; flex: 1;">
+                                ${mat.description || 'No description'}
+                            </p>
+
+                            <!-- Meta Info -->
+                            <div style="display: flex; gap: 12px; font-size: 12px; color: #94a3b8; margin-bottom: 12px; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <i class='bx bx-user'></i>
+                                    <span>${mat.uploaded_by}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <i class='bx bx-data'></i>
+                                    <span>${mat.file_size} MB</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <i class='bx bx-download'></i>
+                                    <span>${mat.downloads}</span>
+                                </div>
+                            </div>
+
+                            <!-- Status Badge -->
+                            <div style="margin-bottom: 16px;">
+                                <span style="padding: 4px 12px; background: ${statusColor.bg}; color: ${statusColor.text}; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+                                    ${mat.status}
+                                </span>
+                            </div>
+
+                            <!-- Actions -->
+                            <div style="display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+                                ${mat.status === 'pending' ? `
+                                    <button onclick="approveMaterial(${mat.id})" style="flex: 1; padding: 8px; background: #d1fae5; border: 1px solid #a7f3d0; border-radius: 6px; cursor: pointer; font-size: 13px; color: #10b981; font-weight: 600;">
+                                        ✓ Approve
+                                    </button>
+                                    <button onclick="rejectMaterial(${mat.id})" style="flex: 1; padding: 8px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; font-size: 13px; color: #dc2626; font-weight: 600;">
+                                        ✗ Reject
+                                    </button>
+                                ` : `
+                                    <button onclick="downloadMaterial(${mat.id})" style="flex: 1; padding: 8px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; cursor: pointer; font-size: 13px; color: #2563eb; font-weight: 600;">
+                                        <i class='bx bx-download'></i> Download
+                                    </button>
+                                `}
+                                <button onclick="deleteMaterial(${mat.id})" style="padding: 8px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; font-size: 13px; color: #dc2626;">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Open upload modal
+        function openUploadModal() {
+            document.getElementById('uploadForm').reset();
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+
+        // Close upload modal
+        function closeUploadModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+        }
+
+        // Upload material
+        async function uploadMaterial(event) {
+            event.preventDefault();
+
+            const file = document.getElementById('materialFile').files[0];
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+
+            const materialData = {
+                title: document.getElementById('materialTitle').value,
+                description: document.getElementById('materialDescription').value,
+                type: document.getElementById('materialType').value,
+                category: document.getElementById('materialCategory').value,
+                file_name: file.name,
+                file_size: (file.size / (1024 * 1024)).toFixed(2),
+                uploaded_by: 'Admin',
+                uploaded_at: new Date().toISOString(),
+                status: 'approved',
+                downloads: 0
+            };
+
+            try {
+                // TODO: Implement actual file upload
+                // const formData = new FormData();
+                // formData.append('file', file);
+                // formData.append('data', JSON.stringify(materialData));
+                // const response = await apiService.fetchWithAuth('/admin/materials', {
+                //     method: 'POST',
+                //     body: formData
+                // });
+
+                // Mock success
+                const newMaterial = {
+                    id: Date.now(),
+                    ...materialData,
+                    file_url: `/uploads/${file.name}`
+                };
+                allMaterials.unshift(newMaterial);
+
+                updateStats();
+                renderMaterials();
+                closeUploadModal();
+
+                modalService.addNotification({
+                    title: 'Success',
+                    message: 'Material uploaded successfully',
+                    type: 'success'
+                });
+            } catch (error) {
+                console.error('Error uploading material:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Failed to upload material',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Approve material
+        async function approveMaterial(materialId) {
+            try {
+                const index = allMaterials.findIndex(m => m.id === materialId);
+                if (index !== -1) {
+                    allMaterials[index].status = 'approved';
+                }
+
+                updateStats();
+                renderMaterials();
+
+                modalService.addNotification({
+                    title: 'Approved',
+                    message: 'Material approved successfully',
+                    type: 'success'
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Reject material
+        async function rejectMaterial(materialId) {
+            if (!confirm('Reject this material? This action will notify the uploader.')) return;
+
+            try {
+                const index = allMaterials.findIndex(m => m.id === materialId);
+                if (index !== -1) {
+                    allMaterials[index].status = 'rejected';
+                }
+
+                updateStats();
+                renderMaterials();
+
+                modalService.addNotification({
+                    title: 'Rejected',
+                    message: 'Material rejected',
+                    type: 'warning'
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Download material
+        function downloadMaterial(materialId) {
+            const material = allMaterials.find(m => m.id === materialId);
+            if (!material) return;
+
+            // TODO: Implement actual download
+            alert(`Download material:\n\n${material.title}\nURL: ${material.file_url}\n\n(Download not implemented yet)`);
+
+            // Increment download count
+            material.downloads++;
+            renderMaterials();
+        }
+
+        // Delete material
+        async function deleteMaterial(materialId) {
+            if (!confirm('Are you sure you want to delete this material?')) return;
+
+            try {
+                // Use backend API
+                const response = await apiService.deleteAssessorMaterial(materialId);
+
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to delete material');
+                }
+
+                // Update local data
+                allMaterials = allMaterials.filter(m => m.id !== materialId);
+                updateStats();
+                renderMaterials();
+
+                modalService.addNotification({
+                    title: 'Deleted',
+                    message: 'Material deleted successfully',
+                    type: 'success'
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Refresh materials
+        function refreshMaterials() {
+            loadMaterials();
+            modalService.addNotification({
+                title: 'Refreshed',
+                message: 'Materials data refreshed',
+                type: 'info'
+            });
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', renderMaterials);
+        document.getElementById('statusFilter').addEventListener('change', renderMaterials);
+        document.getElementById('typeFilter').addEventListener('change', renderMaterials);
+
+        document.getElementById('materialFile').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('fileName').textContent = fileName ? `Selected: ${fileName}` : '';
+        });
+
+        // Close modal on outside click
+        document.getElementById('uploadModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUploadModal();
+            }
+        });
+
+        // Initialize
+        loadMaterials();
+
+        // Logout function
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Admin';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

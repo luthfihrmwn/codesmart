@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submissions Management - CodeSmart Admin</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>Classes</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder-open'></i>
+                    <span>Materials</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content</div>
+                <a href="submissions-sidebar.html" class="nav-item active">
+                    <i class='bx bx-file'></i>
+                    <span>Submissions</span>
+                </a>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">
+                    <i class='bx bx-file'></i> Submissions Overview
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Administrator</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">admin@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-file'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalSubmissions">0</h3>
+                        <p>Total Submissions</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-time'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingSubmissions">0</h3>
+                        <p>Pending Review</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="gradedSubmissions">0</h3>
+                        <p>Graded</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class='bx bx-error-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="lateSubmissions">0</h3>
+                        <p>Late Submissions</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1;">
+                        <div style="position: relative; flex: 1; min-width: 200px;">
+                            <input type="text" id="searchInput" placeholder="Search by student, assignment..." style="width: 100%; padding: 8px 36px 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            <i class='bx bx-search' style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        </div>
+                        <select id="statusFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 120px;">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="graded">Graded</option>
+                            <option value="late">Late</option>
+                        </select>
+                        <select id="classFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 150px;">
+                            <option value="all">All Classes</option>
+                        </select>
+                        <select id="assessorFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 150px;">
+                            <option value="all">All Assessors</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="refreshSubmissions()" style="padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                        <button onclick="exportSubmissions()" style="padding: 8px 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            <i class='bx bx-download'></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submissions Table -->
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-body" style="padding: 0;">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Student</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Assignment</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Class</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Assessor</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Submitted</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Status</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Grade</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissionsTableBody" style="background: white;">
+                                <tr>
+                                    <td colspan="8" style="padding: 60px; text-align: center;">
+                                        <div class="loader"></div>
+                                        <p style="margin-top: 16px; color: #94a3b8;">Loading submissions...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Override Modal -->
+    <div id="gradeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
+        <div style="min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: white; border-radius: 16px; max-width: 600px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                <div style="padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1e293b;">Admin Grade Override</h3>
+                    <button onclick="closeGradeModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8;">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <div style="padding: 24px;">
+                    <div id="submissionInfo" style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                        <!-- Submission details will be inserted here -->
+                    </div>
+
+                    <form id="gradeForm" onsubmit="saveGrade(event)">
+                        <input type="hidden" id="submissionId" value="">
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Grade (0-100) *</label>
+                            <input type="number" id="gradeScore" required min="0" max="100" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Admin Notes</label>
+                            <textarea id="adminNotes" rows="4" placeholder="Reason for override..." style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="padding: 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; margin-bottom: 20px;">
+                            <div style="display: flex; gap: 8px; align-items: start;">
+                                <i class='bx bx-error' style="color: #dc2626; font-size: 20px; flex-shrink: 0;"></i>
+                                <div style="font-size: 13px; color: #991b1b;">
+                                    <strong>Admin Override Warning:</strong> This will override the assessor's grade. This action will be logged in the audit trail.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                            <button type="button" onclick="closeGradeModal()" style="padding: 10px 20px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                                Cancel
+                            </button>
+                            <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                                <i class='bx bx-save'></i> Override Grade
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script>
+        // Admin grade override
+        async function adminOverrideGrade(submissionId) {
+            const submission = allSubmissions.find(s => s.id === submissionId);
+            if (!submission) return;
+
+            const grade = prompt('Enter new grade (0-100):', submission.grade || '');
+            if (grade === null) return;
+
+            const reason = prompt('Enter override reason (required):');
+            if (!reason) {
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Override reason is required',
+                    type: 'error'
+                });
+                return;
+            }
+
+            try {
+                const response = await apiService.adminOverrideGrade(submissionId, {
+                    grade: parseFloat(grade),
+                    feedback: submission.feedback || '',
+                    override_reason: reason
+                });
+
+                if (response.success) {
+                    await loadSubmissions();
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Grade override successful',
+                        type: 'success'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to override grade');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to override grade',
+                    type: 'error'
+                });
+            }
+        }
+    </script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allSubmissions = [];
+        let allClasses = [];
+        let allAssessors = [];
+
+        // Load all data
+        async function loadAllData() {
+            await Promise.all([
+                loadSubmissions(),
+                loadClasses(),
+                loadAssessors()
+            ]);
+        }
+
+        // Load submissions
+        async function loadSubmissions() {
+            try {
+                // Use admin submissions endpoint
+                const response = await apiService.fetchWithAuth('/admin/submissions');
+
+                if (response.success && response.data) {
+                    allSubmissions = response.data;
+                    renderSubmissions();
+                    updateStats();
+                    return;
+                }
+
+                // Fallback to mock data if API fails
+                console.warn('API failed, using mock data');
+                // Mock data
+                const mockSubmissions = [
+                    {
+                        id: 1,
+                        student_id: 5,
+                        student_name: 'Alice Johnson',
+                        assignment_id: 1,
+                        assignment_name: 'Python Basics - Variables',
+                        class_id: 1,
+                        class_name: 'Python Programming Basics',
+                        assessor_id: 2,
+                        assessor_name: 'John Doe',
+                        submitted_at: '2025-11-20T14:30:00',
+                        deadline: '2025-11-20T23:59:00',
+                        status: 'graded',
+                        grade: 85,
+                        graded_at: '2025-11-21T10:00:00',
+                        file_url: '/uploads/submission1.pdf',
+                        is_late: false
+                    },
+                    {
+                        id: 2,
+                        student_id: 6,
+                        student_name: 'Bob Smith',
+                        assignment_id: 2,
+                        assignment_name: 'JavaScript Functions',
+                        class_id: 2,
+                        class_name: 'Advanced JavaScript',
+                        assessor_id: 3,
+                        assessor_name: 'Jane Smith',
+                        submitted_at: '2025-11-21T16:45:00',
+                        deadline: '2025-11-21T23:59:00',
+                        status: 'pending',
+                        grade: null,
+                        graded_at: null,
+                        file_url: '/uploads/submission2.pdf',
+                        is_late: false
+                    },
+                    {
+                        id: 3,
+                        student_id: 7,
+                        student_name: 'Charlie Brown',
+                        assignment_id: 3,
+                        assignment_name: 'HTML/CSS Layout',
+                        class_id: 3,
+                        class_name: 'Web Development Intermediate',
+                        assessor_id: 2,
+                        assessor_name: 'John Doe',
+                        submitted_at: '2025-11-22T10:15:00',
+                        deadline: '2025-11-21T23:59:00',
+                        status: 'pending',
+                        grade: null,
+                        graded_at: null,
+                        file_url: '/uploads/submission3.pdf',
+                        is_late: true
+                    },
+                    {
+                        id: 4,
+                        student_id: 8,
+                        student_name: 'Diana Prince',
+                        assignment_id: 1,
+                        assignment_name: 'Python Basics - Variables',
+                        class_id: 1,
+                        class_name: 'Python Programming Basics',
+                        assessor_id: 2,
+                        assessor_name: 'John Doe',
+                        submitted_at: '2025-11-19T20:00:00',
+                        deadline: '2025-11-20T23:59:00',
+                        status: 'graded',
+                        grade: 92,
+                        graded_at: '2025-11-20T15:30:00',
+                        file_url: '/uploads/submission4.pdf',
+                        is_late: false
+                    }
+                ];
+
+                allSubmissions = mockSubmissions;
+                updateStats();
+                renderSubmissions();
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+            }
+        }
+
+        // Load classes for filter
+        async function loadClasses() {
+            try {
+                allClasses = [
+                    { id: 1, name: 'Python Programming Basics' },
+                    { id: 2, name: 'Advanced JavaScript' },
+                    { id: 3, name: 'Web Development Intermediate' }
+                ];
+                populateClassFilter();
+            } catch (error) {
+                console.error('Error loading classes:', error);
+            }
+        }
+
+        // Load assessors for filter
+        async function loadAssessors() {
+            try {
+                allAssessors = [
+                    { id: 2, name: 'John Doe' },
+                    { id: 3, name: 'Jane Smith' }
+                ];
+                populateAssessorFilter();
+            } catch (error) {
+                console.error('Error loading assessors:', error);
+            }
+        }
+
+        // Populate class filter
+        function populateClassFilter() {
+            const select = document.getElementById('classFilter');
+            allClasses.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Populate assessor filter
+        function populateAssessorFilter() {
+            const select = document.getElementById('assessorFilter');
+            allAssessors.forEach(assessor => {
+                const option = document.createElement('option');
+                option.value = assessor.id;
+                option.textContent = assessor.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            const pending = allSubmissions.filter(s => s.status === 'pending');
+            const graded = allSubmissions.filter(s => s.status === 'graded');
+            const late = allSubmissions.filter(s => s.is_late);
+
+            document.getElementById('totalSubmissions').textContent = allSubmissions.length;
+            document.getElementById('pendingSubmissions').textContent = pending.length;
+            document.getElementById('gradedSubmissions').textContent = graded.length;
+            document.getElementById('lateSubmissions').textContent = late.length;
+        }
+
+        // Render submissions
+        function renderSubmissions() {
+            const tbody = document.getElementById('submissionsTableBody');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const classFilter = document.getElementById('classFilter').value;
+            const assessorFilter = document.getElementById('assessorFilter').value;
+
+            let filteredSubmissions = allSubmissions.filter(sub => {
+                const matchSearch = sub.student_name.toLowerCase().includes(searchTerm) ||
+                                  sub.assignment_name.toLowerCase().includes(searchTerm);
+                const matchStatus = statusFilter === 'all' ||
+                                  (statusFilter === 'late' ? sub.is_late : sub.status === statusFilter);
+                const matchClass = classFilter === 'all' || sub.class_id === parseInt(classFilter);
+                const matchAssessor = assessorFilter === 'all' || sub.assessor_id === parseInt(assessorFilter);
+                return matchSearch && matchStatus && matchClass && matchAssessor;
+            });
+
+            if (filteredSubmissions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 60px; text-align: center;">
+                            <i class='bx bx-file' style="font-size: 64px; color: #cbd5e0;"></i>
+                            <p style="margin-top: 16px; color: #94a3b8; font-size: 16px;">No submissions found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredSubmissions.map(sub => {
+                const statusColors = {
+                    pending: { bg: '#fef3c7', text: '#f59e0b', icon: 'bx-time' },
+                    graded: { bg: '#d1fae5', text: '#10b981', icon: 'bx-check-circle' }
+                };
+                const statusColor = statusColors[sub.status] || statusColors.pending;
+
+                const submittedDate = new Date(sub.submitted_at);
+                const isRecent = (Date.now() - submittedDate.getTime()) < 86400000; // 24 hours
+
+                return `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 16px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 600;">
+                                    ${sub.student_name.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${sub.student_name}</div>
+                                    ${isRecent ? '<span style="font-size: 11px; color: #10b981;">●  Recent</span>' : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 14px; color: #1e293b; font-weight: 500;">${sub.assignment_name}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 13px; color: #64748b;">${sub.class_name}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 13px; color: #64748b;">${sub.assessor_name}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 13px; color: #64748b;">
+                                ${new Date(sub.submitted_at).toLocaleDateString()}<br>
+                                <span style="font-size: 11px; color: #94a3b8;">${new Date(sub.submitted_at).toLocaleTimeString()}</span>
+                            </div>
+                            ${sub.is_late ? '<div style="margin-top: 4px;"><span style="padding: 2px 6px; background: #fef2f2; color: #dc2626; border-radius: 4px; font-size: 11px; font-weight: 600;">LATE</span></div>' : ''}
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; background: ${statusColor.bg}; color: ${statusColor.text}; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class='bx ${statusColor.icon}'></i>
+                                ${sub.status.toUpperCase()}
+                            </span>
+                        </td>
+                        <td style="padding: 16px;">
+                            ${sub.grade !== null ? `
+                                <div style="font-size: 18px; font-weight: 700; color: ${sub.grade >= 70 ? '#10b981' : '#dc2626'};">${sub.grade}</div>
+                            ` : '<span style="color: #94a3b8; font-size: 13px;">Not graded</span>'}
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="display: flex; gap: 6px;">
+                                <button onclick="viewSubmission(${sub.id})" style="padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 12px; color: #475569;" title="View">
+                                    <i class='bx bx-show'></i>
+                                </button>
+                                <button onclick="openGradeModal(${sub.id})" style="padding: 6px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; font-size: 12px; color: #dc2626;" title="Override Grade">
+                                    <i class='bx bx-edit-alt'></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // View submission
+        function viewSubmission(submissionId) {
+            const sub = allSubmissions.find(s => s.id === submissionId);
+            if (!sub) return;
+
+            // TODO: Implement file viewer modal or download
+            alert(`View submission:\n\nStudent: ${sub.student_name}\nAssignment: ${sub.assignment_name}\nFile: ${sub.file_url}\n\n(File viewer not implemented yet)`);
+        }
+
+        // Open grade override modal
+        function openGradeModal(submissionId) {
+            const sub = allSubmissions.find(s => s.id === submissionId);
+            if (!sub) return;
+
+            document.getElementById('submissionId').value = sub.id;
+            document.getElementById('gradeScore').value = sub.grade || '';
+            document.getElementById('adminNotes').value = '';
+
+            document.getElementById('submissionInfo').innerHTML = `
+                <div style="display: grid; gap: 12px;">
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">Student</div>
+                        <div style="font-weight: 600; color: #1e293b;">${sub.student_name}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">Assignment</div>
+                        <div style="font-weight: 600; color: #1e293b;">${sub.assignment_name}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">Current Grade</div>
+                            <div style="font-weight: 700; font-size: 18px; color: ${sub.grade >= 70 ? '#10b981' : '#dc2626'};">${sub.grade !== null ? sub.grade : 'Not graded'}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">Assessor</div>
+                            <div style="font-weight: 600; color: #1e293b;">${sub.assessor_name}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('gradeModal').style.display = 'block';
+        }
+
+        // Close grade modal
+        function closeGradeModal() {
+            document.getElementById('gradeModal').style.display = 'none';
+        }
+
+        // Save grade override
+        async function saveGrade(event) {
+            event.preventDefault();
+
+            const submissionId = parseInt(document.getElementById('submissionId').value);
+            const grade = parseInt(document.getElementById('gradeScore').value);
+            const notes = document.getElementById('adminNotes').value;
+
+            try {
+                // TODO: Replace with actual API call
+                // const response = await apiService.fetchWithAuth(`/admin/submissions/${submissionId}/grade`, {
+                //     method: 'PUT',
+                //     body: JSON.stringify({ grade, admin_notes: notes })
+                // });
+
+                // Update local data
+                const index = allSubmissions.findIndex(s => s.id === submissionId);
+                if (index !== -1) {
+                    allSubmissions[index].grade = grade;
+                    allSubmissions[index].status = 'graded';
+                    allSubmissions[index].graded_at = new Date().toISOString();
+                    allSubmissions[index].admin_override = true;
+                    allSubmissions[index].admin_notes = notes;
+                }
+
+                updateStats();
+                renderSubmissions();
+                closeGradeModal();
+
+                modalService.addNotification({
+                    title: 'Grade Override Success',
+                    message: 'Grade has been overridden successfully',
+                    type: 'success'
+                });
+            } catch (error) {
+                console.error('Error saving grade:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Failed to override grade',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Export submissions to CSV
+        function exportSubmissions() {
+            const csvContent = generateCSV();
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `submissions_export_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            modalService.addNotification({
+                title: 'Export Success',
+                message: 'Submissions exported to CSV',
+                type: 'success'
+            });
+        }
+
+        // Generate CSV content
+        function generateCSV() {
+            const headers = ['ID', 'Student', 'Assignment', 'Class', 'Assessor', 'Submitted', 'Status', 'Grade', 'Late'];
+            const rows = allSubmissions.map(sub => [
+                sub.id,
+                sub.student_name,
+                sub.assignment_name,
+                sub.class_name,
+                sub.assessor_name,
+                new Date(sub.submitted_at).toLocaleString(),
+                sub.status,
+                sub.grade || 'N/A',
+                sub.is_late ? 'Yes' : 'No'
+            ]);
+
+            return [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+        }
+
+        // Refresh submissions
+        function refreshSubmissions() {
+            loadSubmissions();
+            modalService.addNotification({
+                title: 'Refreshed',
+                message: 'Submissions data refreshed',
+                type: 'info'
+            });
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', renderSubmissions);
+        document.getElementById('statusFilter').addEventListener('change', renderSubmissions);
+        document.getElementById('classFilter').addEventListener('change', renderSubmissions);
+        document.getElementById('assessorFilter').addEventListener('change', renderSubmissions);
+
+        // Close modal on outside click
+        document.getElementById('gradeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGradeModal();
+            }
+        });
+
+        // Initialize
+        loadAllData();
+
+        // Logout function
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Admin';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

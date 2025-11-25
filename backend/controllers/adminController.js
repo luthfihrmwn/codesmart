@@ -744,3 +744,339 @@ exports.exportSubmissions = async (req, res, next) => {
 };
 
 module.exports = exports;
+
+// @desc    Admin override submission grade
+// @route   PUT /api/v1/admin/submissions/:id/grade
+// @access  Admin
+exports.overrideSubmissionGrade = async (req, res, next) => {
+    const client = await getClient();
+    
+    try {
+        const { id } = req.params;
+        const { grade, feedback, override_reason } = req.body;
+        const adminId = req.user.id;
+
+        await client.query('BEGIN');
+
+        // Check if submission exists
+        const submissionCheck = await client.query(
+            'SELECT * FROM submissions WHERE id = $1',
+            [id]
+        );
+
+        if (submissionCheck.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({
+                success: false,
+                message: 'Submission not found'
+            });
+        }
+
+        const submission = submissionCheck.rows[0];
+
+        // Update submission with admin override
+        const updateResult = await client.query(
+            `UPDATE submissions
+             SET score = $1,
+                 feedback = $2,
+                 status = 'graded',
+                 graded_at = CURRENT_TIMESTAMP,
+                 admin_override = true,
+                 admin_override_by = $3,
+                 admin_override_at = CURRENT_TIMESTAMP,
+                 admin_override_reason = $4
+             WHERE id = $5
+             RETURNING *`,
+            [grade, feedback, adminId, override_reason, id]
+        );
+
+        // Log the override action in audit log
+        await client.query(
+            `INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [
+                adminId,
+                'ADMIN_GRADE_OVERRIDE',
+                'submission',
+                id,
+                JSON.stringify({
+                    old_score: submission.score,
+                    new_score: grade,
+                    reason: override_reason,
+                    student_id: submission.user_id,
+                    assignment_id: submission.assignment_id
+                })
+            ]
+        );
+
+        await client.query('COMMIT');
+
+        res.status(200).json({
+            success: true,
+            message: 'Grade override successful',
+            data: updateResult.rows[0]
+        });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error in overrideSubmissionGrade:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to override grade',
+            error: error.message
+        });
+    } finally {
+        client.release();
+    }
+};
+
+// @desc    Get all submissions (admin view)
+// @route   GET /api/v1/admin/submissions
+// @access  Admin
+exports.getAllSubmissions = async (req, res, next) => {
+    try {
+        const { status, class_id, assessor_id, page = 1, limit = 50 } = req.query;
+        const offset = (page - 1) * limit;
+
+        let whereClause = '';
+        let params = [];
+        let paramCount = 1;
+        const conditions = [];
+
+        if (status) {
+            if (status === 'pending') {
+                conditions.push(`s.status = 'pending'`);
+            } else if (status === 'graded') {
+                conditions.push(`s.status = 'graded'`);
+            } else if (status === 'late') {
+                conditions.push(`s.submitted_at > a.due_date`);
+            }
+        }
+
+        if (conditions.length > 0) {
+            whereClause = 'WHERE ' + conditions.join(' AND ');
+        }
+
+        const result = await query(
+            `SELECT s.id, s.assignment_id, s.user_id, s.file_url, s.submitted_at,
+                    s.score, s.feedback, s.graded_at, s.status,
+                    s.admin_override, s.admin_override_reason,
+                    u.name as student_name, u.email as student_email,
+                    a.title as assignment_title, a.due_date,
+                    m.name as module_name,
+                    CASE WHEN s.submitted_at > a.due_date THEN true ELSE false END as is_late
+             FROM submissions s
+             JOIN users u ON s.user_id = u.id
+             JOIN assignments a ON s.assignment_id = a.id
+             LEFT JOIN modules m ON a.module_id = m.id
+             ${whereClause}
+             ORDER BY s.submitted_at DESC
+             LIMIT $${paramCount} OFFSET $${paramCount + 1}`,
+            [...params, limit, offset]
+        );
+
+        res.status(200).json({
+            success: true,
+            count: result.rows.length,
+            data: result.rows
+        });
+
+    } catch (error) {
+        console.error('Error in getAllSubmissions:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get submissions',
+            error: error.message
+        });
+    }
+};
+
+// @desc    Get all materials (admin view)
+// @route   GET /api/v1/admin/materials
+// @access  Admin
+exports.getAllMaterials = async (req, res, next) => {
+    try {
+        const { status, module_id } = req.query;
+
+        let whereClause = '';
+        let params = [];
+        let paramCount = 1;
+        const conditions = [];
+
+        if (status) {
+            conditions.push(`lm.status = $${paramCount}`);
+            params.push(status);
+            paramCount++;
+        }
+
+        if (module_id) {
+            conditions.push(`lm.module_id = $${paramCount}`);
+            params.push(module_id);
+            paramCount++;
+        }
+
+        if (conditions.length > 0) {
+            whereClause = 'WHERE ' + conditions.join(' AND ');
+        }
+
+        const result = await query(
+            `SELECT lm.id, lm.module_id, lm.class_number, lm.title,
+                    lm.description, lm.content, lm.is_published,
+                    lm.status, lm.download_count,
+                    lm.uploaded_by, lm.reviewed_by, lm.reviewed_at, lm.rejection_reason,
+                    lm.created_at, lm.updated_at,
+                    m.name as module_name,
+                    u1.name as uploader_name,
+                    u2.name as reviewer_name
+             FROM learning_materials lm
+             LEFT JOIN modules m ON lm.module_id = m.id
+             LEFT JOIN users u1 ON lm.uploaded_by = u1.id
+             LEFT JOIN users u2 ON lm.reviewed_by = u2.id
+             ${whereClause}
+             ORDER BY lm.created_at DESC`,
+            params
+        );
+
+        res.status(200).json({
+            success: true,
+            count: result.rows.length,
+            data: result.rows
+        });
+
+    } catch (error) {
+        console.error('Error in getAllMaterials:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get materials',
+            error: error.message
+        });
+    }
+};
+
+// @desc    Approve material
+// @route   PUT /api/v1/admin/materials/:id/approve
+// @access  Admin
+exports.approveMaterial = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const adminId = req.user.id;
+
+        const result = await query(
+            `UPDATE learning_materials 
+             SET status = 'approved',
+                 reviewed_by = $1,
+                 reviewed_at = CURRENT_TIMESTAMP
+             WHERE id = $2
+             RETURNING *`,
+            [adminId, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Material not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Material approved successfully',
+            data: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Error in approveMaterial:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to approve material',
+            error: error.message
+        });
+    }
+};
+
+// @desc    Reject material
+// @route   PUT /api/v1/admin/materials/:id/reject
+// @access  Admin
+exports.rejectMaterial = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { reason } = req.body;
+        const adminId = req.user.id;
+
+        const result = await query(
+            `UPDATE learning_materials 
+             SET status = 'rejected',
+                 reviewed_by = $1,
+                 reviewed_at = CURRENT_TIMESTAMP,
+                 rejection_reason = $2
+             WHERE id = $3
+             RETURNING *`,
+            [adminId, reason, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Material not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Material rejected',
+            data: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Error in rejectMaterial:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to reject material',
+            error: error.message
+        });
+    }
+};
+
+// @desc    Download material
+// @route   GET /api/v1/admin/materials/:id/download
+// @access  Admin
+exports.downloadMaterial = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        // Increment download count
+        const result = await query(
+            `UPDATE learning_materials 
+             SET download_count = download_count + 1
+             WHERE id = $1
+             RETURNING content_url, title, type`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Material not found'
+            });
+        }
+
+        const material = result.rows[0];
+
+        res.status(200).json({
+            success: true,
+            data: {
+                download_url: material.content_url,
+                title: material.title,
+                type: material.type
+            }
+        });
+
+    } catch (error) {
+        console.error('Error in downloadMaterial:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to download material',
+            error: error.message
+        });
+    }
+};

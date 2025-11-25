@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Discussions API</title>
+</head>
+<body>
+    <h1>Test Discussions API</h1>
+    <div id="result"></div>
+    <pre id="output"></pre>
+
+    <script src="/src/js/api-service.js"></script>
+    <script>
+        const resultDiv = document.getElementById('result');
+        const outputPre = document.getElementById('output');
+
+        async function testAPI() {
+            try {
+                // Login first
+                resultDiv.innerHTML = '🔄 Logging in...';
+
+                const loginResponse = await fetch('http://localhost:5000/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+
+                const loginData = await loginResponse.json();
+
+                if (!loginData.success) {
+                    throw new Error('Login failed: ' + loginData.message);
+                }
+
+                const token = loginData.data.token;
+                resultDiv.innerHTML = '✅ Logged in successfully<br>';
+                resultDiv.innerHTML += '🔄 Fetching discussions...';
+
+                // Get discussions
+                const discussionsResponse = await fetch('http://localhost:5000/api/v1/discussions', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const discussionsData = await discussionsResponse.json();
+
+                resultDiv.innerHTML = '✅ API Response received!<br><br>';
+                resultDiv.innerHTML += `<strong>Success:</strong> ${discussionsData.success}<br>`;
+                resultDiv.innerHTML += `<strong>Total Discussions:</strong> ${discussionsData.data?.length || 0}<br>`;
+
+                if (discussionsData.data && discussionsData.data.length > 0) {
+                    resultDiv.innerHTML += `<strong>Total Replies:</strong> ${discussionsData.data.reduce((s,x)=>s+parseInt(x.replies_count||0),0)}<br>`;
+                    resultDiv.innerHTML += `<strong>Total Views:</strong> ${discussionsData.data.reduce((s,x)=>s+parseInt(x.views_count||0),0)}<br><br>`;
+
+                    resultDiv.innerHTML += '<strong>First 3 Discussions:</strong><br>';
+                    discussionsData.data.slice(0,3).forEach((d, i) => {
+                        resultDiv.innerHTML += `${i+1}. ${d.title} (${d.replies_count} replies)<br>`;
+                    });
+                }
+
+                outputPre.textContent = JSON.stringify(discussionsData, null, 2);
+
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Error: ' + error.message;
+                outputPre.textContent = error.stack;
+            }
+        }
+
+        // Run test on page load
+        testAPI();
+    </script>
+</body>
+</html>

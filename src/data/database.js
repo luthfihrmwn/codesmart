@@ -1995,7 +1995,7 @@ Tanggal: 2 November 2025`,
         const assignedModules = assessor.assignedModules || [1, 2, 3];
 
         return this.users
-            .filter(u => u.role === 'user' && u.promotionRequests && u.promotionRequests.length > 0)
+            .filter(u => u.role === 'student' && u.promotionRequests && u.promotionRequests.length > 0)
             .flatMap(user =>
                 user.promotionRequests
                     .filter(req => req.status === 'pending' && assignedModules.includes(req.moduleId))
@@ -2055,7 +2055,7 @@ Tanggal: 2 November 2025`,
             .map(e => e.userId);
 
         return this.users
-            .filter(u => u.role === 'user' && enrolledUserIds.includes(u.id))
+            .filter(u => u.role === 'student' && enrolledUserIds.includes(u.id))
             .map(user => {
                 const enrollment = this.enrollments.find(e => e.userId === user.id && e.moduleId === moduleId);
                 const submissions = this.submissions.filter(s => s.userId === user.id);
@@ -2083,7 +2083,7 @@ Tanggal: 2 November 2025`,
             .map(e => e.userId);
 
         return this.users
-            .filter(u => u.role === 'user' && enrolledUserIds.includes(u.id))
+            .filter(u => u.role === 'student' && enrolledUserIds.includes(u.id))
             .map(user => {
                 const enrollment = this.enrollments.find(e => e.userId === user.id && e.moduleId === moduleId);
                 return {

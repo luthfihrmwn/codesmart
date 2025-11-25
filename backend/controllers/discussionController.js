@@ -12,10 +12,16 @@ exports.getDiscussions = async (req, res) => {
                 d.*,
                 u.name as author_name,
                 u.role as author_role,
+                m.id as class_id,
+                m.name as class_name,
                 COUNT(DISTINCT dr.id) as replies_count,
-                MAX(dr.created_at) as last_reply_at
+                MAX(dr.created_at) as last_reply_at,
+                CASE WHEN d.is_locked THEN 'locked'
+                     ELSE 'active'
+                END as status
             FROM discussions d
             LEFT JOIN users u ON d.user_id = u.id
+            LEFT JOIN modules m ON d.module_id = m.id
             LEFT JOIN discussion_replies dr ON d.id = dr.discussion_id
             WHERE 1=1
         `;
@@ -33,7 +39,7 @@ exports.getDiscussions = async (req, res) => {
         }
 
         query += `
-            GROUP BY d.id, u.name, u.role
+            GROUP BY d.id, u.name, u.role, m.id, m.name
             ORDER BY d.is_pinned DESC,
                      COALESCE(MAX(dr.created_at), d.created_at) DESC
             LIMIT $${params.length + 1} OFFSET $${params.length + 2}
@@ -45,10 +51,7 @@ exports.getDiscussions = async (req, res) => {
 
         res.json({
             success: true,
-            data: {
-                discussions: result.rows,
-                total: result.rowCount
-            }
+            data: result.rows
         });
     } catch (error) {
         console.error('Error fetching discussions:', error);

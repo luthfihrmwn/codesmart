@@ -274,7 +274,7 @@
 
     <!-- Main Content -->
     <div class="dashboard-container">
-        <h1 class="page-title">Announcements</h1>
+        <h1 class="page-title"><i class='bx bx-broadcast'></i> Announcements</h1>
 
         <!-- Filter Tabs -->
         <div class="filter-tabs">
@@ -409,6 +409,7 @@
             const roles = {
                 'all': 'Everyone',
                 'student': 'Students',
+                'user': 'Students',
                 'assessor': 'Assessors',
                 'admin': 'Admins'
             };
@@ -420,7 +421,7 @@
             const container = document.getElementById('announcementsGrid');
             container.innerHTML = `
                 <div class="empty-state">
-                    <i class='bx bx-megaphone'></i>
+                    <i class='bx bx-broadcast'></i>
                     <h3>No Announcements</h3>
                     <p>There are no announcements at this time</p>
                 </div>

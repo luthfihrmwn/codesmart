@@ -56,8 +56,12 @@ router.put('/modules/:id', adminController.updateModule);
 router.delete('/modules/:id', adminController.deleteModule);
 
 // Learning Materials Management (Admin can use moduleController methods)
+router.get('/materials', adminController.getAllMaterials);
 router.post('/materials', moduleController.createLearningMaterial);
 router.put('/materials/:id', moduleController.updateLearningMaterial);
+router.put('/materials/:id/approve', adminController.approveMaterial);
+router.put('/materials/:id/reject', adminController.rejectMaterial);
+router.get('/materials/:id/download', adminController.downloadMaterial);
 router.delete('/materials/:id', moduleController.deleteLearningMaterial);
 
 // Assignment Management
@@ -66,6 +70,10 @@ router.get('/assignments', assignmentController.getAllAssignments);
 router.post('/assignments', uploadAssignment.single('attachment'), assignmentController.createAssignment);
 router.put('/assignments/:id', uploadAssignment.single('attachment'), assignmentController.updateAssignment);
 router.delete('/assignments/:id', assignmentController.deleteAssignment);
+
+// Submission Management (Admin)
+router.get('/submissions', adminController.getAllSubmissions);
+router.put('/submissions/:id/grade', adminController.overrideSubmissionGrade);
 
 // Statistics
 router.get('/statistics', adminController.getAdminStatistics);

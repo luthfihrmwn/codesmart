@@ -18,7 +18,7 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(100) NOT NULL,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'assessor', 'user')),
+    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'assessor', 'student')),
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'inactive', 'suspended')),
     phone VARCHAR(20),
     photo_url TEXT,

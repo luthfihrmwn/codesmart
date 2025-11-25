@@ -138,7 +138,7 @@ class AuthService {
     }
 
     isUser() {
-        return this.currentUser && this.currentUser.role === 'user';
+        return this.currentUser && this.currentUser.role === 'student';
     }
 
     // Update current user data via API

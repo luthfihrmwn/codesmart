@@ -5,7 +5,8 @@
 
 // API Configuration
 const API_CONFIG = {
-    BASE_URL: 'http://localhost:5000/api/v1',
+    BASE_URL: 'http://localhost:3000/api/v1', // Main backend
+    ML_URL: 'http://localhost:5000/api/v1',   // ML service for SVM predictions
     TIMEOUT: 30000, // 30 seconds
 };
 
@@ -259,11 +260,23 @@ class APIService {
     }
 
     async updateProfile(data) {
-        return this.put('/auth/update-details', data);
+        return this.put('/users/profile', data);
     }
 
-    async updatePassword(currentPassword, newPassword) {
-        return this.put('/auth/update-password', { currentPassword, newPassword });
+    async uploadProfilePhoto(formData) {
+        const token = this.getToken();
+        const response = await fetch(`${this.baseURL}/users/profile/photo`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        return await response.json();
+    }
+
+    async updatePassword(data) {
+        return this.put('/users/profile/password', data);
     }
 
     async forgotPassword(email) {
@@ -735,6 +748,99 @@ class APIService {
      */
     async fetchWithAuth(endpoint, options = {}) {
         return this.request(endpoint, options);
+    }
+
+    // ==========================================
+    // ML SERVICE ENDPOINTS (SVM Predictions)
+    // ==========================================
+
+    /**
+     * ML request method - uses ML_URL instead of BASE_URL
+     */
+    async mlRequest(endpoint, options = {}) {
+        const url = `${API_CONFIG.ML_URL}${endpoint}`;
+
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers,
+        };
+
+        const token = this.getToken();
+        if (token && !options.skipAuth) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const requestOptions = {
+            ...options,
+            headers,
+        };
+
+        try {
+            const response = await fetch(url, requestOptions);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || `HTTP Error: ${response.status}`);
+            }
+
+            return data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getSVMPredictions() {
+        return this.mlRequest('/ml/predictions');
+    }
+
+    async getSVMStats() {
+        return this.mlRequest('/ml/stats');
+    }
+
+    async getSVMPrediction(studentId) {
+        return this.mlRequest(`/ml/predict/${studentId}`);
+    }
+
+    async trainSVMModel() {
+        return this.mlRequest('/ml/train', { method: 'POST' });
+    }
+
+    async getSVMModelInfo() {
+        return this.mlRequest('/ml/info');
+    }
+
+    // ==========================================
+    // ADMIN SUBMISSION MANAGEMENT
+    // ==========================================
+
+    async getAdminSubmissions(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get('/admin/submissions' + (queryString ? '?' + queryString : ''));
+    }
+
+    async adminOverrideGrade(submissionId, gradeData) {
+        return this.put('/admin/submissions/' + submissionId + '/grade', gradeData);
+    }
+
+    // ==========================================
+    // ADMIN MATERIALS MANAGEMENT
+    // ==========================================
+
+    async getAdminMaterials(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.get('/admin/materials' + (queryString ? '?' + queryString : ''));
+    }
+
+    async approveMaterial(materialId) {
+        return this.put('/admin/materials/' + materialId + '/approve');
+    }
+
+    async rejectMaterial(materialId, reason) {
+        return this.put('/admin/materials/' + materialId + '/reject', { reason });
+    }
+
+    async downloadMaterial(materialId) {
+        return this.get('/admin/materials/' + materialId + '/download');
     }
 }
 

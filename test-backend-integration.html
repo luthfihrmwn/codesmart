@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #667eea;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #764ba2;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { border-left-color: #10b981; background: #d1fae5; }
+        .error { border-left-color: #dc2626; background: #fee2e2; }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.ok { background: #d1fae5; color: #065f46; }
+        .status.fail { background: #fee2e2; color: #991b1b; }
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔌 Backend Integration Test - CodeSmart</h1>
+    <p>Test koneksi antara Frontend dan Backend API</p>
+
+    <!-- Login Section -->
+    <div class="test-section">
+        <h3>1. Authentication Test</h3>
+        <p>Login untuk mendapatkan token (required untuk test lainnya)</p>
+        <input type="text" id="username" placeholder="Username (admin/assessor)" value="admin">
+        <input type="password" id="password" placeholder="Password" value="admin123">
+        <button onclick="testLogin()">Login</button>
+        <button onclick="testGetMe()">Get Current User</button>
+        <button onclick="testLogout()">Logout</button>
+        <div id="auth-result"></div>
+    </div>
+
+    <!-- Backend Health -->
+    <div class="test-section">
+        <h3>2. Server Health Check</h3>
+        <button onclick="testBackendHealth()">Test Backend (Port 3000)</button>
+        <button onclick="testMLHealth()">Test ML Service (Port 5000)</button>
+        <div id="health-result"></div>
+    </div>
+
+    <!-- Admin Endpoints -->
+    <div class="test-section">
+        <h3>3. Admin Endpoints Test</h3>
+        <button onclick="testAdminUsers()">GET /admin/users</button>
+        <button onclick="testAdminModules()">GET /admin/modules</button>
+        <button onclick="testAdminStats()">GET /admin/statistics</button>
+        <button onclick="testAdminAssignments()">GET /admin/assignments</button>
+        <div id="admin-result"></div>
+    </div>
+
+    <!-- Common Endpoints -->
+    <div class="test-section">
+        <h3>4. Common Endpoints Test</h3>
+        <button onclick="testDiscussions()">GET /discussions</button>
+        <button onclick="testAnnouncements()">GET /announcements</button>
+        <button onclick="testNotifications()">GET /notifications</button>
+        <div id="common-result"></div>
+    </div>
+
+    <!-- ML Service Endpoints -->
+    <div class="test-section">
+        <h3>5. ML Service Test (SVM)</h3>
+        <button onclick="testMLInfo()">GET /ml/info</button>
+        <button onclick="testMLStats()">GET /ml/stats</button>
+        <button onclick="testMLPredictions()">GET /ml/predictions</button>
+        <div id="ml-result"></div>
+    </div>
+
+    <!-- Assessor Endpoints -->
+    <div class="test-section">
+        <h3>6. Assessor Endpoints Test</h3>
+        <button onclick="testAssessorStats()">GET /assessor/statistics</button>
+        <button onclick="testAssessorStudents()">GET /assessor/students</button>
+        <button onclick="testAssessorSubmissions()">GET /assessor/submissions/pending</button>
+        <div id="assessor-result"></div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script>
+        // Helper function to display results
+        function showResult(elementId, data, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${isSuccess ? 'success' : 'error'}">${JSON.stringify(data, null, 2)}</div>`;
+        }
+
+        // 1. Authentication Tests
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const result = await apiService.login(username, password);
+                showResult('auth-result', result, result.success);
+                if (result.success) {
+                    alert('✅ Login berhasil! Token tersimpan. Sekarang bisa test endpoint lain.');
+                }
+            } catch (error) {
+                showResult('auth-result', { error: error.message }, false);
+            }
+        }
+
+        async function testGetMe() {
+            try {
+                const result = await apiService.getMe();
+                showResult('auth-result', result, result.success);
+            } catch (error) {
+                showResult('auth-result', { error: error.message }, false);
+            }
+        }
+
+        async function testLogout() {
+            try {
+                await apiService.logout();
+                showResult('auth-result', { message: 'Logged out successfully' }, true);
+            } catch (error) {
+                showResult('auth-result', { error: error.message }, false);
+            }
+        }
+
+        // 2. Health Check Tests
+        async function testBackendHealth() {
+            try {
+                const response = await fetch('http://localhost:3000/health');
+                const result = await response.json();
+                showResult('health-result', { backend: result }, response.ok);
+            } catch (error) {
+                showResult('health-result', { error: 'Backend not reachable: ' + error.message }, false);
+            }
+        }
+
+        async function testMLHealth() {
+            try {
+                const response = await fetch('http://localhost:5000/health');
+                const result = await response.json();
+                showResult('health-result', { mlService: result }, response.ok);
+            } catch (error) {
+                showResult('health-result', { error: 'ML Service not reachable: ' + error.message }, false);
+            }
+        }
+
+        // 3. Admin Endpoints Tests
+        async function testAdminUsers() {
+            try {
+                const result = await apiService.getAllUsers();
+                showResult('admin-result', result, result.success);
+            } catch (error) {
+                showResult('admin-result', { error: error.message }, false);
+            }
+        }
+
+        async function testAdminModules() {
+            try {
+                const result = await apiService.getAllModules();
+                showResult('admin-result', result, result.success);
+            } catch (error) {
+                showResult('admin-result', { error: error.message }, false);
+            }
+        }
+
+        async function testAdminStats() {
+            try {
+                const result = await apiService.getAdminStatistics();
+                showResult('admin-result', result, result.success);
+            } catch (error) {
+                showResult('admin-result', { error: error.message }, false);
+            }
+        }
+
+        async function testAdminAssignments() {
+            try {
+                const result = await apiService.getAllAssignments();
+                showResult('admin-result', result, result.success);
+            } catch (error) {
+                showResult('admin-result', { error: error.message }, false);
+            }
+        }
+
+        // 4. Common Endpoints Tests
+        async function testDiscussions() {
+            try {
+                const result = await apiService.getDiscussions();
+                showResult('common-result', result, result.success);
+            } catch (error) {
+                showResult('common-result', { error: error.message }, false);
+            }
+        }
+
+        async function testAnnouncements() {
+            try {
+                const result = await apiService.getAnnouncements();
+                showResult('common-result', result, result.success);
+            } catch (error) {
+                showResult('common-result', { error: error.message }, false);
+            }
+        }
+
+        async function testNotifications() {
+            try {
+                const result = await apiService.getNotifications();
+                showResult('common-result', result, result.success);
+            } catch (error) {
+                showResult('common-result', { error: error.message }, false);
+            }
+        }
+
+        // 5. ML Service Tests
+        async function testMLInfo() {
+            try {
+                const result = await apiService.getSVMModelInfo();
+                showResult('ml-result', result, result.success);
+            } catch (error) {
+                showResult('ml-result', { error: error.message }, false);
+            }
+        }
+
+        async function testMLStats() {
+            try {
+                const result = await apiService.getSVMStats();
+                showResult('ml-result', result, result.success);
+            } catch (error) {
+                showResult('ml-result', { error: error.message }, false);
+            }
+        }
+
+        async function testMLPredictions() {
+            try {
+                const result = await apiService.getSVMPredictions();
+                showResult('ml-result', result, result.success);
+            } catch (error) {
+                showResult('ml-result', { error: error.message }, false);
+            }
+        }
+
+        // 6. Assessor Endpoints Tests
+        async function testAssessorStats() {
+            try {
+                const result = await apiService.getAssessorStatistics();
+                showResult('assessor-result', result, result.success);
+            } catch (error) {
+                showResult('assessor-result', { error: error.message }, false);
+            }
+        }
+
+        async function testAssessorStudents() {
+            try {
+                const result = await apiService.getStudents();
+                showResult('assessor-result', result, result.success);
+            } catch (error) {
+                showResult('assessor-result', { error: error.message }, false);
+            }
+        }
+
+        async function testAssessorSubmissions() {
+            try {
+                const result = await apiService.getPendingSubmissions();
+                showResult('assessor-result', result, result.success);
+            } catch (error) {
+                showResult('assessor-result', { error: error.message }, false);
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ API Service loaded:', typeof apiService);
+            console.log('📍 Backend URL:', apiService.baseURL);
+        });
+    </script>
+</body>
+</html>

@@ -1,25 +1,30 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-// PostgreSQL connection pool
-const pool = new Pool({
+// PostgreSQL connection pool configuration
+const poolConfig = {
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
     database: process.env.DB_NAME || 'codesmart_db',
     user: process.env.DB_USER || 'postgres',
-    password: String(process.env.DB_PASSWORD || ''), // Ensure password is a string
-    max: 20, // Maximum number of clients in pool
+    password: String(process.env.DB_PASSWORD || ''),
+    ssl: { rejectUnauthorized: false },
+    max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000, // Increased timeout for cloud DB
-    // SSL configuration for Supabase and other cloud PostgreSQL
-    ssl: process.env.DB_HOST && process.env.DB_HOST.includes('supabase')
-        ? { rejectUnauthorized: false }
-        : false,
-    // Force IPv4 for Supabase connection
-    ...(process.env.DB_HOST && process.env.DB_HOST.includes('supabase') && {
-        host: process.env.DB_HOST,
-    }),
+    connectionTimeoutMillis: 10000,
+};
+
+console.log('🔧 Database Config:', {
+    host: poolConfig.host,
+    port: poolConfig.port,
+    database: poolConfig.database,
+    user: poolConfig.user,
+    passwordLength: poolConfig.password.length,
+    ssl: poolConfig.ssl
 });
+
+const pool = new Pool(poolConfig);
 
 // Test database connection
 pool.on('connect', () => {

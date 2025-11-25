@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussions Management - CodeSmart Admin</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>Classes</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder-open'></i>
+                    <span>Materials</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Submissions</span>
+                </a>
+                <a href="discussions-sidebar.html" class="nav-item active">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">
+                    <i class='bx bx-message-square-dots'></i> Discussions Management
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Administrator</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">admin@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-message-square-dots'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalDiscussions">0</h3>
+                        <p>Total Threads</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeDiscussions">0</h3>
+                        <p>Active</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-flag'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="flaggedDiscussions">0</h3>
+                        <p>Flagged</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-chat'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalReplies">0</h3>
+                        <p>Total Replies</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1;">
+                        <div style="position: relative; flex: 1; min-width: 200px;">
+                            <input type="text" id="searchInput" placeholder="Search discussions..." style="width: 100%; padding: 8px 36px 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            <i class='bx bx-search' style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        </div>
+                        <select id="statusFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 120px;">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="locked">Locked</option>
+                            <option value="flagged">Flagged</option>
+                        </select>
+                        <select id="classFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 150px;">
+                            <option value="all">All Classes</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="refreshDiscussions()" style="padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discussions List -->
+            <div id="discussionsList" style="margin-top: 24px;">
+                <div style="text-align: center; padding: 60px;">
+                    <div class="loader"></div>
+                    <p style="margin-top: 16px; color: #94a3b8;">Loading discussions...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discussion Detail Modal -->
+    <div id="discussionDetailModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class='bx bx-message-square-detail'></i> Discussion Details</h2>
+                <button class="modal-close" onclick="closeDiscussionDetail()">&times;</button>
+            </div>
+            <div id="discussionDetailContent" class="modal-body">
+                <div style="text-align: center; padding: 40px;">
+                    <div class="loader"></div>
+                    <p style="margin-top: 16px; color: #94a3b8;">Loading discussion...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allDiscussions = [];
+        let allClasses = [];
+
+        // Load all data
+        async function loadAllData() {
+            await Promise.all([
+                loadDiscussions(),
+                loadClasses()
+            ]);
+        }
+
+        // Load discussions
+        async function loadDiscussions() {
+            try {
+                console.log('🔄 Loading discussions from API...');
+                // Use real backend API
+                const response = await apiService.getDiscussions();
+
+                console.log('📡 API Response:', response);
+
+                if (response.success && response.data) {
+                    console.log('✅ Loaded', response.data.length, 'discussions from database');
+                    allDiscussions = response.data;
+                    renderDiscussions();
+                    updateStats();
+                    return;
+                }
+
+                // Fallback to mock data if API fails
+                console.warn('⚠️ API failed, using mock data. Reason:', response.message || 'Unknown');
+                const mockDiscussions = [
+                    {
+                        id: 1,
+                        title: 'Bagaimana cara menggunakan JavaScript closures?',
+                        content: 'Saya masih bingung dengan konsep closures di JavaScript. Bisa tolong jelaskan dengan contoh?',
+                        author_id: 5,
+                        author_name: 'hasan',
+                        class_id: 1,
+                        class_name: 'Fundamental JavaScript',
+                        created_at: '2025-11-23T10:00:00',
+                        replies_count: 5,
+                        views_count: 23,
+                        is_pinned: false,
+                        is_locked: false,
+                        is_flagged: false,
+                        status: 'active'
+                    },
+                    {
+                        id: 2,
+                        title: 'Perbedaan let, const, dan var',
+                        content: 'Saya ingin tahu perbedaan antara let, const, dan var di JavaScript. Kapan sebaiknya menggunakan masing-masing?',
+                        author_id: 5,
+                        author_name: 'hasan',
+                        class_id: 1,
+                        class_name: 'Fundamental JavaScript',
+                        created_at: '2025-11-22T14:30:00',
+                        replies_count: 8,
+                        views_count: 35,
+                        is_pinned: true,
+                        is_locked: false,
+                        is_flagged: false,
+                        status: 'active'
+                    },
+                    {
+                        id: 3,
+                        title: 'Arrow functions vs regular functions',
+                        content: 'Apa perbedaan utama antara arrow functions dan regular functions? Saya sering lihat arrow functions dipakai.',
+                        author_id: 5,
+                        author_name: 'hasan',
+                        class_id: 2,
+                        class_name: 'Intermediate JavaScript',
+                        created_at: '2025-11-21T09:15:00',
+                        replies_count: 12,
+                        views_count: 47,
+                        is_pinned: false,
+                        is_locked: false,
+                        is_flagged: false,
+                        status: 'active'
+                    },
+                    {
+                        id: 4,
+                        title: 'Promises dan async/await',
+                        content: 'Saya baru belajar tentang asynchronous programming. Bagaimana cara menggunakan Promises dan async/await dengan benar?',
+                        author_id: 5,
+                        author_name: 'hasan',
+                        class_id: 2,
+                        class_name: 'Intermediate JavaScript',
+                        created_at: '2025-11-20T08:00:00',
+                        replies_count: 15,
+                        views_count: 62,
+                        is_pinned: false,
+                        is_locked: false,
+                        is_flagged: false,
+                        status: 'active'
+                    },
+                    {
+                        id: 5,
+                        title: 'Array methods: map, filter, reduce',
+                        content: 'Bisa tolong jelaskan cara kerja map, filter, dan reduce? Saya masih sering keliru kapan harus pakai yang mana.',
+                        author_id: 5,
+                        author_name: 'hasan',
+                        class_id: 3,
+                        class_name: 'Advance JavaScript',
+                        created_at: '2025-11-19T16:45:00',
+                        replies_count: 10,
+                        views_count: 41,
+                        is_pinned: false,
+                        is_locked: false,
+                        is_flagged: false,
+                        status: 'active'
+                    }
+                ];
+
+                allDiscussions = mockDiscussions;
+                updateStats();
+                renderDiscussions();
+            } catch (error) {
+                console.error('Error loading discussions:', error);
+            }
+        }
+
+        // Load classes for filter
+        async function loadClasses() {
+            try {
+                // Load modules from API
+                const response = await apiService.getAllModules();
+                if (response.success && response.data) {
+                    allClasses = response.data.map(module => ({
+                        id: module.id,
+                        name: module.name
+                    }));
+                } else {
+                    allClasses = [];
+                }
+                populateClassFilter();
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                allClasses = [];
+                populateClassFilter();
+            }
+        }
+
+        // Populate class filter
+        function populateClassFilter() {
+            const select = document.getElementById('classFilter');
+            allClasses.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            const active = allDiscussions.filter(d => d.status === 'active');
+            const flagged = allDiscussions.filter(d => d.is_flagged);
+            const totalReplies = allDiscussions.reduce((sum, d) => sum + parseInt(d.replies_count || 0), 0);
+
+            document.getElementById('totalDiscussions').textContent = allDiscussions.length;
+            document.getElementById('activeDiscussions').textContent = active.length;
+            document.getElementById('flaggedDiscussions').textContent = flagged.length;
+            document.getElementById('totalReplies').textContent = totalReplies;
+        }
+
+        // Render discussions
+        function renderDiscussions() {
+            const container = document.getElementById('discussionsList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const classFilter = document.getElementById('classFilter').value;
+
+            let filteredDiscussions = allDiscussions.filter(disc => {
+                const matchSearch = disc.title.toLowerCase().includes(searchTerm) ||
+                                  disc.content.toLowerCase().includes(searchTerm);
+                const matchStatus = statusFilter === 'all' ||
+                                  (statusFilter === 'flagged' ? disc.is_flagged : disc.status === statusFilter);
+                const matchClass = classFilter === 'all' || disc.class_id === parseInt(classFilter);
+                return matchSearch && matchStatus && matchClass;
+            });
+
+            if (filteredDiscussions.length === 0) {
+                container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 60px;">
+                        <i class='bx bx-message-square-dots' style="font-size: 64px; color: #cbd5e0;"></i>
+                        <p style="margin-top: 16px; color: #94a3b8; font-size: 16px;">No discussions found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredDiscussions.map(disc => {
+                const createdDate = new Date(disc.created_at);
+                const timeAgo = getTimeAgo(createdDate);
+
+                return `
+                    <div class="card" style="margin-bottom: 16px; ${disc.is_flagged ? 'border-left: 4px solid #dc2626;' : ''}">
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px;">
+                                <div style="flex: 1;">
+                                    <!-- Badges -->
+                                    <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                                        ${disc.is_pinned ? `
+                                            <span style="padding: 4px 12px; background: #dbeafe; color: #2563eb; border: 1px solid #93c5fd; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                📌 PINNED
+                                            </span>
+                                        ` : ''}
+                                        ${disc.is_locked ? `
+                                            <span style="padding: 4px 12px; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                🔒 LOCKED
+                                            </span>
+                                        ` : ''}
+                                        ${disc.is_flagged ? `
+                                            <span style="padding: 4px 12px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                🚩 FLAGGED
+                                            </span>
+                                        ` : ''}
+                                        <span style="padding: 4px 12px; background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                            📚 ${disc.class_name}
+                                        </span>
+                                    </div>
+
+                                    <!-- Title -->
+                                    <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #1e293b;">${disc.title}</h3>
+
+                                    <!-- Content Preview -->
+                                    <p style="margin: 0 0 16px 0; color: #64748b; font-size: 14px; line-height: 1.6;">
+                                        ${disc.content.substring(0, 150)}${disc.content.length > 150 ? '...' : ''}
+                                    </p>
+
+                                    <!-- Meta Info -->
+                                    <div style="display: flex; gap: 20px; font-size: 13px; color: #94a3b8; flex-wrap: wrap;">
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class='bx bx-user'></i>
+                                            <span>${disc.author_name}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class='bx bx-time'></i>
+                                            <span>${timeAgo}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class='bx bx-message-rounded-dots'></i>
+                                            <span>${disc.replies_count} replies</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <i class='bx bx-show'></i>
+                                            <span>${disc.views_count} views</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div style="display: flex; flex-direction: column; gap: 8px; min-width: 120px;">
+                                    <button onclick="viewDiscussion(${disc.id})" style="padding: 8px 12px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; cursor: pointer; font-size: 13px; color: #16a34a; font-weight: 600; white-space: nowrap;">
+                                        <i class='bx bx-show'></i> View
+                                    </button>
+                                    ${!disc.is_pinned ? `
+                                        <button onclick="pinDiscussion(${disc.id})" style="padding: 8px 12px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; cursor: pointer; font-size: 13px; color: #2563eb; font-weight: 600; white-space: nowrap;">
+                                            <i class='bx bx-pin'></i> Pin
+                                        </button>
+                                    ` : `
+                                        <button onclick="unpinDiscussion(${disc.id})" style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 13px; color: #64748b; font-weight: 600; white-space: nowrap;">
+                                            <i class='bx bx-pin'></i> Unpin
+                                        </button>
+                                    `}
+                                    ${!disc.is_locked ? `
+                                        <button onclick="lockDiscussion(${disc.id})" style="padding: 8px 12px; background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; cursor: pointer; font-size: 13px; color: #d97706; font-weight: 600; white-space: nowrap;">
+                                            <i class='bx bx-lock'></i> Lock
+                                        </button>
+                                    ` : `
+                                        <button onclick="unlockDiscussion(${disc.id})" style="padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 13px; color: #64748b; font-weight: 600; white-space: nowrap;">
+                                            <i class='bx bx-lock-open'></i> Unlock
+                                        </button>
+                                    `}
+                                    <button onclick="deleteDiscussion(${disc.id})" style="padding: 8px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; font-size: 13px; color: #dc2626; font-weight: 600; white-space: nowrap;">
+                                        <i class='bx bx-trash'></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Get time ago
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                week: 604800,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return interval === 1 ? `1 ${unit} ago` : `${interval} ${unit}s ago`;
+                }
+            }
+            return 'Just now';
+        }
+
+        // Pin discussion
+        async function pinDiscussion(discussionId) {
+            try {
+                // Use real backend API
+                const response = await apiService.toggleDiscussionPin(discussionId);
+
+                if (response.success) {
+                    // Update local data
+                    const index = allDiscussions.findIndex(d => d.id === discussionId);
+                    if (index !== -1) {
+                        allDiscussions[index].is_pinned = true;
+                    }
+
+                    renderDiscussions();
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Discussion pinned',
+                        type: 'success'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to pin discussion');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to pin discussion',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Unpin discussion
+        async function unpinDiscussion(discussionId) {
+            try {
+                // Use real backend API
+                const response = await apiService.toggleDiscussionPin(discussionId);
+
+                if (response.success) {
+                    const index = allDiscussions.findIndex(d => d.id === discussionId);
+                    if (index !== -1) {
+                        allDiscussions[index].is_pinned = false;
+                    }
+
+                    renderDiscussions();
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Discussion unpinned',
+                        type: 'info'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to unpin discussion');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to unpin discussion',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Lock discussion
+        async function lockDiscussion(discussionId) {
+            if (!confirm('Lock this discussion? Users won\'t be able to reply.')) return;
+
+            try {
+                // Use real backend API
+                const response = await apiService.toggleDiscussionLock(discussionId);
+
+                if (response.success) {
+                    const index = allDiscussions.findIndex(d => d.id === discussionId);
+                    if (index !== -1) {
+                        allDiscussions[index].is_locked = true;
+                        allDiscussions[index].status = 'locked';
+                    }
+
+                    updateStats();
+                    renderDiscussions();
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Discussion locked',
+                        type: 'success'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to lock discussion');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to lock discussion',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Unlock discussion
+        async function unlockDiscussion(discussionId) {
+            try {
+                // Use real backend API
+                const response = await apiService.toggleDiscussionLock(discussionId);
+
+                if (response.success) {
+                    const index = allDiscussions.findIndex(d => d.id === discussionId);
+                    if (index !== -1) {
+                        allDiscussions[index].is_locked = false;
+                        allDiscussions[index].status = 'active';
+                    }
+
+                    updateStats();
+                    renderDiscussions();
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Discussion unlocked',
+                        type: 'info'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to unlock discussion');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to unlock discussion',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Delete discussion
+        async function deleteDiscussion(discussionId) {
+            if (!confirm('Are you sure you want to delete this discussion? This action cannot be undone.')) return;
+
+            try {
+                // Use real backend API
+                const response = await apiService.deleteDiscussion(discussionId);
+
+                if (response.success) {
+                    allDiscussions = allDiscussions.filter(d => d.id !== discussionId);
+                    updateStats();
+                    renderDiscussions();
+
+                    modalService.addNotification({
+                        title: 'Deleted',
+                        message: 'Discussion deleted successfully',
+                        type: 'success'
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to delete discussion');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: error.message || 'Failed to delete discussion',
+                    type: 'error'
+                });
+            }
+        }
+
+        // View discussion detail with replies
+        async function viewDiscussion(discussionId) {
+            const modal = document.getElementById('discussionDetailModal');
+            const content = document.getElementById('discussionDetailContent');
+
+            // Show modal with loading state
+            modal.style.display = 'flex';
+            content.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div class="loader"></div>
+                    <p style="margin-top: 16px; color: #94a3b8;">Loading discussion...</p>
+                </div>
+            `;
+
+            try {
+                // Get discussion details
+                const discussion = allDiscussions.find(d => d.id === discussionId);
+                if (!discussion) {
+                    throw new Error('Discussion not found');
+                }
+
+                // Fetch discussion with replies from API
+                console.log('🔄 Fetching discussion details for ID:', discussionId);
+                const response = await apiService.fetchWithAuth(`/discussions/${discussionId}`);
+
+                console.log('📡 Discussion Response:', response);
+
+                let replies = [];
+                if (response.success && response.data) {
+                    // API returns { discussion: {...}, replies: [...] }
+                    replies = response.data.replies || [];
+                    console.log('✅ Loaded', replies.length, 'replies from database');
+                } else {
+                    console.warn('⚠️ Failed to load discussion:', response.message);
+                }
+
+                // Render discussion details
+                const createdDate = new Date(discussion.created_at);
+
+                content.innerHTML = `
+                    <div style="margin-bottom: 24px;">
+                        <!-- Discussion Header -->
+                        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                                ${discussion.is_pinned ? `
+                                    <span style="padding: 4px 12px; background: #dbeafe; color: #2563eb; border: 1px solid #93c5fd; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                        📌 PINNED
+                                    </span>
+                                ` : ''}
+                                ${discussion.is_locked ? `
+                                    <span style="padding: 4px 12px; background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                        🔒 LOCKED
+                                    </span>
+                                ` : ''}
+                                <span style="padding: 4px 12px; background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                    📚 ${discussion.class_name}
+                                </span>
+                            </div>
+
+                            <h3 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 700; color: #1e293b;">${discussion.title}</h3>
+
+                            <p style="margin: 0 0 16px 0; color: #475569; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${discussion.content}</p>
+
+                            <div style="display: flex; gap: 20px; font-size: 13px; color: #94a3b8; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <i class='bx bx-user'></i>
+                                    <span><strong>${discussion.author_name}</strong></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <i class='bx bx-time'></i>
+                                    <span>${createdDate.toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <i class='bx bx-message-rounded-dots'></i>
+                                    <span>${replies.length} replies</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <i class='bx bx-show'></i>
+                                    <span>${discussion.views_count} views</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Replies Section -->
+                        <div>
+                            <h4 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                <i class='bx bx-chat'></i> Replies (${replies.length})
+                            </h4>
+
+                            ${replies.length > 0 ? replies.map((reply, index) => {
+                                const replyDate = new Date(reply.created_at);
+                                return `
+                                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">
+                                                    ${reply.author_name ? reply.author_name.charAt(0).toUpperCase() : 'U'}
+                                                </div>
+                                                <div>
+                                                    <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${reply.author_name}</div>
+                                                    <div style="font-size: 12px; color: #94a3b8;">${replyDate.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</div>
+                                                </div>
+                                            </div>
+                                            <span style="padding: 2px 8px; background: #f1f5f9; color: #64748b; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                                                #${index + 1}
+                                            </span>
+                                        </div>
+                                        <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${reply.content}</p>
+                                    </div>
+                                `;
+                            }).join('') : `
+                                <div style="text-align: center; padding: 40px; background: #f8fafc; border-radius: 8px;">
+                                    <i class='bx bx-message-x' style="font-size: 48px; color: #cbd5e0;"></i>
+                                    <p style="margin-top: 12px; color: #94a3b8; font-size: 14px;">No replies yet</p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading discussion:', error);
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class='bx bx-error-circle' style="font-size: 64px; color: #dc2626;"></i>
+                        <p style="margin-top: 16px; color: #dc2626; font-size: 16px; font-weight: 600;">Failed to load discussion</p>
+                        <p style="margin-top: 8px; color: #94a3b8; font-size: 14px;">${error.message}</p>
+                        <button onclick="closeDiscussionDetail()" style="margin-top: 16px; padding: 8px 16px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Close
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Close discussion detail modal
+        function closeDiscussionDetail() {
+            document.getElementById('discussionDetailModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('discussionDetailModal');
+            if (event.target === modal) {
+                closeDiscussionDetail();
+            }
+        }
+
+        // Refresh discussions
+        function refreshDiscussions() {
+            loadDiscussions();
+            modalService.addNotification({
+                title: 'Refreshed',
+                message: 'Discussions data refreshed',
+                type: 'info'
+            });
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', renderDiscussions);
+        document.getElementById('statusFilter').addEventListener('change', renderDiscussions);
+        document.getElementById('classFilter').addEventListener('change', renderDiscussions);
+
+        // Initialize
+        loadAllData();
+
+        // Logout function
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Admin';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classes Management - CodeSmart Admin</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+                <a href="users-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Users</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item active">
+                    <i class='bx bx-book-open'></i>
+                    <span>Classes</span>
+                </a>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder-open'></i>
+                    <span>Materials</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Submissions</span>
+                </a>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="reports-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">
+                    <i class='bx bx-book-open'></i> Classes Management
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Admin</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Administrator</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">admin@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-book-open'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalClasses">0</h3>
+                        <p>Total Classes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeClasses">0</h3>
+                        <p>Active Classes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-user-check'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalStudents">0</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-user-voice'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalAssessors">0</h3>
+                        <p>Assigned Assessors</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1;">
+                        <div style="position: relative; flex: 1; min-width: 200px;">
+                            <input type="text" id="searchInput" placeholder="Search classes..." style="width: 100%; padding: 8px 36px 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            <i class='bx bx-search' style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        </div>
+                        <select id="statusFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 120px;">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select id="levelFilter" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; min-width: 150px;">
+                            <option value="all">All Levels</option>
+                            <option value="fundamental">Fundamental</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advance">Advance</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="refreshClasses()" style="padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                        <button onclick="openCreateClassModal()" style="padding: 8px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                            <i class='bx bx-plus'></i> Create Class
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes Table -->
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-body" style="padding: 0;">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Class Name</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Code</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Assessor</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Level</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Students</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Schedule</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Status</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classesTableBody" style="background: white;">
+                                <tr>
+                                    <td colspan="8" style="padding: 60px; text-align: center;">
+                                        <div class="loader"></div>
+                                        <p style="margin-top: 16px; color: #94a3b8;">Loading classes...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Class Modal -->
+    <div id="classModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
+        <div style="min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: white; border-radius: 16px; max-width: 600px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+                <div style="padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1e293b;" id="modalTitle">Create New Class</h3>
+                    <button onclick="closeClassModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8;">
+                        <i class='bx bx-x'></i>
+                    </button>
+                </div>
+                <div style="padding: 24px;">
+                    <form id="classForm" onsubmit="saveClass(event)">
+                        <input type="hidden" id="classId" value="">
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Class Name *</label>
+                            <input type="text" id="className" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Class Code *</label>
+                            <input type="text" id="classCode" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;" placeholder="e.g., CS101">
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Description</label>
+                            <textarea id="classDescription" rows="3" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Level *</label>
+                                <select id="classLevel" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                    <option value="">Select Level</option>
+                                    <option value="fundamental">Fundamental</option>
+                                    <option value="intermediate">Intermediate</option>
+                                    <option value="advance">Advance</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Capacity</label>
+                                <input type="number" id="classCapacity" min="1" value="30" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Assign Assessor *</label>
+                            <select id="classAssessor" required style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                <option value="">Select Assessor</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Schedule</label>
+                            <input type="text" id="classSchedule" placeholder="e.g., Mon & Wed, 10:00-12:00" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">Start Date</label>
+                                <input type="date" id="classStartDate" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #475569;">End Date</label>
+                                <input type="date" id="classEndDate" style="width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="classActive" checked style="width: 18px; height: 18px; margin-right: 8px;">
+                                <span style="font-size: 14px; font-weight: 600; color: #475569;">Active Class</span>
+                            </label>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                            <button type="button" onclick="closeClassModal()" style="padding: 10px 20px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #64748b;">
+                                Cancel
+                            </button>
+                            <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                                <i class='bx bx-save'></i> Save Class
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAdmin()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allClasses = [];
+        let allAssessors = [];
+
+        // Load data on page load
+        async function loadAllData() {
+            await Promise.all([
+                loadClasses(),
+                loadAssessors()
+            ]);
+        }
+
+        // Load all classes
+        async function loadClasses() {
+            try {
+                // For now, use mock data since backend might not have the endpoint yet
+                // TODO: Replace with actual API call: const response = await apiService.fetchWithAuth('/admin/classes');
+
+                const mockClasses = [
+                    {
+                        id: 1,
+                        name: 'Python Programming Basics',
+                        code: 'PY101',
+                        description: 'Introduction to Python programming',
+                        level: 'fundamental',
+                        assessor_id: 6,
+                        assessor_name: 'azzahra',
+                        student_count: 1,
+                        capacity: 30,
+                        schedule: 'Mon & Wed, 10:00-12:00',
+                        start_date: '2025-01-15',
+                        end_date: '2025-05-15',
+                        status: 'active'
+                    },
+                    {
+                        id: 2,
+                        name: 'Advanced JavaScript',
+                        code: 'JS201',
+                        description: 'Advanced JavaScript concepts',
+                        level: 'advance',
+                        assessor_id: 6,
+                        assessor_name: 'azzahra',
+                        student_count: 1,
+                        capacity: 25,
+                        schedule: 'Tue & Thu, 14:00-16:00',
+                        start_date: '2025-01-20',
+                        end_date: '2025-05-20',
+                        status: 'active'
+                    },
+                    {
+                        id: 3,
+                        name: 'Web Development Intermediate',
+                        code: 'WD102',
+                        description: 'Intermediate web development',
+                        level: 'intermediate',
+                        assessor_id: 6,
+                        assessor_name: 'azzahra',
+                        student_count: 0,
+                        capacity: 30,
+                        schedule: 'Mon & Fri, 13:00-15:00',
+                        start_date: '2025-02-01',
+                        end_date: '2025-06-01',
+                        status: 'inactive'
+                    }
+                ];
+
+                allClasses = mockClasses;
+                updateStats();
+                renderClasses();
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Failed to load classes',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Load assessors
+        async function loadAssessors() {
+            try {
+                const response = await apiService.fetchWithAuth('/admin/users');
+                if (response.success && response.data && response.data.users) {
+                    allAssessors = response.data.users.filter(user => user.role === 'assessor');
+                    populateAssessorDropdown();
+                }
+            } catch (error) {
+                console.error('Error loading assessors:', error);
+                // Use real assessor data from database
+                allAssessors = [
+                    { id: 6, name: 'azzahra', email: 'guru@app.com' }
+                ];
+                populateAssessorDropdown();
+            }
+        }
+
+        // Populate assessor dropdown
+        function populateAssessorDropdown() {
+            const select = document.getElementById('classAssessor');
+            select.innerHTML = '<option value="">Select Assessor</option>';
+
+            allAssessors.forEach(assessor => {
+                const option = document.createElement('option');
+                option.value = assessor.id;
+                option.textContent = `${assessor.name} (${assessor.email})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            const activeClasses = allClasses.filter(c => c.status === 'active');
+            const totalStudents = allClasses.reduce((sum, c) => sum + (c.student_count || 0), 0);
+            const uniqueAssessors = new Set(allClasses.map(c => c.assessor_id)).size;
+
+            document.getElementById('totalClasses').textContent = allClasses.length;
+            document.getElementById('activeClasses').textContent = activeClasses.length;
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('totalAssessors').textContent = uniqueAssessors;
+        }
+
+        // Render classes table
+        function renderClasses() {
+            const tbody = document.getElementById('classesTableBody');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const levelFilter = document.getElementById('levelFilter').value;
+
+            let filteredClasses = allClasses.filter(cls => {
+                const matchSearch = cls.name.toLowerCase().includes(searchTerm) ||
+                                  cls.code.toLowerCase().includes(searchTerm);
+                const matchStatus = statusFilter === 'all' || cls.status === statusFilter;
+                const matchLevel = levelFilter === 'all' || cls.level === levelFilter;
+                return matchSearch && matchStatus && matchLevel;
+            });
+
+            if (filteredClasses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 60px; text-align: center;">
+                            <i class='bx bx-book-open' style="font-size: 64px; color: #cbd5e0;"></i>
+                            <p style="margin-top: 16px; color: #94a3b8; font-size: 16px;">No classes found</p>
+                            <button onclick="openCreateClassModal()" style="margin-top: 16px; padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                                <i class='bx bx-plus'></i> Create First Class
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredClasses.map(cls => {
+                const statusColor = cls.status === 'active' ? '#10b981' : '#94a3b8';
+                const statusBg = cls.status === 'active' ? '#d1fae5' : '#f1f5f9';
+
+                const levelColors = {
+                    fundamental: { bg: '#fef3c7', text: '#f59e0b' },
+                    intermediate: { bg: '#dbeafe', text: '#3b82f6' },
+                    advance: { bg: '#d1fae5', text: '#10b981' }
+                };
+                const levelColor = levelColors[cls.level] || { bg: '#f1f5f9', text: '#64748b' };
+
+                return `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 16px;">
+                            <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${cls.name}</div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${cls.description || 'No description'}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 8px; background: #f1f5f9; color: #475569; border-radius: 6px; font-size: 12px; font-weight: 600;">${cls.code}</span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">
+                                    ${(cls.assessor_name || 'NA').substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div style="font-size: 14px; color: #1e293b; font-weight: 500;">${cls.assessor_name || 'Not assigned'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; background: ${levelColor.bg}; color: ${levelColor.text}; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize;">
+                                ${cls.level}
+                            </span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 14px; color: #1e293b; font-weight: 600;">${cls.student_count || 0} / ${cls.capacity || 30}</div>
+                            <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; overflow: hidden;">
+                                <div style="width: ${((cls.student_count || 0) / (cls.capacity || 30)) * 100}%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                            </div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 13px; color: #64748b;">${cls.schedule || '-'}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; background: ${statusBg}; color: ${statusColor}; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize;">
+                                ${cls.status}
+                            </span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="editClass(${cls.id})" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 12px; color: #475569;" title="Edit">
+                                    <i class='bx bx-edit-alt'></i>
+                                </button>
+                                <button onclick="deleteClass(${cls.id})" style="padding: 6px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer; font-size: 12px; color: #dc2626;" title="Delete">
+                                    <i class='bx bx-trash'></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Open create class modal
+        function openCreateClassModal() {
+            document.getElementById('modalTitle').textContent = 'Create New Class';
+            document.getElementById('classForm').reset();
+            document.getElementById('classId').value = '';
+            document.getElementById('classActive').checked = true;
+            document.getElementById('classModal').style.display = 'block';
+        }
+
+        // Edit class
+        function editClass(classId) {
+            const cls = allClasses.find(c => c.id === classId);
+            if (!cls) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Class';
+            document.getElementById('classId').value = cls.id;
+            document.getElementById('className').value = cls.name;
+            document.getElementById('classCode').value = cls.code;
+            document.getElementById('classDescription').value = cls.description || '';
+            document.getElementById('classLevel').value = cls.level;
+            document.getElementById('classCapacity').value = cls.capacity || 30;
+            document.getElementById('classAssessor').value = cls.assessor_id || '';
+            document.getElementById('classSchedule').value = cls.schedule || '';
+            document.getElementById('classStartDate').value = cls.start_date || '';
+            document.getElementById('classEndDate').value = cls.end_date || '';
+            document.getElementById('classActive').checked = cls.status === 'active';
+            document.getElementById('classModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeClassModal() {
+            document.getElementById('classModal').style.display = 'none';
+        }
+
+        // Save class
+        async function saveClass(event) {
+            event.preventDefault();
+
+            const classId = document.getElementById('classId').value;
+            const classData = {
+                name: document.getElementById('className').value,
+                code: document.getElementById('classCode').value,
+                description: document.getElementById('classDescription').value,
+                level: document.getElementById('classLevel').value,
+                capacity: parseInt(document.getElementById('classCapacity').value),
+                assessor_id: parseInt(document.getElementById('classAssessor').value),
+                schedule: document.getElementById('classSchedule').value,
+                start_date: document.getElementById('classStartDate').value,
+                end_date: document.getElementById('classEndDate').value,
+                status: document.getElementById('classActive').checked ? 'active' : 'inactive'
+            };
+
+            try {
+                // TODO: Replace with actual API call
+                // const response = await apiService.fetchWithAuth(
+                //     classId ? `/admin/classes/${classId}` : '/admin/classes',
+                //     {
+                //         method: classId ? 'PUT' : 'POST',
+                //         body: JSON.stringify(classData)
+                //     }
+                // );
+
+                // Mock success
+                const assessor = allAssessors.find(a => a.id === classData.assessor_id);
+
+                if (classId) {
+                    // Update existing
+                    const index = allClasses.findIndex(c => c.id === parseInt(classId));
+                    if (index !== -1) {
+                        allClasses[index] = {
+                            ...allClasses[index],
+                            ...classData,
+                            assessor_name: assessor?.name || 'Unknown'
+                        };
+                    }
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Class updated successfully',
+                        type: 'success'
+                    });
+                } else {
+                    // Create new
+                    const newClass = {
+                        id: Date.now(),
+                        ...classData,
+                        assessor_name: assessor?.name || 'Unknown',
+                        student_count: 0
+                    };
+                    allClasses.unshift(newClass);
+                    modalService.addNotification({
+                        title: 'Success',
+                        message: 'Class created successfully',
+                        type: 'success'
+                    });
+                }
+
+                updateStats();
+                renderClasses();
+                closeClassModal();
+            } catch (error) {
+                console.error('Error saving class:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Failed to save class',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Delete class
+        async function deleteClass(classId) {
+            if (!confirm('Are you sure you want to delete this class?')) return;
+
+            try {
+                // TODO: Replace with actual API call
+                // await apiService.fetchWithAuth(`/admin/classes/${classId}`, { method: 'DELETE' });
+
+                allClasses = allClasses.filter(c => c.id !== classId);
+                updateStats();
+                renderClasses();
+
+                modalService.addNotification({
+                    title: 'Success',
+                    message: 'Class deleted successfully',
+                    type: 'success'
+                });
+            } catch (error) {
+                console.error('Error deleting class:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Failed to delete class',
+                    type: 'error'
+                });
+            }
+        }
+
+        // Refresh classes
+        function refreshClasses() {
+            loadClasses();
+            modalService.addNotification({
+                title: 'Refreshed',
+                message: 'Classes data refreshed',
+                type: 'info'
+            });
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', renderClasses);
+        document.getElementById('statusFilter').addEventListener('change', renderClasses);
+        document.getElementById('levelFilter').addEventListener('change', renderClasses);
+
+        // Close modal on outside click
+        document.getElementById('classModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeClassModal();
+            }
+        });
+
+        // Initialize
+        loadAllData();
+
+        // Logout function
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Admin Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Admin';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
