@@ -175,7 +175,7 @@
                     const dashboardLink = document.querySelector('a[href="/src/pages/user/dashboard.html"]');
                     if (dashboardLink && user.role) {
                         if (user.role === 'admin') {
-                            dashboardLink.href = '/src/pages/admin/dashboard.html';
+                            dashboardLink.href = '/src/pages/admin/dashboard-sidebar.html';
                             dashboardLink.querySelector('.font-semibold').textContent = 'Admin Dashboard';
                         } else if (user.role === 'assessor') {
                             dashboardLink.href = '/src/pages/assessor/dashboard.html';

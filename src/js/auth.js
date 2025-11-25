@@ -323,3 +323,6 @@ class AuthService {
 
 // Create global auth service instance
 const authService = new AuthService();
+
+// Export to window for use in other files
+window.authService = authService;

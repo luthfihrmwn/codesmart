@@ -899,9 +899,10 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../../js/auth.js"></script>
-    <script src="../../js/api-service.js"></script>
-    <script src="../../js/modal-service.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
+    <script src="/src/js/modal-service.js"></script>
 
     <script>
         // Global variable to store selected file
@@ -938,14 +939,21 @@
 
         // Logout function
         function logout() {
-            modalService.showConfirm(
-                'Logout Confirmation',
-                'Are you sure you want to logout?',
-                () => {
-                    authService.logout();
-                    window.location.href = '../../../login.html';
+            modalService.confirm({
+                title: 'Logout Confirmation',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: () => {
+                    // Clear session and tokens
+                    localStorage.removeItem('codesmart_session');
+                    localStorage.removeItem('codesmart_token');
+                    localStorage.removeItem('codesmart_refresh_token');
+                    // Redirect to index page
+                    window.location.href = '/index.html';
                 }
-            );
+            });
         }
 
         // Load user profile data
@@ -963,7 +971,6 @@
 
                     // Update nav user info
                     document.getElementById('userNameNav').textContent = user.name || 'Admin';
-                    document.getElementById('userAvatarNav').textContent = (user.name || 'A')[0].toUpperCase();
 
                     // Update photo if exists, otherwise show default initial
                     const photoDisplay = document.getElementById('profilePhotoDisplay');
@@ -977,6 +984,25 @@
                         // Show default initial if no photo
                         const initial = (user.name || 'A')[0].toUpperCase();
                         photoDisplay.innerHTML = `<span id="profileInitial">${initial}</span>`;
+                    }
+
+                    // Update navbar avatar using userProfileLoader
+                    if (window.userProfileLoader) {
+                        window.userProfileLoader.updateNavbarAvatar(user);
+                    } else {
+                        // Fallback: Update manually if loader not available yet
+                        const userAvatarNav = document.getElementById('userAvatarNav');
+                        if (userAvatarNav && user.photo_url) {
+                            const photoUrl = user.photo_url.startsWith('http')
+                                ? user.photo_url
+                                : `http://localhost:3000${user.photo_url}`;
+                            userAvatarNav.style.backgroundImage = `url('${photoUrl}')`;
+                            userAvatarNav.style.backgroundSize = 'cover';
+                            userAvatarNav.style.backgroundPosition = 'center';
+                            userAvatarNav.textContent = '';
+                        } else if (userAvatarNav) {
+                            userAvatarNav.textContent = (user.name || 'A')[0].toUpperCase();
+                        }
                     }
 
                     // Update stats
@@ -1094,6 +1120,11 @@
                     // Clear selected file
                     selectedPhotoFile = null;
                     document.getElementById('photoInput').value = '';
+
+                    // Update navbar avatar if userProfileLoader exists
+                    if (window.userProfileLoader) {
+                        window.userProfileLoader.updateNavbarAvatar(response.data.user || { photo_url: response.data.photo_url });
+                    }
                 } else {
                     modalService.alert({
                         title: 'Upload Failed',
