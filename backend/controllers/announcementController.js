@@ -12,7 +12,8 @@ exports.getAnnouncements = async (req, res) => {
         let query = `
             SELECT
                 a.*,
-                u.name as author_name
+                u.name as author_name,
+                u.photo_url as author_photo
             FROM announcements a
             LEFT JOIN users u ON a.author_id = u.id
             WHERE 1=1
@@ -72,7 +73,8 @@ exports.getAnnouncementById = async (req, res) => {
         const result = await pool.query(
             `SELECT
                 a.*,
-                u.name as author_name
+                u.name as author_name,
+                u.photo_url as author_photo
             FROM announcements a
             LEFT JOIN users u ON a.author_id = u.id
             WHERE a.id = $1`,

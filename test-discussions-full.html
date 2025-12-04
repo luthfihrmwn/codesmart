@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussions Full Test - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/src/css/admin-sidebar.css">
+    <link rel="stylesheet" href="/src/css/notification.css">
+    <link rel="stylesheet" href="/src/css/modal-system.css">
+    <style>
+        body {
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .test-header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .test-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2 4px rgba(0,0,0,0.1);
+        }
+        .log-item {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-item.info { background: #e3f2fd; color: #1976d2; }
+        .log-item.success { background: #e8f5e9; color: #388e3c; }
+        .log-item.error { background: #ffebee; color: #d32f2f; }
+        .log-item.warn { background: #fff3e0; color: #f57c00; }
+        
+        .discussion-card {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .discussion-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #5568d3;
+        }
+        .btn-success {
+            background: #4caf50;
+        }
+        .btn-danger {
+            background: #f44336;
+        }
+        #discussionsList {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Discussions Page - Full Function Test</h1>
+            <p>Testing all functions with real API calls</p>
+            <div>
+                <button class="btn" onclick="runFullTest()">▶️ Run Full Test</button>
+                <button class="btn btn-success" onclick="window.location.href='/src/pages/assessor/discussions-sidebar.html'">📄 Go to Real Page</button>
+                <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear</button>
+            </div>
+        </div>
+        
+        <div class="test-grid">
+            <div class="test-panel">
+                <h3>📝 Test Logs</h3>
+                <div id="testLogs" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+            
+            <div class="test-panel">
+                <h3>📊 Test Results</h3>
+                <div id="testResults"></div>
+            </div>
+        </div>
+        
+        <div class="test-panel" style="margin-top: 20px;">
+            <h3>💬 Discussions List (Live Data)</h3>
+            <div id="discussionsList">
+                <div class="loading">
+                    <i class='bx bx-loader-alt bx-spin' style="font-size: 48px;"></i>
+                    <p>Click "Run Full Test" to load discussions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    
+    <script>
+        const testLogs = document.getElementById('testLogs');
+        const testResults = document.getElementById('testResults');
+        const discussionsList = document.getElementById('discussionsList');
+        
+        let testsPassed = 0;
+        let testsFailed = 0;
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log-item ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            testLogs.appendChild(div);
+            testLogs.scrollTop = testLogs.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateResults() {
+            testResults.innerHTML = `
+                <div style="font-size: 24px; margin: 20px 0;">
+                    <div style="color: #4caf50; margin: 10px 0;">✅ Passed: ${testsPassed}</div>
+                    <div style="color: #f44336; margin: 10px 0;">❌ Failed: ${testsFailed}</div>
+                    <div style="color: #666; margin: 10px 0;">📊 Total: ${testsPassed + testsFailed}</div>
+                </div>
+            `;
+        }
+        
+        function clearAll() {
+            testLogs.innerHTML = '';
+            testResults.innerHTML = '';
+            discussionsList.innerHTML = '<div class="loading"><p>Cleared</p></div>';
+            testsPassed = 0;
+            testsFailed = 0;
+        }
+        
+        async function runFullTest() {
+            clearAll();
+            log('🚀 Starting Full Discussions Test Suite', 'info');
+            log('==========================================', 'info');
+            
+            // Test 1: Check auth
+            log('', 'info');
+            log('TEST 1: Authentication', 'info');
+            if (!authService || !authService.isLoggedIn()) {
+                log('❌ FAILED: Not logged in', 'error');
+                log('Please login at /src/pages/auth/login.html', 'warn');
+                testsFailed++;
+                updateResults();
+                return;
+            }
+            log('✅ PASSED: User authenticated', 'success');
+            testsPassed++;
+            
+            const user = authService.getCurrentUser();
+            log(`User: ${user.name} (${user.role})`, 'info');
+            
+            // Test 2: Token
+            log('', 'info');
+            log('TEST 2: Authentication Token', 'info');
+            const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
+            if (!token) {
+                log('❌ FAILED: No token found', 'error');
+                testsFailed++;
+                updateResults();
+                return;
+            }
+            log(`✅ PASSED: Token exists (${token.substring(0, 20)}...)`, 'success');
+            testsPassed++;
+            
+            // Test 3: Load discussions
+            log('', 'info');
+            log('TEST 3: Load Discussions from API', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/discussions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.success || !Array.isArray(data.data)) {
+                    throw new Error('Invalid response format');
+                }
+                
+                log(`✅ PASSED: Loaded ${data.data.length} discussions`, 'success');
+                testsPassed++;
+                
+                // Test 4: Render discussions
+                log('', 'info');
+                log('TEST 4: Render Discussions to DOM', 'info');
+                
+                if (data.data.length === 0) {
+                    log('⚠️ WARNING: No discussions in database', 'warn');
+                    discussionsList.innerHTML = '<p style="text-align:center;padding:40px;color:#999;">No discussions available</p>';
+                } else {
+                    discussionsList.innerHTML = data.data.map(d => `
+                        <div class="discussion-card" onclick="testShowDetail(${d.id})">
+                            <div style="display:flex;justify-content:space-between;align-items:start;">
+                                <div style="flex:1;">
+                                    <h4 style="margin:0 0 8px 0;color:#333;">${d.title || 'Untitled'}</h4>
+                                    <p style="color:#666;margin:8px 0;font-size:14px;">${(d.content || '').substring(0, 150)}...</p>
+                                    <div style="font-size:13px;color:#999;">
+                                        <span><i class='bx bx-user'></i> ${d.author_name}</span> •
+                                        <span><i class='bx bx-comment'></i> ${d.replies_count} replies</span> •
+                                        <span><i class='bx bx-show'></i> ${d.views_count} views</span>
+                                    </div>
+                                </div>
+                                ${d.is_pinned ? '<span style="color:#f59e0b;">📌 Pinned</span>' : ''}
+                                ${d.is_solved ? '<span style="color:#10b981;">✅ Solved</span>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    log(`✅ PASSED: Rendered ${data.data.length} discussions`, 'success');
+                    testsPassed++;
+                }
+                
+                // Test 5: Load modules
+                log('', 'info');
+                log('TEST 5: Load Modules for Filter', 'info');
+                const modulesResponse = await fetch('http://localhost:5000/api/v1/modules', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const modulesData = await modulesResponse.json();
+                if (modulesData.success) {
+                    log(`✅ PASSED: Loaded ${modulesData.data.modules?.length || 0} modules`, 'success');
+                    testsPassed++;
+                } else {
+                    log('❌ FAILED: Modules API failed', 'error');
+                    testsFailed++;
+                }
+                
+                // Test 6: Load single discussion
+                if (data.data.length > 0) {
+                    log('', 'info');
+                    log('TEST 6: Load Discussion Detail', 'info');
+                    const firstId = data.data[0].id;
+                    const detailResponse = await fetch(`http://localhost:5000/api/v1/discussions/${firstId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    const detailData = await detailResponse.json();
+                    if (detailData.success) {
+                        const repliesCount = detailData.data.replies?.length || 0;
+                        log(`✅ PASSED: Loaded discussion with ${repliesCount} replies`, 'success');
+                        testsPassed++;
+                    } else {
+                        log('❌ FAILED: Discussion detail API failed', 'error');
+                        testsFailed++;
+                    }
+                }
+                
+            } catch (error) {
+                log(`❌ FAILED: ${error.message}`, 'error');
+                testsFailed++;
+            }
+            
+            log('', 'info');
+            log('==========================================', 'info');
+            log(`✅ Tests Complete: ${testsPassed} passed, ${testsFailed} failed`, testsFailed === 0 ? 'success' : 'warn');
+            updateResults();
+            
+            if (testsFailed === 0) {
+                log('', 'info');
+                log('🎉 All tests passed! The discussions page should work.', 'success');
+                log('If it still doesn\'t work, check browser console for errors.', 'info');
+            }
+        }
+        
+        async function testShowDetail(id) {
+            log(`📄 Loading discussion ${id}...`, 'info');
+            const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    log(`✅ Loaded discussion: "${data.data.discussion.title}"`, 'success');
+                    log(`   Replies: ${data.data.replies.length}`, 'info');
+                } else {
+                    log(`❌ Failed to load discussion`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run if logged in
+        window.addEventListener('load', () => {
+            if (authService && authService.isLoggedIn()) {
+                log('✅ User logged in, ready to test', 'success');
+            } else {
+                log('⚠️ Please login first', 'warn');
+                discussionsList.innerHTML = '<p style="text-align:center;padding:40px;color:#f44336;">Please <a href="/src/pages/auth/login.html">login</a> first</p>';
+            }
+        });
+    </script>
+</body>
+</html>

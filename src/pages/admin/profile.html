@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/admin-override.css">
     <style>
         * {
             margin: 0;
@@ -978,7 +980,7 @@
                         // Construct full URL for photo from backend
                         const photoUrl = user.photo_url.startsWith('http')
                             ? user.photo_url
-                            : `http://localhost:3000${user.photo_url}`;
+                            : `http://localhost:5000${user.photo_url}`;
                         photoDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo">`;
                     } else {
                         // Show default initial if no photo
@@ -995,7 +997,7 @@
                         if (userAvatarNav && user.photo_url) {
                             const photoUrl = user.photo_url.startsWith('http')
                                 ? user.photo_url
-                                : `http://localhost:3000${user.photo_url}`;
+                                : `http://localhost:5000${user.photo_url}`;
                             userAvatarNav.style.backgroundImage = `url('${photoUrl}')`;
                             userAvatarNav.style.backgroundSize = 'cover';
                             userAvatarNav.style.backgroundPosition = 'center';
@@ -1108,7 +1110,7 @@
                     const photoDisplay = document.getElementById('profilePhotoDisplay');
                     const photoUrl = response.data.photo_url.startsWith('http')
                         ? response.data.photo_url
-                        : `http://localhost:3000${response.data.photo_url}`;
+                        : `http://localhost:5000${response.data.photo_url}`;
                     photoDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo">`;
 
                     // Hide save button

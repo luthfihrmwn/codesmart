@@ -5,6 +5,7 @@ const {
     getDiscussionById,
     createDiscussion,
     createReply,
+    getDiscussionReplies,
     togglePin,
     toggleLock,
     markAsSolution,
@@ -37,6 +38,13 @@ router.get('/:id', getDiscussionById);
  * @body    { module_id, assignment_id, title, content }
  */
 router.post('/', createDiscussion);
+
+/**
+ * @route   GET /api/v1/discussions/:id/replies
+ * @desc    Get all replies for a discussion
+ * @access  Private
+ */
+router.get('/:id/replies', getDiscussionReplies);
 
 /**
  * @route   POST /api/v1/discussions/:discussion_id/replies

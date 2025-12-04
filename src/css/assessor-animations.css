@@ -1,0 +1,148 @@
+/* ================================================
+   ASSESSOR ANIMATIONS & VISUAL ENHANCEMENTS
+   Beautiful animations and transitions
+   ================================================ */
+
+/* ===== SIDEBAR ENHANCEMENTS ===== */
+/* Sidebar background is now defined in admin-sidebar.css */
+/* Using same purple gradient as admin */
+
+.sidebar-logo {
+    background: transparent;
+    padding: 16px 20px;
+    border-radius: 0;
+}
+
+.sidebar-logo i {
+    font-size: 28px;
+}
+
+/* Nav Items - no animations */
+.nav-item {
+    position: relative;
+    overflow: hidden;
+    margin: 4px 0;
+    border-radius: 10px;
+}
+
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    transform: scaleY(0);
+}
+
+.nav-item.active::before {
+    transform: scaleY(1);
+}
+
+/* ===== HEADER ENHANCEMENTS ===== */
+.admin-header {
+    background: white;
+    border-bottom: 1px solid #f1f5f9;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Notification Bell - No animations */
+.notification-bell {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* User Menu - No animations */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* ===== NO CARD ANIMATIONS ===== */
+/* Cards appear instantly without animation */
+
+/* ===== NO STAT CARD ANIMATIONS ===== */
+/* Stat cards appear instantly without animation */
+
+/* ===== NO TABLE ANIMATIONS ===== */
+/* Table rows appear instantly without animation */
+
+/* ===== NO BUTTON ANIMATIONS ===== */
+/* Buttons work without ripple effect */
+
+/* ===== NO MODAL ANIMATIONS ===== */
+/* Modals appear instantly */
+
+/* ===== NO BADGE ANIMATIONS ===== */
+/* Badges appear instantly */
+
+/* ===== LOADING SPINNER ===== */
+.loader {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===== NO PROGRESS BAR ANIMATION ===== */
+/* Progress bars appear at final width instantly */
+
+/* ===== NO SEARCH BOX ANIMATION ===== */
+/* Search box works without underline animation */
+
+/* ===== NO FLOATING ANIMATION ===== */
+/* Module cards stay static */
+
+/* ===== NO SHIMMER EFFECT ===== */
+/* Loading states without shimmer */
+
+/* ===== NO SCROLL ANIMATIONS ===== */
+/* Content appears instantly */
+
+/* ===== NO HOVER GLOW EFFECT ===== */
+/* Icons without glow effect */
+
+/* ===== NO PAGE TRANSITION ===== */
+/* Page loads instantly */

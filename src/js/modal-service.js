@@ -187,12 +187,40 @@ class ModalService {
         } = options;
 
         let className = '';
-        if (danger) className = 'danger-modal';
-        else if (success) className = 'success-modal';
+        let bgGradient = 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%)';
+        let borderColor = '#3b82f6';
+
+        if (danger) {
+            className = 'danger-modal';
+            bgGradient = 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%)';
+            borderColor = '#ef4444';
+        } else if (success) {
+            className = 'success-modal';
+            bgGradient = 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)';
+            borderColor = '#10b981';
+        }
 
         const modalId = this.show({
             title: title,
-            content: `<p style="font-size: 16px; color: #334155; line-height: 1.8;">${message}</p>`,
+            content: `
+                <div style="
+                    padding: 24px 32px;
+                    background: ${bgGradient};
+                    border-radius: 12px;
+                    border-left: 4px solid ${borderColor};
+                    margin: -8px 0;
+                    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+                ">
+                    <p style="
+                        font-size: 17px;
+                        color: #111827;
+                        line-height: 1.7;
+                        margin: 0;
+                        font-weight: 500;
+                        text-align: left;
+                    ">${message}</p>
+                </div>
+            `,
             size: 'sm',
             className: className,
             buttons: [
@@ -243,9 +271,57 @@ class ModalService {
             info: '#3b82f6'
         };
 
+        const bgColors = {
+            success: '#f0fdf4',
+            error: '#fef2f2',
+            warning: '#fffbeb',
+            info: '#eff6ff'
+        };
+
+        const gradients = {
+            success: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)',
+            error: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%)',
+            warning: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%)',
+            info: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%)'
+        };
+
         const modalId = this.show({
-            title: `<i class='bx ${icons[type]}' style="color: ${colors[type]}"></i>${title}`,
-            content: `<p style="font-size: 16px; color: #4b5563; line-height: 1.6;">${message}</p>`,
+            title: `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="
+                        width: 48px;
+                        height: 48px;
+                        background: ${colors[type]};
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    ">
+                        <i class='bx ${icons[type]}' style="color: white; font-size: 28px;"></i>
+                    </div>
+                    <span style="font-size: 20px; font-weight: 700; color: #1f2937;">${title}</span>
+                </div>
+            `,
+            content: `
+                <div style="
+                    padding: 24px 32px;
+                    background: ${gradients[type]};
+                    border-radius: 12px;
+                    border-left: 4px solid ${colors[type]};
+                    margin: -8px 0;
+                    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+                ">
+                    <p style="
+                        font-size: 17px;
+                        color: #111827;
+                        line-height: 1.7;
+                        margin: 0;
+                        font-weight: 500;
+                        text-align: left;
+                    ">${message}</p>
+                </div>
+            `,
             size: 'sm',
             buttons: [
                 {

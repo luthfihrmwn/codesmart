@@ -154,10 +154,10 @@ exports.getGradeDistribution = async (req, res) => {
         let query = `
             SELECT
                 CASE
-                    WHEN s.grade >= 90 THEN 'A (90-100)'
-                    WHEN s.grade >= 80 THEN 'B (80-89)'
-                    WHEN s.grade >= 70 THEN 'C (70-79)'
-                    WHEN s.grade >= 60 THEN 'D (60-69)'
+                    WHEN s.score >= 90 THEN 'A (90-100)'
+                    WHEN s.score >= 80 THEN 'B (80-89)'
+                    WHEN s.score >= 70 THEN 'C (70-79)'
+                    WHEN s.score >= 60 THEN 'D (60-69)'
                     ELSE 'F (0-59)'
                 END as grade_range,
                 COUNT(*) as count,
@@ -180,15 +180,16 @@ exports.getGradeDistribution = async (req, res) => {
         }
 
         query += `
-            GROUP BY grade_range
-            ORDER BY
-                CASE grade_range
-                    WHEN 'A (90-100)' THEN 1
-                    WHEN 'B (80-89)' THEN 2
-                    WHEN 'C (70-79)' THEN 3
-                    WHEN 'D (60-69)' THEN 4
-                    ELSE 5
+            GROUP BY
+                CASE
+                    WHEN s.score >= 90 THEN 'A (90-100)'
+                    WHEN s.score >= 80 THEN 'B (80-89)'
+                    WHEN s.score >= 70 THEN 'C (70-79)'
+                    WHEN s.score >= 60 THEN 'D (60-69)'
+                    ELSE 'F (0-59)'
                 END
+            ORDER BY
+                MIN(s.score) DESC
         `;
 
         const result = await pool.query(query, params);
@@ -197,10 +198,10 @@ exports.getGradeDistribution = async (req, res) => {
         const statsQuery = `
             SELECT
                 COUNT(*) as total_graded,
-                ROUND(AVG(s.grade), 2) as average_grade,
-                MIN(s.grade) as min_grade,
-                MAX(s.grade) as max_grade,
-                ROUND(STDDEV(s.grade), 2) as std_deviation
+                ROUND(AVG(s.score), 2) as average_score,
+                MIN(s.score) as min_score,
+                MAX(s.score) as max_score,
+                ROUND(STDDEV(s.score), 2) as std_deviation
             FROM submissions s
             JOIN assignments a ON s.assignment_id = a.id
             WHERE s.status = 'graded'
@@ -293,7 +294,7 @@ exports.getEngagementMetrics = async (req, res) => {
                 AND d.created_at >= NOW() - INTERVAL '${days} days'
             LEFT JOIN discussion_replies dr ON u.id = dr.user_id
                 AND dr.created_at >= NOW() - INTERVAL '${days} days'
-            WHERE u.role = 'student'
+            WHERE u.role IN ('student', 'user')
             GROUP BY u.id, u.name, u.email
             HAVING (COUNT(DISTINCT s.id) + COUNT(DISTINCT d.id) + COUNT(DISTINCT dr.id)) > 0
             ORDER BY total_activities DESC
@@ -328,41 +329,56 @@ exports.getAtRiskStudents = async (req, res) => {
     try {
         const query = `
             SELECT
-                u.id,
-                u.name,
-                u.email,
-                u.current_level,
-                COUNT(DISTINCT s.id) as total_submissions,
-                COUNT(DISTINCT CASE WHEN s.status = 'submitted' THEN s.id END) as pending_submissions,
-                ROUND(AVG(CASE WHEN s.status = 'graded' THEN s.score END), 2) as average_score,
-                COUNT(DISTINCT CASE
-                    WHEN s.status = 'submitted'
-                    AND s.submitted_at < NOW() - INTERVAL '7 days'
-                    THEN s.id
-                END) as overdue_pending,
-                MAX(s.submitted_at) as last_submission_date,
-                CASE
-                    WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' THEN 'high'
-                    WHEN MAX(s.submitted_at) < NOW() - INTERVAL '7 days' THEN 'medium'
-                    WHEN AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 'medium'
-                    WHEN COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 3 THEN 'high'
-                    ELSE 'low'
-                END as risk_level
-            FROM users u
-            LEFT JOIN submissions s ON u.id = s.user_id
-            WHERE u.role = 'student'
-            GROUP BY u.id, u.name, u.email, u.current_level
-            HAVING
-                MAX(s.submitted_at) < NOW() - INTERVAL '7 days'
-                OR AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60
-                OR COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 2
-            ORDER BY
-                CASE risk_level
-                    WHEN 'high' THEN 1
-                    WHEN 'medium' THEN 2
-                    ELSE 3
-                END,
-                last_submission_date ASC NULLS FIRST
+                id,
+                name,
+                email,
+                current_level,
+                total_submissions,
+                pending_submissions,
+                average_score,
+                overdue_pending,
+                last_submission_date,
+                risk_level
+            FROM (
+                SELECT
+                    u.id,
+                    u.name,
+                    u.email,
+                    u.current_level,
+                    COUNT(DISTINCT s.id) as total_submissions,
+                    COUNT(DISTINCT CASE WHEN s.status = 'submitted' THEN s.id END) as pending_submissions,
+                    ROUND(AVG(CASE WHEN s.status = 'graded' THEN s.score END), 2) as average_score,
+                    COUNT(DISTINCT CASE
+                        WHEN s.status = 'submitted'
+                        AND s.submitted_at < NOW() - INTERVAL '7 days'
+                        THEN s.id
+                    END) as overdue_pending,
+                    MAX(s.submitted_at) as last_submission_date,
+                    CASE
+                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' OR MAX(s.submitted_at) IS NULL THEN 'high'
+                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '7 days' THEN 'medium'
+                        WHEN AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 'medium'
+                        WHEN COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 3 THEN 'high'
+                        ELSE 'low'
+                    END as risk_level,
+                    CASE
+                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' OR MAX(s.submitted_at) IS NULL THEN 1
+                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '7 days' THEN 2
+                        WHEN AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 2
+                        WHEN COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 3 THEN 1
+                        ELSE 3
+                    END as risk_priority
+                FROM users u
+                LEFT JOIN submissions s ON u.id = s.user_id
+                WHERE u.role IN ('student', 'user')
+                GROUP BY u.id, u.name, u.email, u.current_level
+                HAVING
+                    MAX(s.submitted_at) < NOW() - INTERVAL '7 days'
+                    OR MAX(s.submitted_at) IS NULL
+                    OR AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60
+                    OR COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 2
+            ) as at_risk
+            ORDER BY risk_priority ASC, last_submission_date ASC NULLS FIRST
         `;
 
         const result = await pool.query(query);
@@ -399,7 +415,7 @@ async function getAssessorAnalytics(userId, userRole) {
             COUNT(DISTINCT a.id) as total_assignments,
             COUNT(DISTINCT d.id) as total_discussions
         FROM submissions s
-        LEFT JOIN users u ON s.user_id = u.id AND u.role = 'student'
+        LEFT JOIN users u ON s.user_id = u.id AND u.role IN ('student', 'user')
         LEFT JOIN assignments a ON s.assignment_id = a.id
         LEFT JOIN discussions d ON d.created_at >= NOW() - INTERVAL '30 days'
         ${userRole === 'assessor' ? 'WHERE s.graded_by = $1 OR s.graded_by IS NULL' : ''}
@@ -409,6 +425,29 @@ async function getAssessorAnalytics(userId, userRole) {
         overviewQuery,
         userRole === 'assessor' ? [userId] : []
     );
+
+    // Count at-risk students
+    const atRiskQuery = `
+        SELECT COUNT(*) as at_risk_count
+        FROM (
+            SELECT u.id
+            FROM users u
+            LEFT JOIN submissions s ON u.id = s.user_id
+            WHERE u.role IN ('student', 'user')
+            GROUP BY u.id
+            HAVING
+                MAX(s.submitted_at) < NOW() - INTERVAL '7 days'
+                OR MAX(s.submitted_at) IS NULL
+                OR AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60
+                OR COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 2
+        ) as at_risk
+    `;
+
+    const atRiskResult = await pool.query(atRiskQuery);
+
+    // Merge at_risk_count into overview
+    const overview = overviewResult.rows[0];
+    overview.at_risk_count = atRiskResult.rows[0].at_risk_count;
 
     // Recent activity
     const recentActivityQuery = `
@@ -429,7 +468,7 @@ async function getAssessorAnalytics(userId, userRole) {
     const recentActivityResult = await pool.query(recentActivityQuery);
 
     return {
-        overview: overviewResult.rows[0],
+        overview: overview,
         recent_activity: recentActivityResult.rows
     };
 }

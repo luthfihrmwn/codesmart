@@ -861,14 +861,18 @@ exports.getAllSubmissions = async (req, res, next) => {
             `SELECT s.id, s.assignment_id, s.user_id, s.file_url, s.submitted_at,
                     s.score, s.feedback, s.graded_at, s.status,
                     s.admin_override, s.admin_override_reason,
-                    u.name as student_name, u.email as student_email,
-                    a.title as assignment_title, a.due_date,
-                    m.name as module_name,
+                    u.id as student_id, u.name as student_name, u.email as student_email, u.photo_url as student_photo,
+                    a.id as assignment_id, a.title as assignment_name, a.class_number, a.due_date,
+                    m.id as module_id, m.name as module_name, m.level,
+                    c.id as class_id, c.name as class_name, c.code as class_code,
+                    grader.id as assessor_id, grader.name as assessor_name, grader.email as assessor_email, grader.photo_url as assessor_photo,
                     CASE WHEN s.submitted_at > a.due_date THEN true ELSE false END as is_late
              FROM submissions s
              JOIN users u ON s.user_id = u.id
              JOIN assignments a ON s.assignment_id = a.id
              LEFT JOIN modules m ON a.module_id = m.id
+             LEFT JOIN classes c ON a.class_number = c.id
+             LEFT JOIN users grader ON s.graded_by = grader.id
              ${whereClause}
              ORDER BY s.submitted_at DESC
              LIMIT $${paramCount} OFFSET $${paramCount + 1}`,

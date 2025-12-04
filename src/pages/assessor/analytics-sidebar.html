@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Dashboard - CodeSmart Assessor</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
-    <link rel="stylesheet" href="../../css/notification.css">
+                <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
-    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         /* Container */
@@ -95,15 +94,15 @@
         }
 
         .stat-card:nth-child(2) .stat-icon {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
         }
 
         .stat-card:nth-child(3) .stat-icon {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
         }
 
         .stat-card:nth-child(4) .stat-icon {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
         }
 
         /* Stat Icon */
@@ -131,15 +130,23 @@
         }
 
         .stat-icon.success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
         }
 
         .stat-icon.warning {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .stat-icon.info {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
         }
 
         .stat-icon.danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #9775fa 0%, #7048e8 100%);
         }
 
         /* Stat Info */
@@ -296,13 +303,13 @@
         }
 
         .risk-table th {
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 1.8rem 2rem;
             text-align: left;
             font-size: 1.35rem;
             font-weight: 700;
-            color: #374151;
-            border-bottom: 3px solid #e5e7eb;
+            color: white;
+            border-bottom: 3px solid rgba(102, 126, 234, 0.3);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -616,7 +623,7 @@
         /* Export Button */
         .btn-export {
             padding: 0 2.5rem;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -627,7 +634,7 @@
             align-items: center;
             gap: 0.6rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
             height: 48px;
             white-space: nowrap;
         }
@@ -638,7 +645,7 @@
 
         .btn-export:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
         }
 
         .btn-export:active {
@@ -788,14 +795,6 @@
                     <span>Analytics</span>
                 </a>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -804,8 +803,7 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">
-                    <i class='bx bx-bar-chart-alt-2'></i> Analytics Dashboard
+                <h1 class="page-title-header">Analytics Dashboard
                 </h1>
             </div>
             <div class="header-right">
@@ -813,11 +811,30 @@
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu" onclick="toggleUserMenu()">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Assessor</div>
                         <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -825,10 +842,8 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <!-- Analytics Container -->
-            <div class="analytics-container">
-                <!-- Filter Bar -->
-                <div class="filter-bar">
+            <!-- Filter Bar (Moved to Top) -->
+            <div class="filter-bar" style="margin-bottom: 24px;">
                     <div class="filter-row">
                         <!-- Date Range Section -->
                         <div class="filter-section date-range-section">
@@ -879,6 +894,48 @@
                     </div>
                 </div>
 
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-group'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalStudentsAnalytics">0</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-line-chart'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="avgPerformance">0%</h3>
+                        <p>Avg Performance</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-task'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="completionRate">0%</h3>
+                        <p>Completion Rate</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-book-open'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="activeClasses">0</h3>
+                        <p>Active Classes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Container -->
+            <div class="analytics-container">
                 <!-- Stats Overview -->
                 <div class="stats-overview" id="statsOverview">
                     <div class="loading">
@@ -899,25 +956,14 @@
                         </div>
                     </div>
 
-                    <!-- Module Completion Chart -->
+                    <!-- Performance Statistics Chart -->
                     <div class="chart-card">
                         <h3>
-                            <i class='bx bx-pie-chart-alt-2'></i>
-                            Module Completion
+                            <i class='bx bx-trending-up'></i>
+                            Performance Statistics
                         </h3>
                         <div class="chart-container">
-                            <canvas id="completionChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Engagement Trend Chart -->
-                    <div class="chart-card full-width-card">
-                        <h3>
-                            <i class='bx bx-line-chart'></i>
-                            Student Engagement Trend
-                        </h3>
-                        <div class="chart-container">
-                            <canvas id="engagementChart"></canvas>
+                            <canvas id="performanceChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1020,6 +1066,7 @@
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script src="/src/js/svm-modal.js"></script>
     <script>
         // Auth check
@@ -1050,6 +1097,63 @@
             }
         }
 
+        // Load top stats cards
+        async function loadTopStats() {
+            try {
+                const token = localStorage.getItem('codesmart_token');
+
+                // Load dashboard data for stats
+                const dashboardResponse = await fetch('http://localhost:5000/api/v1/analytics/dashboard', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const dashboardData = await dashboardResponse.json();
+
+                // Load grade distribution for avg performance
+                const gradeResponse = await fetch('http://localhost:5000/api/v1/analytics/grade-distribution', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const gradeData = await gradeResponse.json();
+
+                // Load assignments to count total
+                const assignmentsResponse = await fetch('http://localhost:5000/api/v1/assignments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const assignmentsData = await assignmentsResponse.json();
+
+                if (dashboardData.success && gradeData.success) {
+                    const overview = dashboardData.data.overview;
+                    const statistics = gradeData.data.statistics;
+
+                    // Update Total Students
+                    const totalStudents = overview.total_students || 0;
+                    document.getElementById('totalStudentsAnalytics').textContent = totalStudents;
+
+                    // Update Avg Performance (from grade statistics)
+                    const avgScore = parseFloat(statistics.average_score) || 0;
+                    document.getElementById('avgPerformance').textContent = avgScore.toFixed(1) + '%';
+
+                    // Calculate Completion Rate (graded / total assignments)
+                    const totalGraded = parseInt(statistics.total_graded) || 0;
+                    const totalAssignments = assignmentsData.success ? (assignmentsData.data.length || 0) : parseInt(overview.total_assignments) || 0;
+                    const completionRate = totalAssignments > 0 ? ((totalGraded / totalAssignments) * 100) : 0;
+                    document.getElementById('completionRate').textContent = completionRate.toFixed(0) + '%';
+
+                    // Update Active Classes (from modules)
+                    const activeClasses = modules.length || 0;
+                    document.getElementById('activeClasses').textContent = activeClasses;
+
+                    console.log('✅ Top stats updated:', {
+                        totalStudents,
+                        avgPerformance: avgScore,
+                        completionRate: completionRate.toFixed(0),
+                        activeClasses
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Error loading top stats:', error);
+            }
+        }
+
         // Load dashboard data
         async function loadDashboardData() {
             try {
@@ -1060,38 +1164,99 @@
                 if (startDate) params.append('start_date', startDate);
                 if (endDate) params.append('end_date', endDate);
 
+                const token = localStorage.getItem('codesmart_token');
+                console.log('📊 Loading dashboard data...');
+                console.log('Token available:', !!token);
+                console.log('Token value:', token ? token.substring(0, 20) + '...' : 'null');
+
                 const response = await fetch(`http://localhost:5000/api/v1/analytics/dashboard?${params}`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
+                console.log('Response status:', response.status);
+
+                // Handle 401 Unauthorized - Auto-reload after 2 seconds
+                if (response.status === 401) {
+                    console.error('❌ Unauthorized - Token invalid or expired');
+                    console.log('🔄 Auto-reloading page in 2 seconds...');
+
+                    document.getElementById('statsOverview').innerHTML = `
+                        <div class="empty-state" style="animation: fadeIn 0.3s ease-in;">
+                            <div style="position: relative; width: 120px; height: 120px; margin: 0 auto 2rem;">
+                                <i class="bx bx-lock-alt" style="
+                                    font-size: 80px;
+                                    color: #667eea;
+                                    animation: pulse 1.5s ease-in-out infinite;
+                                "></i>
+                            </div>
+                            <p style="font-size: 2rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">
+                                Session Expired
+                            </p>
+                            <p style="font-size: 1.4rem; font-weight: 500; color: #9ca3af; margin-bottom: 2rem;">
+                                Refreshing page automatically...
+                            </p>
+                            <div style="width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; margin: 0 auto;">
+                                <div style="
+                                    width: 0%;
+                                    height: 100%;
+                                    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                                    animation: progressBar 2s linear forwards;
+                                "></div>
+                            </div>
+                        </div>
+                        <style>
+                            @keyframes pulse {
+                                0%, 100% { transform: scale(1); opacity: 1; }
+                                50% { transform: scale(1.1); opacity: 0.8; }
+                            }
+                            @keyframes progressBar {
+                                from { width: 0%; }
+                                to { width: 100%; }
+                            }
+                            @keyframes fadeIn {
+                                from { opacity: 0; transform: translateY(20px); }
+                                to { opacity: 1; transform: translateY(0); }
+                            }
+                        </style>
+                    `;
+
+                    // Auto-reload after 2 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                    return;
+                }
+
                 const data = await response.json();
+                console.log('Dashboard data:', data);
+
                 if (data.success) {
                     dashboardData = data.data;
                     renderStats();
                     await loadGradeDistribution();
-                    await loadModuleCompletion();
-                    await loadEngagementMetrics();
+                    await renderPerformanceChart();
                     await loadAtRiskStudents();
                 } else {
+                    console.error('API returned error:', data.message);
                     // Show empty state if API returns error
                     document.getElementById('statsOverview').innerHTML = `
                         <div class="empty-state">
                             <i class="bx bx-line-chart"></i>
                             <p>No Analytics Data Available</p>
-                            <p style="font-size: 1.4rem; font-weight: 500; color: #9ca3af;">Start collecting data to see insights here</p>
+                            <p style="font-size: 1.4rem; font-weight: 500; color: #9ca3af;">${data.message || 'Start collecting data to see insights here'}</p>
                         </div>
                     `;
                 }
             } catch (error) {
-                console.error('Error loading dashboard data:', error);
+                console.error('❌ Error loading dashboard data:', error);
                 // Show empty state instead of staying in loading
                 document.getElementById('statsOverview').innerHTML = `
                     <div class="empty-state">
                         <i class="bx bx-line-chart"></i>
-                        <p>No Analytics Data Available</p>
-                        <p style="font-size: 1.4rem; font-weight: 500; color: #9ca3af;">Start collecting data to see insights here</p>
+                        <p>Error Loading Analytics</p>
+                        <p style="font-size: 1.4rem; font-weight: 500; color: #9ca3af;">Please try refreshing the page</p>
                     </div>
                 `;
             }
@@ -1100,13 +1265,15 @@
         // Render stats
         function renderStats() {
             const container = document.getElementById('statsOverview');
+            const overview = dashboardData.overview || dashboardData;
+
             container.innerHTML = `
                 <div class="stat-card">
                     <div class="stat-icon primary">
                         <i class='bx bx-user'></i>
                     </div>
                     <div class="stat-info">
-                        <h3>${dashboardData.total_students || 0}</h3>
+                        <h3>${overview.total_students || 0}</h3>
                         <p>Total Students</p>
                     </div>
                 </div>
@@ -1116,7 +1283,7 @@
                         <i class='bx bx-check-circle'></i>
                     </div>
                     <div class="stat-info">
-                        <h3>${dashboardData.pending_submissions || 0}</h3>
+                        <h3>${overview.pending_submissions || 0}</h3>
                         <p>Pending Submissions</p>
                     </div>
                 </div>
@@ -1126,17 +1293,17 @@
                         <i class='bx bx-star'></i>
                     </div>
                     <div class="stat-info">
-                        <h3>${dashboardData.average_score ? dashboardData.average_score.toFixed(1) : '0'}%</h3>
+                        <h3>${overview.average_score ? parseFloat(overview.average_score).toFixed(1) : '0'}%</h3>
                         <p>Average Score</p>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-icon danger">
-                        <i class='bx bx-error'></i>
+                    <div class="stat-icon info">
+                        <i class='bx bx-book-open'></i>
                     </div>
                     <div class="stat-info">
-                        <h3>${dashboardData.at_risk_count || 0}</h3>
+                        <h3>${overview.at_risk_count || 0}</h3>
                         <p>At-Risk Students</p>
                     </div>
                 </div>
@@ -1150,7 +1317,7 @@
                 const params = moduleId ? `?module_id=${moduleId}` : '';
                 const response = await fetch(`http://localhost:5000/api/v1/analytics/grade-distribution${params}`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token')}`
                     }
                 });
 
@@ -1168,6 +1335,17 @@
             const ctx = document.getElementById('gradeChart');
             if (charts.gradeChart) charts.gradeChart.destroy();
 
+            // Convert array to object if needed
+            const gradeMap = {};
+            if (Array.isArray(distribution)) {
+                distribution.forEach(item => {
+                    const grade = item.grade_range;
+                    gradeMap[grade] = parseInt(item.count) || 0;
+                });
+            }
+
+            console.log('Grade distribution:', gradeMap);
+
             charts.gradeChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1175,25 +1353,25 @@
                     datasets: [{
                         label: 'Number of Students',
                         data: [
-                            distribution?.a || 0,
-                            distribution?.b || 0,
-                            distribution?.c || 0,
-                            distribution?.d || 0,
-                            distribution?.f || 0
+                            gradeMap['A (90-100)'] || 0,
+                            gradeMap['B (80-89)'] || 0,
+                            gradeMap['C (70-79)'] || 0,
+                            gradeMap['D (60-69)'] || 0,
+                            gradeMap['F (0-59)'] || 0
                         ],
                         backgroundColor: [
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(245, 158, 11, 0.8)',
-                            'rgba(239, 68, 68, 0.8)',
-                            'rgba(107, 114, 128, 0.8)'
+                            'rgba(72, 187, 120, 0.8)',   // A: Success green
+                            'rgba(102, 126, 234, 0.8)',  // B: Primary purple
+                            'rgba(237, 137, 54, 0.8)',   // C: Warning orange
+                            'rgba(255, 107, 107, 0.8)',  // D: Danger red
+                            'rgba(156, 163, 175, 0.8)'   // F: Gray
                         ],
                         borderColor: [
-                            'rgb(16, 185, 129)',
-                            'rgb(59, 130, 246)',
-                            'rgb(245, 158, 11)',
-                            'rgb(239, 68, 68)',
-                            'rgb(107, 114, 128)'
+                            'rgb(72, 187, 120)',         // A: Success green
+                            'rgb(102, 126, 234)',        // B: Primary purple
+                            'rgb(237, 137, 54)',         // C: Warning orange
+                            'rgb(255, 107, 107)',        // D: Danger red
+                            'rgb(156, 163, 175)'         // F: Gray
                         ],
                         borderWidth: 2
                     }]
@@ -1218,12 +1396,95 @@
             });
         }
 
+        // Render Performance Statistics Chart
+        async function renderPerformanceChart() {
+            const ctx = document.getElementById('performanceChart');
+            if (charts.performanceChart) charts.performanceChart.destroy();
+
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/analytics/grade-distribution', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token')}`
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success && data.data.statistics) {
+                    const stats = data.data.statistics;
+
+                    charts.performanceChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Average Score', 'Min Score', 'Max Score', 'Std Deviation'],
+                            datasets: [{
+                                label: 'Performance Metrics',
+                                data: [
+                                    parseFloat(stats.average_score) || 0,
+                                    stats.min_score || 0,
+                                    stats.max_score || 0,
+                                    parseFloat(stats.std_deviation) || 0
+                                ],
+                                backgroundColor: [
+                                    'rgba(102, 126, 234, 0.8)',  // Primary purple
+                                    'rgba(255, 107, 107, 0.8)',  // Danger red
+                                    'rgba(72, 187, 120, 0.8)',   // Success green
+                                    'rgba(237, 137, 54, 0.8)'    // Warning orange
+                                ],
+                                borderColor: [
+                                    'rgb(102, 126, 234)',
+                                    'rgb(255, 107, 107)',
+                                    'rgb(72, 187, 120)',
+                                    'rgb(237, 137, 54)'
+                                ],
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 12,
+                                            weight: '600'
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed !== null) {
+                                                label += context.parsed.toFixed(2);
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading performance chart:', error);
+            }
+        }
+
         // Load module completion
         async function loadModuleCompletion() {
             try {
                 const response = await fetch('http://localhost:5000/api/v1/analytics/module-completion', {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token')}`
                     }
                 });
 
@@ -1289,7 +1550,7 @@
 
                 const response = await fetch(`http://localhost:5000/api/v1/analytics/engagement?${params}`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token')}`
                     }
                 });
 
@@ -1345,19 +1606,35 @@
         // Load at-risk students
         async function loadAtRiskStudents() {
             try {
+                console.log('📊 Loading at-risk students...');
+                const token = localStorage.getItem('codesmart_token');
+
                 const response = await fetch('http://localhost:5000/api/v1/analytics/at-risk-students', {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
+                console.log('At-risk students response status:', response.status);
+
+                // Handle 401 Unauthorized
+                if (response.status === 401) {
+                    console.error('❌ Unauthorized - Token invalid');
+                    document.getElementById('atRiskTableContainer').innerHTML = '<div class="empty-state"><i class="bx bx-lock-alt"></i><p>Authentication required</p><p style="font-size: 1.4rem;">Please refresh the page</p></div>';
+                    return;
+                }
+
                 const data = await response.json();
+                console.log('At-risk students data:', data);
+
                 if (data.success) {
                     renderAtRiskTable(data.data.at_risk_students);
+                } else {
+                    document.getElementById('atRiskTableContainer').innerHTML = `<div class="empty-state"><i class="bx bx-error"></i><p>${data.message || 'Error loading at-risk students'}</p></div>`;
                 }
             } catch (error) {
-                console.error('Error loading at-risk students:', error);
-                document.getElementById('atRiskTableContainer').innerHTML = '<div class="empty-state"><i class="bx bx-error"></i><p>Error loading at-risk students</p></div>';
+                console.error('❌ Error loading at-risk students:', error);
+                document.getElementById('atRiskTableContainer').innerHTML = '<div class="empty-state"><i class="bx bx-error"></i><p>Error loading at-risk students</p><p style="font-size: 1.4rem;">Please try refreshing</p></div>';
             }
         }
 
@@ -1419,7 +1696,7 @@
             try {
                 const moduleId = document.getElementById('filterModule').value;
                 const params = moduleId ? `?module_id=${moduleId}` : '';
-                window.location.href = `http://localhost:5000/api/v1/exports/class-summary${params}&token=${localStorage.getItem('token')}`;
+                window.location.href = `http://localhost:5000/api/v1/exports/class-summary${params}&token=${localStorage.getItem('codesmart_token')}`;
                 if (typeof notificationService !== 'undefined') {
                     notificationService.show('Exporting analytics...', 'info');
                 }
@@ -1431,26 +1708,17 @@
             }
         };
 
-        // Logout function
-        window.logout = function() {
-            if (typeof modalService !== 'undefined') {
-                modalService.confirm({
-                    title: '<i class="bx bx-log-out"></i> Confirm Logout',
-                    message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
-                    confirmText: 'Yes, Logout',
-                    cancelText: 'Cancel',
-                    danger: true,
-                    onConfirm: function() {
-                        localStorage.clear();
-                        window.location.href = '../auth/login.html';
-                    }
-                });
-            } else {
-                if (confirm('Are you sure you want to logout?')) {
-                    localStorage.clear();
-                    window.location.href = '../auth/login.html';
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
                 }
-            }
+            });
         };
 
         // Set user info
@@ -1497,7 +1765,12 @@
 
         // Initialize
         initializeDateRange();
-        loadModules();
+
+        // Load modules first, then stats (need modules count for active classes)
+        loadModules().then(() => {
+            loadTopStats();
+        });
+
         loadDashboardData();
 
         // SVM Analytics Functions
@@ -1721,6 +1994,36 @@
                 loadSVMData();
             }, 1000);
         });
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+
     </script>
+    <script src="../../js/assessor-navbar.js"></script>
 </body>
 </html>

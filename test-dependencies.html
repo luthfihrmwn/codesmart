@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dependencies Loading</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .test { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Dependencies Loading Test</h1>
+    <div id="results"></div>
+    
+    <!-- Load scripts in same order as discussions page -->
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function test(name, condition) {
+            const div = document.createElement('div');
+            div.className = `test ${condition ? 'pass' : 'fail'}`;
+            div.innerHTML = `${condition ? '✅' : '❌'} ${name}`;
+            results.appendChild(div);
+            return condition;
+        }
+        
+        // Wait for all scripts to load
+        window.addEventListener('load', () => {
+            const h2 = document.createElement('h2');
+            h2.textContent = 'Dependency Check Results:';
+            results.appendChild(h2);
+            
+            test('authService exists', typeof authService !== 'undefined');
+            test('authService.isLoggedIn is function', typeof authService?.isLoggedIn === 'function');
+            test('authService.getCurrentUser is function', typeof authService?.getCurrentUser === 'function');
+            test('authService.logout is function', typeof authService?.logout === 'function');
+            
+            test('apiService exists', typeof apiService !== 'undefined' || typeof window.apiService !== 'undefined');
+            
+            test('notificationService exists', typeof notificationService !== 'undefined' || typeof window.notificationService !== 'undefined');
+            
+            test('modalService exists', typeof modalService !== 'undefined');
+            test('modalService on window', typeof window.modalService !== 'undefined');
+            test('modalService.confirm is function', typeof modalService?.confirm === 'function');
+            test('modalService.showNotification is function', typeof modalService?.showNotification === 'function');
+            
+            // Check if user is logged in
+            const h3 = document.createElement('h2');
+            h3.textContent = 'Authentication Status:';
+            results.appendChild(h3);
+            
+            const isLoggedIn = authService && authService.isLoggedIn();
+            test('User is logged in', isLoggedIn);
+            
+            if (isLoggedIn) {
+                const user = authService.getCurrentUser();
+                test(`User name: ${user?.name || 'Unknown'}`, !!user?.name);
+                test(`User role: ${user?.role || 'Unknown'}`, !!user?.role);
+                
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
+                test('Token in localStorage', !!token);
+                
+                if (token) {
+                    const div = document.createElement('div');
+                    div.className = 'test pass';
+                    div.innerHTML = `Token preview: ${token.substring(0, 30)}...`;
+                    results.appendChild(div);
+                }
+            }
+            
+            // DOM elements check
+            const h4 = document.createElement('h2');
+            h4.textContent = 'Check if loaded on discussions page:';
+            results.appendChild(h4);
+            
+            test('Boxicons CSS loaded', document.querySelector('link[href*="boxicons"]') !== null);
+            
+            // Summary
+            const summary = document.createElement('div');
+            summary.style.cssText = 'margin-top: 30px; padding: 20px; background: white; border-radius: 8px;';
+            
+            const allPassed = document.querySelectorAll('.pass').length;
+            const allFailed = document.querySelectorAll('.fail').length;
+            
+            summary.innerHTML = `
+                <h2>Summary</h2>
+                <p style="font-size: 18px;">
+                    ✅ Passed: ${allPassed}<br>
+                    ❌ Failed: ${allFailed}<br>
+                    Total: ${allPassed + allFailed}
+                </p>
+                ${allFailed === 0 ? '<p style="color: #155724; font-weight: bold;">🎉 All dependencies loaded successfully!</p>' : '<p style="color: #721c24; font-weight: bold;">⚠️ Some dependencies failed to load</p>'}
+            `;
+            results.appendChild(summary);
+        });
+    </script>
+</body>
+</html>

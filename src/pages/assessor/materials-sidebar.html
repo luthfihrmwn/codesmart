@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learning Materials - CodeSmart Assessor</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
-    <link rel="stylesheet" href="../../css/notification.css">
+                <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
-    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
-    <style>
+        <style>
         /* File Upload Styles */
         .file-upload-container {
             margin-bottom: 20px;
@@ -395,14 +394,6 @@
                     <span>Analytics</span>
                 </a>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -411,8 +402,7 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">
-                    <i class='bx bx-folder'></i> Learning Materials
+                <h1 class="page-title-header">Learning Materials
                 </h1>
             </div>
             <div class="header-right">
@@ -420,11 +410,30 @@
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu" onclick="toggleUserMenu()">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Assessor</div>
                         <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -432,6 +441,46 @@
 
         <!-- Content -->
         <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-folder'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalMaterials">0</h3>
+                        <p>Total Materials</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-file'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="materialsByType">0</h3>
+                        <p>By Type</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-data'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalSize">0 MB</h3>
+                        <p>Total Size</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-show'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalViews">0</h3>
+                        <p>Total Views</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Filters -->
             <div class="filters-row">
                 <div class="filter-group" style="flex: 2;">
@@ -644,6 +693,7 @@
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAssessor()) {
@@ -739,10 +789,45 @@
                 }
 
                 allMaterials = materials;
+                updateStats();
                 renderMaterials(allMaterials);
             } catch (error) {
                 console.error('Error loading materials:', error);
                 renderMaterials([]);
+            }
+        }
+
+        // Update stats with real data
+        function updateStats() {
+            try {
+                const totalMaterials = allMaterials.length;
+
+                // Count by type
+                const typeCount = {};
+                allMaterials.forEach(m => {
+                    const type = m.type || 'Other';
+                    typeCount[type] = (typeCount[type] || 0) + 1;
+                });
+                const mostCommonType = Object.keys(typeCount).length > 0 ?
+                    Object.keys(typeCount).reduce((a, b) => typeCount[a] > typeCount[b] ? a : b) : 'N/A';
+
+                // Calculate total size (if available in data)
+                const totalSize = allMaterials.reduce((sum, m) => {
+                    const size = parseFloat(m.file_size) || 0;
+                    return sum + size;
+                }, 0);
+                const totalSizeMB = totalSize > 0 ? (totalSize / (1024 * 1024)).toFixed(2) : 0;
+
+                // Calculate total views (if available in data)
+                const totalViews = allMaterials.reduce((sum, m) => sum + (parseInt(m.views) || 0), 0);
+
+                // Update UI
+                document.getElementById('totalMaterials').textContent = totalMaterials;
+                document.getElementById('materialsByType').textContent = mostCommonType;
+                document.getElementById('totalSize').textContent = totalSizeMB + ' MB';
+                document.getElementById('totalViews').textContent = totalViews;
+            } catch (error) {
+                console.error('Error updating stats:', error);
             }
         }
 
@@ -1235,11 +1320,10 @@
             });
         }
 
-        // Logout
         function logout() {
             modalService.confirm({
-                title: '<i class="bx bx-log-out"></i> Confirm Logout',
-                message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart?',
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
@@ -1249,5 +1333,6 @@
             });
         }
     </script>
+    <script src="../../js/assessor-navbar.js"></script>
 </body>
 </html>

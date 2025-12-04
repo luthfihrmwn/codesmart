@@ -5,7 +5,7 @@
 
 // API Configuration
 const API_CONFIG = {
-    BASE_URL: 'http://localhost:3000/api/v1', // Main backend
+    BASE_URL: 'http://localhost:5000/api/v1', // Main backend
     ML_URL: 'http://localhost:5000/api/v1',   // ML service for SVM predictions
     TIMEOUT: 30000, // 30 seconds
 };
@@ -550,6 +550,10 @@ class APIService {
     // ==========================================
     // ASSESSOR ENDPOINTS
     // ==========================================
+
+    async getAssessorSubmissions() {
+        return this.get('/assessor/submissions');
+    }
 
     async getPendingSubmissions() {
         return this.get('/assessor/submissions/pending');

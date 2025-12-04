@@ -1,23 +1,429 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discussion Forum - CodeSmart Assessor</title>
+    <title>Discussion Forum - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
-    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
-
     <style>
-        * {
-            box-sizing: border-box;
+        /* WhatsApp-style Discussion Layout */
+        .discussion-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            gap: 0;
         }
 
-        /* Keyframe Animations */
-        @keyframes fadeIn {
+        /* Chat List Panel */
+        .chat-list-panel {
+            width: 400px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e9edef;
+        }
+
+        .chat-list-header {
+            padding: 20px;
+            background: white;
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .chat-list-header h2 {
+            font-size: 20px;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-mini {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-mini {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .stat-mini i {
+            font-size: 16px;
+        }
+
+        .stat-mini.total { color: #667eea; }
+        .stat-mini.total i { color: #667eea; }
+        .stat-mini.active { color: #48bb78; }
+        .stat-mini.active i { color: #48bb78; }
+        .stat-mini.resolved { color: #4299e1; }
+        .stat-mini.resolved i { color: #4299e1; }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 45px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #f7fafc;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .filter-tab {
+            padding: 6px 12px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #718096;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .filter-tab:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f2f5;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .chat-item:hover {
+            background: #f0f2f5;
+        }
+
+        .chat-item.active {
+            background: #e7f3ff;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .chat-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #111b21;
+            margin: 0 0 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-badges {
+            display: flex;
+            gap: 4px;
+        }
+
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .badge.pinned { background: #fef3c7; color: #92400e; }
+        .badge.solved { background: #d1fae5; color: #065f46; }
+        .badge.locked { background: #fee2e2; color: #991b1b; }
+
+        .chat-preview {
+            font-size: 13px;
+            color: #667781;
+            margin: 5px 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .chat-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #667781;
+        }
+
+        .chat-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Author Avatar in Chat List */
+        .chat-author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .chat-author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+            flex-shrink: 0;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .chat-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-item:hover .chat-author-avatar {
+            transform: scale(1.08) rotate(3deg);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .chat-author-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: #111b21;
+        }
+
+        /* Chat Detail Panel */
+        .chat-detail-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #efeae2;
+        }
+
+        .chat-detail-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #667781;
+        }
+
+        .chat-detail-empty i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: #d1d7db;
+        }
+
+        .chat-detail-header {
+            padding: 15px 20px;
+            background: #f0f2f5;
+            border-bottom: 1px solid #d1d7db;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-detail-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-detail-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            text-transform: uppercase;
+            border: 2px solid white;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .chat-detail-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-detail-meta h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: #111b21;
+        }
+
+        .chat-detail-meta p {
+            margin: 0;
+            font-size: 12px;
+            color: #667781;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .chat-action-btn.pin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .chat-action-btn.lock {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message-original {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 20px;
+        }
+
+        .message-original-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .message-author-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-author-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .message-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .message-author {
+            font-weight: 600;
+            color: #111b21;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #667781;
+        }
+
+        .message-content {
+            color: #111b21;
+            line-height: 1.5;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            animation: slideUp 0.2s ease;
+        }
+
+        @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(10px);
@@ -28,632 +434,181 @@
             }
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .message-bubble.own {
+            background: #d9fdd3;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
         }
 
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: -1000px 0;
-            }
-            100% {
-                background-position: 1000px 0;
-            }
-        }
-
-        /* Discussion Item Styles */
-        .discussion-item {
+        .message-bubble.other {
             background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            gap: 2rem;
-            align-items: start;
-            position: relative;
-            overflow: hidden;
-            animation: scaleIn 0.4s ease-out;
-            border-left: 5px solid #667eea;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
         }
 
-        .discussion-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.03), transparent);
-            transition: left 0.5s;
-        }
-
-        .discussion-item:hover::before {
-            left: 100%;
-        }
-
-        .discussion-item:hover {
-            box-shadow: 0 8px 28px rgba(0,0,0,0.12);
-            transform: translateY(-4px) scale(1.01);
-        }
-
-        .discussion-icon {
-            font-size: 3rem;
-            color: #667eea;
-            flex-shrink: 0;
-            margin-top: 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .discussion-item:hover .discussion-icon {
-            transform: scale(1.2) rotate(5deg);
-        }
-
-        .discussion-icon.pinned {
-            color: #fbbf24;
-        }
-
-        .discussion-icon.locked {
-            color: #6b7280;
-        }
-
-        .discussion-icon.solved {
-            color: #10b981;
-        }
-
-        .discussion-content {
-            flex: 1;
-        }
-
-        .discussion-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .discussion-title {
-            font-size: 1.9rem;
-            font-weight: 700;
-            color: #1f2937;
-            line-height: 1.4;
-            transition: color 0.3s;
-        }
-
-        .discussion-item:hover .discussion-title {
-            color: #667eea;
-        }
-
-        .discussion-badges {
-            display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            padding: 0.6rem 1.4rem;
-            border-radius: 24px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-        }
-
-        .badge:hover {
-            transform: scale(1.05);
-        }
-
-        .badge.pinned {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            color: #92400e;
-        }
-
-        .badge.locked {
-            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-            color: #374151;
-        }
-
-        .badge.solved {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #065f46;
-        }
-
-        .discussion-preview {
-            color: #6b7280;
-            font-size: 1.5rem;
-            margin: 1rem 0;
-            line-height: 1.8;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .discussion-meta {
-            display: flex;
-            gap: 2rem;
-            font-size: 1.3rem;
-            color: #9ca3af;
-            flex-wrap: wrap;
-        }
-
-        .discussion-meta span {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s;
-        }
-
-        .discussion-meta span:hover {
-            color: #374151;
-        }
-
-        .discussion-meta i {
-            font-size: 1.6rem;
-            transition: transform 0.3s;
-        }
-
-        .discussion-meta span:hover i {
-            transform: scale(1.2);
-        }
-
-        /* Modal Styles */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .discussion-modal {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 900px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-            z-index: 1001;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .detail-header {
-            margin-bottom: 2.5rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid #f3f4f6;
-        }
-
-        .detail-title {
-            font-size: 2.6rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-            line-height: 1.3;
-        }
-
-        .detail-meta {
-            display: flex;
-            gap: 2.5rem;
-            color: #6b7280;
-            font-size: 1.4rem;
-            flex-wrap: wrap;
-        }
-
-        .detail-meta span {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .detail-meta i {
-            font-size: 1.8rem;
-        }
-
-        .detail-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-action {
-            padding: 1rem 1.8rem;
-            border-radius: 10px;
-            border: 2px solid #e5e7eb;
-            background: white;
-            cursor: pointer;
-            font-size: 1.3rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-action::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: currentColor;
-            opacity: 0.1;
-            transform: translate(-50%, -50%);
-            transition: width 0.5s, height 0.5s;
-        }
-
-        .btn-action:hover::before {
-            width: 200px;
-            height: 200px;
-        }
-
-        .btn-action:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        .btn-action:active {
-            transform: translateY(-1px);
-        }
-
-        .btn-action i {
-            transition: transform 0.3s;
-        }
-
-        .btn-action:hover i {
-            transform: scale(1.2);
-        }
-
-        .btn-action.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-        }
-
-        .discussion-body {
-            font-size: 1.6rem;
-            line-height: 1.9;
-            color: #374151;
-            margin-bottom: 3rem;
-            white-space: pre-wrap;
-            padding: 2rem;
-            background: #f9fafb;
-            border-radius: 12px;
-        }
-
-        .replies-section {
-            margin-top: 3rem;
-        }
-
-        .replies-header {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .replies-header i {
-            color: #667eea;
-        }
-
-        .reply-item {
-            background: #f9fafb;
-            padding: 2.5rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #e5e7eb;
-            transition: all 0.3s;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .reply-item:hover {
-            background: #f3f4f6;
-            border-left-color: #667eea;
-            transform: translateX(5px);
-        }
-
-        .reply-item.solution {
-            background: linear-gradient(90deg, #ecfdf5 0%, white 15%);
-            border-left-color: #10b981;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
-        }
-
-        .reply-header {
+        .message-bubble-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
+            margin-bottom: 5px;
         }
 
-        .reply-author {
-            font-weight: 700;
-            color: #1f2937;
-            font-size: 1.5rem;
-        }
-
-        .reply-time {
-            font-size: 1.3rem;
-            color: #9ca3af;
-        }
-
-        .reply-content {
-            font-size: 1.5rem;
-            line-height: 1.8;
-            color: #4b5563;
-            white-space: pre-wrap;
-        }
-
-        .reply-actions {
-            margin-top: 1.5rem;
-            display: flex;
-            gap: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .reply-form {
-            margin-top: 3rem;
-            padding-top: 2.5rem;
-            border-top: 2px solid #f3f4f6;
-        }
-
-        .reply-form h4 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: #1f2937;
-        }
-
-        .reply-form textarea {
-            width: 100%;
-            min-height: 150px;
-            padding: 1.5rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 1.5rem;
-            font-family: inherit;
-            resize: vertical;
-            transition: all 0.3s;
-            background: #f9fafb;
-        }
-
-        .reply-form textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .reply-form .btn-submit {
-            margin-top: 1.5rem;
-            padding: 1.2rem 2.4rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.4rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        .message-bubble-author-info {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 8px;
         }
 
-        .reply-form .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-
-        .reply-form .btn-submit i {
-            font-size: 1.8rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 6rem 2rem;
-            color: #9ca3af;
-            background: white;
-            border-radius: 16px;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .empty-state i {
-            font-size: 8rem;
-            margin-bottom: 2rem;
-            opacity: 0.2;
+        .message-bubble-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .empty-state h3 {
-            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             font-weight: 700;
-            color: #374151;
-            margin-bottom: 1rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            border: 2px solid white;
+            box-shadow: 0 1px 4px rgba(102, 126, 234, 0.25);
+            flex-shrink: 0;
+            overflow: hidden;
         }
 
-        .empty-state p {
-            font-size: 1.5rem;
-            color: #6b7280;
+        .message-bubble-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .message-bubble-author {
+            font-size: 13px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .message-bubble-time {
+            font-size: 11px;
+            color: #667781;
+        }
+
+        .message-bubble-content {
+            font-size: 14px;
+            color: #111b21;
+            word-wrap: break-word;
+        }
+
+        .message-input-area {
+            padding: 15px 20px;
+            background: #f0f2f5;
+            border-top: 1px solid #d1d7db;
+        }
+
+        .message-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            resize: none;
+            min-height: 45px;
+            max-height: 150px;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #5568d3;
+        }
+
+        .send-btn:disabled {
+            background: #d1d7db;
+            cursor: not-allowed;
         }
 
         .loading {
             text-align: center;
-            padding: 6rem 2rem;
-            font-size: 1.6rem;
-            color: #9ca3af;
-            background: white;
-            border-radius: 16px;
+            padding: 40px;
+            color: #667781;
         }
 
-        .loading i {
-            font-size: 4rem;
-            color: #667eea;
+        .loader {
+            border: 3px solid #f0f2f5;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
         }
 
-        /* Smooth scrollbar */
-        .discussion-modal::-webkit-scrollbar {
-            width: 8px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .discussion-modal::-webkit-scrollbar-track {
-            background: #f3f4f6;
-            border-radius: 10px;
+        /* Scrollbar */
+        .chat-list::-webkit-scrollbar,
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .discussion-modal::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+        .chat-list::-webkit-scrollbar-track,
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .discussion-modal::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+        .chat-list::-webkit-scrollbar-thumb,
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
         }
 
-        /* Responsive Design */
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .chat-list-panel {
+                width: 350px;
+            }
+        }
+
         @media (max-width: 768px) {
-            .discussion-item {
-                padding: 2rem;
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-
-            .discussion-icon {
-                font-size: 2.5rem;
-            }
-
-            .discussion-title {
-                font-size: 1.7rem;
-            }
-
-            .discussion-meta {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .detail-title {
-                font-size: 2.2rem;
-            }
-
-            .detail-meta {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .detail-actions {
-                flex-direction: column;
-            }
-
-            .btn-action {
+            .chat-list-panel {
                 width: 100%;
-                justify-content: center;
             }
 
-            .discussion-modal {
-                padding: 2rem;
-                width: 95%;
+            .chat-detail-panel {
+                display: none;
             }
 
-            .reply-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .discussion-item {
-                padding: 1.5rem;
-            }
-
-            .discussion-title {
-                font-size: 1.5rem;
-            }
-
-            .discussion-preview {
-                font-size: 1.4rem;
-            }
-
-            .detail-title {
-                font-size: 2rem;
-            }
-
-            .reply-item {
-                padding: 2rem;
+            .chat-detail-panel.mobile-show {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1000;
             }
         }
     </style>
@@ -724,14 +679,6 @@
                     <span>Analytics</span>
                 </a>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout(); return false;">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -740,193 +687,193 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">
-                    <i class='bx bx-message-square-dots'></i> Discussion Forum
-                </h1>
+                <h1 class="page-title-header">Discussion Forum</h1>
             </div>
             <div class="header-right">
                 <div class="notification-bell" id="notificationBellBtn">
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu" onclick="toggleUserMenu()">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Assessor</div>
                         <div class="user-role">Assessor</div>
                     </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
 
-        <!-- Content -->
-        <div class="admin-content">
-            <!-- Modern Toolbar -->
-            <div class="modern-toolbar">
-                <div class="toolbar-left">
-                    <div class="search-box">
-                        <i class='bx bx-search'></i>
-                        <input type="text" id="searchInput" placeholder="Search discussions..." class="search-input">
+        <!-- Discussion Content -->
+        <div class="admin-content" style="padding: 0; height: calc(100vh - 80px);">
+            <div class="discussion-container">
+                <!-- Chat List Panel -->
+                <div class="chat-list-panel">
+                    <div class="chat-list-header">
+                        <h2><i class='bx bx-message-square-dots'></i> Discussions</h2>
+
+                        <div class="stats-mini">
+                            <div class="stat-mini total">
+                                <i class='bx bx-message-square-dots'></i>
+                                <span id="totalCount">0</span>
+                            </div>
+                            <div class="stat-mini active">
+                                <i class='bx bx-check-circle'></i>
+                                <span id="activeCount">0</span>
+                            </div>
+                            <div class="stat-mini resolved">
+                                <i class='bx bx-message-square-check'></i>
+                                <span id="resolvedCount">0</span>
+                            </div>
+                        </div>
+
+                        <div class="search-box">
+                            <i class='bx bx-search'></i>
+                            <input type="text" id="searchInput" placeholder="Search discussions...">
+                        </div>
+
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" data-filter="all">All</button>
+                            <button class="filter-tab" data-filter="solved">Solved</button>
+                            <button class="filter-tab" data-filter="unsolved">Unsolved</button>
+                            <button class="filter-tab" data-filter="pinned">Pinned</button>
+                        </div>
                     </div>
-                    <div class="filter-dropdown">
-                        <select id="filterModule" class="modern-select">
-                            <option value="">All Modules</option>
-                        </select>
+
+                    <div class="chat-list" id="chatList">
+                        <div class="loading">
+                            <div class="loader"></div>
+                            <span>Loading discussions...</span>
+                        </div>
                     </div>
-                    <div class="filter-dropdown">
-                        <select id="filterAssignment" class="modern-select">
-                            <option value="">All Assignments</option>
-                        </select>
-                    </div>
-                    <div class="filter-dropdown">
-                        <select id="filterStatus" class="modern-select">
-                            <option value="">All Status</option>
-                            <option value="pinned">Pinned Only</option>
-                            <option value="solved">Solved Only</option>
-                            <option value="unsolved">Unsolved Only</option>
-                            <option value="locked">Locked</option>
-                        </select>
+                </div>
+
+                <!-- Chat Detail Panel -->
+                <div class="chat-detail-panel" id="chatDetailPanel">
+                    <div class="chat-detail-empty">
+                        <i class='bx bx-message-square-dots'></i>
+                        <h2>Select a Discussion</h2>
+                        <p>Choose a discussion from the list to view details and replies</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Discussions List -->
-            <div id="discussionsList">
-                <div class="loading">
-                    <i class='bx bx-loader-alt bx-spin'></i>
-                    Memuat diskusi...
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Discussion Detail Modal -->
-    <div class="modal" id="discussionModal" style="display: none;">
-        <div class="modal-overlay" onclick="closeDiscussionModal()"></div>
-        <div class="discussion-modal" id="discussionDetail">
-            <div class="loading">Loading...</div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="../../js/modal-service.js"></script>
-    <script type="module" src="../../js/notification-bell.js"></script>
-    <script type="module">
-        import { modalService } from '../../js/modal-service.js';
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
 
+    <script>
         let discussions = [];
-        let modules = [];
         let currentDiscussion = null;
+        let currentUser = null;
+        let currentFilter = 'all';
 
         // Initialize
         async function init() {
-            console.log('Initializing discussions page...');
-            console.log('DOM ready state:', document.readyState);
+            console.log('🚀 [init] Starting discussions...');
 
-            // Load modules in parallel, don't wait for it
-            loadModules().catch(err => console.error('Modules load failed:', err));
-            
-            // Load discussions immediately
-            await loadDiscussions();
-            setupEventListeners();
-            setUserInfo();
-
-            console.log('Initialization complete');
-        }
-        // Load modules
-        async function loadModules() {
-            try {
-                console.log('Loading modules...');
-                const response = await fetch('http://localhost:5000/api/v1/modules', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
-                    }
-                });
-                const data = await response.json();
-                console.log('Modules response:', data);
-
-                if (data.success) {
-                    modules = data.data.modules || data.data || [];
-                    console.log('Loaded modules:', modules.length);
-                    renderModuleFilter();
-                }
-            } catch (error) {
-                console.error('Error loading modules:', error);
+            // Check authentication
+            if (!authService || !authService.isLoggedIn()) {
+                window.location.href = '/src/pages/auth/login.html';
+                return;
             }
-        }
 
-        // Render module filter
-        function renderModuleFilter() {
-            const filterModule = document.getElementById('filterModule');
-            modules.forEach(module => {
-                const option = document.createElement('option');
-                option.value = module.id;
-                option.textContent = `${module.name} (${module.level.toUpperCase()})`;
-                filterModule.appendChild(option);
-            });
+            currentUser = authService.getCurrentUser();
+            console.log('✅ [init] Current user:', currentUser);
+
+            // Load discussions
+            await loadDiscussions();
+
+            // Setup event listeners
+            setupEventListeners();
         }
 
         // Load discussions
         async function loadDiscussions() {
             try {
-                const filterModuleEl = document.getElementById('filterModule');
-                const filterAssignmentEl = document.getElementById('filterAssignment');
+                console.log('📡 [loadDiscussions] Fetching from API...');
 
-                const moduleId = filterModuleEl ? filterModuleEl.value : '';
-                const assignmentId = filterAssignmentEl ? filterAssignmentEl.value : '';
-
-                const params = new URLSearchParams();
-                if (moduleId) params.append('module_id', moduleId);
-                if (assignmentId) params.append('assignment_id', assignmentId);
-
-                console.log('Loading discussions from API...');
-                const response = await fetch(`http://localhost:5000/api/v1/discussions?${params}`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
-                    }
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/v1/discussions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                const data = await response.json();
-                console.log('API Response:', data);
-
-                if (data.success) {
-                    discussions = data.data.discussions || [];
-                    console.log('Loaded discussions:', discussions.length);
-                    applyFilters();
-                } else {
-                    // If API fails, show empty state
-                    console.warn('API returned success=false');
-                    discussions = [];
-                    renderEmptyState();
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
+
+                const data = await response.json();
+                console.log('✅ [loadDiscussions] Data loaded:', data);
+
+                if (data.success && Array.isArray(data.data)) {
+                    discussions = data.data;
+                    updateStats();
+                    renderChatList();
+                }
+
             } catch (error) {
-                console.error('Error loading discussions:', error);
-                // Show empty state instead of staying in loading
-                discussions = [];
-                renderEmptyState();
+                console.error('❌ [loadDiscussions] Error:', error);
+                document.getElementById('chatList').innerHTML = `
+                    <div class="loading">
+                        <i class='bx bx-error-circle' style="font-size: 40px; color: #ef4444;"></i>
+                        <span>Failed to load discussions</span>
+                    </div>
+                `;
             }
         }
 
-        // Apply filters
-        function applyFilters() {
-            const filterStatusEl = document.getElementById('filterStatus');
-            const searchInputEl = document.getElementById('searchInput');
+        // Update stats
+        function updateStats() {
+            const total = discussions.length;
+            const active = discussions.filter(d => !d.is_solved && !d.is_locked).length;
+            const resolved = discussions.filter(d => d.is_solved).length;
 
-            const filterStatus = filterStatusEl ? filterStatusEl.value : 'all';
-            const searchTerm = searchInputEl ? searchInputEl.value.toLowerCase() : '';
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('activeCount').textContent = active;
+            document.getElementById('resolvedCount').textContent = resolved;
+        }
+
+        // Render chat list
+        function renderChatList() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
             let filtered = [...discussions];
 
-            if (filterStatus === 'pinned') {
-                filtered = filtered.filter(d => d.is_pinned);
-            } else if (filterStatus === 'solved') {
+            // Apply filter
+            if (currentFilter === 'solved') {
                 filtered = filtered.filter(d => d.is_solved);
-            } else if (filterStatus === 'unsolved') {
+            } else if (currentFilter === 'unsolved') {
                 filtered = filtered.filter(d => !d.is_solved);
-            } else if (filterStatus === 'locked') {
-                filtered = filtered.filter(d => d.is_locked);
+            } else if (currentFilter === 'pinned') {
+                filtered = filtered.filter(d => d.is_pinned);
             }
 
+            // Apply search
             if (searchTerm) {
                 filtered = filtered.filter(d =>
                     d.title.toLowerCase().includes(searchTerm) ||
@@ -934,294 +881,321 @@
                 );
             }
 
-            renderDiscussions(filtered);
-        }
+            const chatList = document.getElementById('chatList');
 
-        // Render discussions
-        function renderDiscussions(data) {
-            const container = document.getElementById('discussionsList');
-            console.log('Rendering discussions:', data.length, 'items');
-
-            if (!container) {
-                console.error('discussionsList container not found!');
+            if (filtered.length === 0) {
+                chatList.innerHTML = `
+                    <div class="loading">
+                        <i class='bx bx-message-square-x' style="font-size: 40px; color: #94a3b8;"></i>
+                        <span>No discussions found</span>
+                    </div>
+                `;
                 return;
             }
 
-            if (data.length === 0) {
-                console.log('No discussions to display, showing empty state');
-                renderEmptyState();
-                return;
-            }
+            chatList.innerHTML = filtered.map(d => {
+                const badges = [];
+                if (d.is_pinned) badges.push('<span class="badge pinned">Pinned</span>');
+                if (d.is_solved) badges.push('<span class="badge solved">Solved</span>');
+                if (d.is_locked) badges.push('<span class="badge locked">Locked</span>');
 
-            container.innerHTML = data.map(discussion => `
-                <div class="discussion-item" onclick="showDiscussionDetail(${discussion.id})">
-                    <i class='bx ${getDiscussionIcon(discussion)} discussion-icon ${getDiscussionClass(discussion)}'></i>
-                    <div class="discussion-content">
-                        <div class="discussion-header">
-                            <h3 class="discussion-title">${discussion.title}</h3>
-                            <div class="discussion-badges">
-                                ${discussion.is_pinned ? '<span class="badge pinned"><i class="bx bxs-pin"></i> Pinned</span>' : ''}
-                                ${discussion.is_solved ? '<span class="badge solved"><i class="bx bx-check-circle"></i> Solved</span>' : ''}
-                                ${discussion.is_locked ? '<span class="badge locked"><i class="bx bx-lock"></i> Locked</span>' : ''}
-                            </div>
+                return `
+                    <div class="chat-item ${currentDiscussion && currentDiscussion.id === d.id ? 'active' : ''}"
+                         onclick="selectDiscussion(${d.id})">
+                        <div class="chat-header">
+                            <div class="chat-title">${escapeHtml(d.title)}</div>
+                            <div class="chat-badges">${badges.join('')}</div>
                         </div>
-                        <p class="discussion-preview">${discussion.content}</p>
-                        <div class="discussion-meta">
-                            <span><i class='bx bx-user'></i> ${discussion.author_name || 'Unknown'}</span>
-                            <span><i class='bx bx-time'></i> ${formatDate(discussion.created_at)}</span>
-                            <span><i class='bx bx-comment'></i> ${discussion.replies_count || 0} replies</span>
-                            <span><i class='bx bx-show'></i> ${discussion.views_count || 0} views</span>
+                        <div class="chat-preview">${escapeHtml(d.content)}</div>
+                        <div class="chat-author-info">
+                            <div class="chat-author-avatar" id="chat-avatar-${d.id}">
+                                ${d.author_photo ?
+                                    `<img src="${getPhotoUrl(d.author_photo)}"
+                                          alt="${d.author_name || 'Author'}"
+                                          onerror="this.style.display='none'; document.getElementById('chat-avatar-${d.id}').innerHTML='${getInitials(d.author_name || 'Unknown')}';">` :
+                                    getInitials(d.author_name || 'Unknown')
+                                }
+                            </div>
+                            <span class="chat-author-name">${escapeHtml(d.author_name || 'Unknown')}</span>
+                        </div>
+                        <div class="chat-meta">
+                            <span><i class='bx bx-message-square-dots'></i> ${d.replies_count || 0}</span>
+                            <span><i class='bx bx-show'></i> ${d.views_count || 0}</span>
+                            <span>${formatDate(d.created_at)}</span>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // Get discussion icon
-        function getDiscussionIcon(discussion) {
-            if (discussion.is_pinned) return 'bxs-pin';
-            if (discussion.is_locked) return 'bx-lock';
-            if (discussion.is_solved) return 'bx-check-circle';
-            return 'bx-message-square-dots';
-        }
-
-        // Get discussion class
-        function getDiscussionClass(discussion) {
-            if (discussion.is_pinned) return 'pinned';
-            if (discussion.is_locked) return 'locked';
-            if (discussion.is_solved) return 'solved';
-            return '';
-        }
-
-        // Render empty state
-        function renderEmptyState() {
-            const container = document.getElementById('discussionsList');
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class='bx bx-message-square-x'></i>
-                    <h3>Belum Ada Diskusi</h3>
-                    <p>Data diskusi belum tersedia saat ini.</p>
-                    <p>Diskusi dari siswa akan muncul di sini.</p>
-                    <button class="btn-primary" onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; border: none; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; cursor: pointer; font-size: 14px;">
-                        <i class='bx bx-refresh'></i> Refresh Halaman
-                    </button>
-                </div>
-            `;
-        }
-
-        // Show discussion detail
-        window.showDiscussionDetail = async function(id) {
-            const modal = document.getElementById('discussionModal');
-            const detail = document.getElementById('discussionDetail');
-
-            modal.style.display = 'flex';
-            detail.innerHTML = '<div class="loading"><i class="bx bx-loader-alt bx-spin"></i> Loading...</div>';
-
+        // Select discussion
+        async function selectDiscussion(discussionId) {
             try {
-                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
-                    }
+                currentDiscussion = discussions.find(d => d.id === discussionId);
+                if (!currentDiscussion) return;
+
+                console.log('📖 [selectDiscussion] Loading discussion:', discussionId);
+
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${discussionId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await response.json();
+
                 if (data.success) {
-                    currentDiscussion = data.data.discussion;
-                    currentDiscussion.replies = data.data.replies; // Add replies to discussion object
-                    renderDiscussionDetail(currentDiscussion);
+                    currentDiscussion.replies = data.data.replies || [];
+                    renderChatDetail();
+                    renderChatList(); // Update active state
                 }
+
             } catch (error) {
-                console.error('Error loading discussion:', error);
-                detail.innerHTML = '<div class="loading">Error loading discussion</div>';
+                console.error('❌ [selectDiscussion] Error:', error);
+                notificationService.error('Failed to load discussion');
             }
-        };
-
-        // Render discussion detail
-        function renderDiscussionDetail(discussion) {
-            const detail = document.getElementById('discussionDetail');
-            detail.innerHTML = `
-                <div class="detail-header">
-                    <div style="margin-bottom: 1rem;">
-                        ${discussion.is_pinned ? '<span class="badge pinned"><i class="bx bxs-pin"></i> Pinned</span>' : ''}
-                        ${discussion.is_solved ? '<span class="badge solved"><i class="bx bx-check-circle"></i> Solved</span>' : ''}
-                        ${discussion.is_locked ? '<span class="badge locked"><i class="bx bx-lock"></i> Locked</span>' : ''}
-                    </div>
-                    <h2 class="detail-title">${discussion.title}</h2>
-                    <div class="detail-meta">
-                        <span><i class='bx bx-user'></i> ${discussion.author_name}</span>
-                        <span><i class='bx bx-time'></i> ${formatDate(discussion.created_at)}</span>
-                        <span><i class='bx bx-show'></i> ${discussion.views_count || 0} views</span>
-                    </div>
-                    <div class="detail-actions">
-                        <button class="btn-action ${discussion.is_pinned ? 'active' : ''}" onclick="togglePin(${discussion.id})">
-                            <i class='bx bxs-pin'></i> ${discussion.is_pinned ? 'Unpin' : 'Pin'}
-                        </button>
-                        <button class="btn-action ${discussion.is_locked ? 'active' : ''}" onclick="toggleLock(${discussion.id})">
-                            <i class='bx bx-lock'></i> ${discussion.is_locked ? 'Unlock' : 'Lock'}
-                        </button>
-                        <button class="btn-action" onclick="closeDiscussionModal()">
-                            <i class='bx bx-x'></i> Close
-                        </button>
-                    </div>
-                </div>
-
-                <div class="discussion-body">${discussion.content}</div>
-
-                <div class="replies-section">
-                    <h3 class="replies-header">
-                        <i class='bx bx-comment'></i> ${discussion.replies ? discussion.replies.length : 0} Replies
-                    </h3>
-                    <div>
-                        ${discussion.replies && discussion.replies.length > 0 ? renderReplies(discussion.replies) : '<p style="color: #9ca3af; text-align: center; padding: 2rem;">No replies yet</p>'}
-                    </div>
-                </div>
-
-                ${!discussion.is_locked ? `
-                    <div class="reply-form">
-                        <h4>Add Reply</h4>
-                        <textarea id="replyContent" placeholder="Write your reply..."></textarea>
-                        <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 1.4rem;">
-                            <input type="checkbox" id="markAsSolution">
-                            Mark as solution
-                        </label>
-                        <button class="btn-submit" onclick="submitReply()">
-                            <i class='bx bx-send'></i> Submit Reply
-                        </button>
-                    </div>
-                ` : '<p style="color: #9ca3af; text-align: center; padding: 2rem; background: #f9fafb; border-radius: 0.8rem; margin-top: 2rem;"><i class="bx bx-lock"></i> This discussion is locked</p>'}
-            `;
         }
 
-        // Render replies
-        function renderReplies(replies) {
-            return replies.map(reply => `
-                <div class="reply-item ${reply.is_solution ? 'solution' : ''}">
-                    <div class="reply-header">
-                        <div>
-                            <span class="reply-author">${reply.author_name || 'Unknown'}</span>
-                            ${reply.is_solution ? '<span class="badge solved" style="margin-left: 0.5rem;"><i class="bx bx-check-circle"></i> Solution</span>' : ''}
-                        </div>
-                        <span class="reply-time">${formatDate(reply.created_at)}</span>
+        // Render chat detail
+        function renderChatDetail() {
+            const panel = document.getElementById('chatDetailPanel');
+
+            if (!currentDiscussion) {
+                panel.innerHTML = `
+                    <div class="chat-detail-empty">
+                        <i class='bx bx-message-square-dots'></i>
+                        <h2>Select a Discussion</h2>
+                        <p>Choose a discussion from the list to view details and replies</p>
                     </div>
-                    <div class="reply-content">${reply.content}</div>
-                    ${!reply.is_solution ? `
-                        <div class="reply-actions">
-                            <button class="btn-action" onclick="markReplyAsSolution(${reply.id})">
-                                <i class='bx bx-check-circle'></i> Mark as Solution
+                `;
+                return;
+            }
+
+            const replies = currentDiscussion.replies || [];
+
+            panel.innerHTML = `
+                <div class="chat-detail-header">
+                    <div class="chat-detail-info">
+                        <div class="chat-detail-avatar" id="detail-avatar-${currentDiscussion.id}">
+                            ${currentDiscussion.author_photo ?
+                                `<img src="${getPhotoUrl(currentDiscussion.author_photo)}"
+                                      alt="${currentDiscussion.author_name || 'Author'}"
+                                      onerror="this.style.display='none'; document.getElementById('detail-avatar-${currentDiscussion.id}').innerHTML='${getInitials(currentDiscussion.author_name || 'Unknown')}';">` :
+                                getInitials(currentDiscussion.author_name || 'Unknown')
+                            }
+                        </div>
+                        <div class="chat-detail-meta">
+                            <h3>${escapeHtml(currentDiscussion.title)}</h3>
+                            <p>${escapeHtml(currentDiscussion.author_name || 'Unknown')} • ${formatDate(currentDiscussion.created_at)}</p>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="chat-action-btn pin" onclick="togglePin(${currentDiscussion.id})">
+                            <i class='bx ${currentDiscussion.is_pinned ? 'bxs-pin' : 'bx-pin'}'></i>
+                            ${currentDiscussion.is_pinned ? 'Unpin' : 'Pin'}
+                        </button>
+                        <button class="chat-action-btn lock" onclick="toggleLock(${currentDiscussion.id})">
+                            <i class='bx ${currentDiscussion.is_locked ? 'bxs-lock-alt' : 'bx-lock-open-alt'}'></i>
+                            ${currentDiscussion.is_locked ? 'Unlock' : 'Lock'}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message-original">
+                        <div class="message-original-header">
+                            <div class="message-author-info">
+                                <div class="message-author-avatar" id="msg-avatar-${currentDiscussion.id}">
+                                    ${currentDiscussion.author_photo ?
+                                        `<img src="${getPhotoUrl(currentDiscussion.author_photo)}"
+                                              alt="${currentDiscussion.author_name || 'Author'}"
+                                              onerror="this.style.display='none'; document.getElementById('msg-avatar-${currentDiscussion.id}').innerHTML='${getInitials(currentDiscussion.author_name || 'Unknown')}';">` :
+                                        getInitials(currentDiscussion.author_name || 'Unknown')
+                                    }
+                                </div>
+                                <span class="message-author">${escapeHtml(currentDiscussion.author_name || 'Unknown')}</span>
+                            </div>
+                            <span class="message-time">${formatTime(currentDiscussion.created_at)}</span>
+                        </div>
+                        <div class="message-content">${escapeHtml(currentDiscussion.content)}</div>
+                    </div>
+
+                    ${replies.map(r => {
+                        const isOwn = currentUser && r.user_id === currentUser.id;
+                        return `
+                            <div class="message-bubble ${isOwn ? 'own' : 'other'}">
+                                <div class="message-bubble-header">
+                                    <div class="message-bubble-author-info">
+                                        <div class="message-bubble-avatar" id="reply-avatar-${r.id}">
+                                            ${r.author_photo ?
+                                                `<img src="${getPhotoUrl(r.author_photo)}"
+                                                      alt="${r.author_name || 'Author'}"
+                                                      onerror="this.style.display='none'; document.getElementById('reply-avatar-${r.id}').innerHTML='${getInitials(r.author_name || 'Unknown')}';">` :
+                                                getInitials(r.author_name || 'Unknown')
+                                            }
+                                        </div>
+                                        <span class="message-bubble-author">${escapeHtml(r.author_name || 'Unknown')}</span>
+                                    </div>
+                                    <span class="message-bubble-time">${formatTime(r.created_at)}</span>
+                                </div>
+                                <div class="message-bubble-content">${escapeHtml(r.content)}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                ${!currentDiscussion.is_locked ? `
+                    <div class="message-input-area">
+                        <div class="message-input-container">
+                            <textarea
+                                id="replyInput"
+                                class="message-input"
+                                placeholder="Type a message..."
+                                rows="1"
+                                onkeydown="handleReplyKeydown(event)"></textarea>
+                            <button class="send-btn" onclick="sendReply()">
+                                <i class='bx bx-send'></i>
+                                Send
                             </button>
                         </div>
-                    ` : ''}
-                </div>
-            `).join('');
+                    </div>
+                ` : `
+                    <div class="message-input-area">
+                        <div style="text-align: center; color: #667781; padding: 10px;">
+                            <i class='bx bx-lock-alt'></i> This discussion is locked
+                        </div>
+                    </div>
+                `}
+            `;
+
+            // Auto-scroll to bottom
+            setTimeout(() => {
+                const messagesDiv = document.getElementById('chatMessages');
+                if (messagesDiv) {
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+            }, 100);
+
+            // Auto-resize textarea
+            const textarea = document.getElementById('replyInput');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+                });
+            }
         }
 
-        // Submit reply
-        window.submitReply = async function() {
-            const content = document.getElementById('replyContent').value.trim();
-            const isSolution = document.getElementById('markAsSolution').checked;
+        // Handle reply keydown
+        function handleReplyKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendReply();
+            }
+        }
+
+        // Send reply
+        async function sendReply() {
+            const input = document.getElementById('replyInput');
+            const content = input.value.trim();
 
             if (!content) {
-                modalService.showNotification('Please write a reply', 'warning');
+                notificationService.warning('Please enter a message');
                 return;
             }
 
             try {
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
                 const response = await fetch(`http://localhost:5000/api/v1/discussions/${currentDiscussion.id}/replies`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ content, is_solution: isSolution })
+                    body: JSON.stringify({ content })
                 });
 
                 const data = await response.json();
+
                 if (data.success) {
-                    modalService.showNotification('Reply added successfully', 'success');
-                    showDiscussionDetail(currentDiscussion.id);
+                    input.value = '';
+                    input.style.height = 'auto';
+                    await selectDiscussion(currentDiscussion.id);
+                    notificationService.success('Reply sent!');
                 } else {
-                    modalService.showNotification(data.message || 'Error adding reply', 'error');
+                    throw new Error(data.error || 'Failed to send reply');
                 }
+
             } catch (error) {
-                console.error('Error adding reply:', error);
-                modalService.showNotification('Error adding reply', 'error');
+                console.error('❌ [sendReply] Error:', error);
+                notificationService.error('Failed to send reply');
             }
-        };
+        }
 
         // Toggle pin
-        window.togglePin = async function(id) {
+        async function togglePin(discussionId) {
             try {
-                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}/pin`, {
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${discussionId}/pin`, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await response.json();
+
                 if (data.success) {
-                    modalService.showNotification(data.message, 'success');
-                    showDiscussionDetail(id);
-                    loadDiscussions();
+                    await loadDiscussions();
+                    await selectDiscussion(discussionId);
+                    notificationService.success(data.message || 'Pin status updated');
                 }
+
             } catch (error) {
-                console.error('Error toggling pin:', error);
-                modalService.showNotification('Error updating discussion', 'error');
+                console.error('❌ [togglePin] Error:', error);
+                notificationService.error('Failed to update pin status');
             }
-        };
+        }
 
         // Toggle lock
-        window.toggleLock = async function(id) {
+        async function toggleLock(discussionId) {
             try {
-                const response = await fetch(`http://localhost:5000/api/v1/discussions/${id}/lock`, {
+                const token = localStorage.getItem('codesmart_token') || localStorage.getItem('token');
+                const response = await fetch(`http://localhost:5000/api/v1/discussions/${discussionId}/lock`, {
                     method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await response.json();
-                if (data.success) {
-                    modalService.showNotification(data.message, 'success');
-                    showDiscussionDetail(id);
-                    loadDiscussions();
-                }
-            } catch (error) {
-                console.error('Error toggling lock:', error);
-                modalService.showNotification('Error updating discussion', 'error');
-            }
-        };
 
-        // Mark reply as solution
-        window.markReplyAsSolution = async function(replyId) {
-            try {
-                const response = await fetch(`http://localhost:5000/api/v1/discussions/replies/${replyId}/solution`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('codesmart_token') || localStorage.getItem('token')}`
-                    }
+                if (data.success) {
+                    await loadDiscussions();
+                    await selectDiscussion(discussionId);
+                    notificationService.success(data.message || 'Lock status updated');
+                }
+
+            } catch (error) {
+                console.error('❌ [toggleLock] Error:', error);
+                notificationService.error('Failed to update lock status');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search
+            document.getElementById('searchInput').addEventListener('input', renderChatList);
+
+            // Filter tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderChatList();
                 });
-
-                const data = await response.json();
-                if (data.success) {
-                    modalService.showNotification('Marked as solution', 'success');
-                    showDiscussionDetail(currentDiscussion.id);
-                    loadDiscussions();
-                }
-            } catch (error) {
-                console.error('Error marking solution:', error);
-                modalService.showNotification('Error marking solution', 'error');
-            }
-        };
-
-        // Close modal
-        window.closeDiscussionModal = function() {
-            document.getElementById('discussionModal').style.display = 'none';
-            currentDiscussion = null;
-        };
+            });
+        }
 
         // Format date
         function formatDate(dateString) {
+            if (!dateString) return 'Unknown';
             const date = new Date(dateString);
             const now = new Date();
             const diffMs = now - date;
@@ -1230,44 +1204,97 @@
             const diffDays = Math.floor(diffMs / 86400000);
 
             if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins} minutes ago`;
-            if (diffHours < 24) return `${diffHours} hours ago`;
-            if (diffDays < 7) return `${diffDays} days ago`;
-            return date.toLocaleDateString();
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short'
+            });
         }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            document.getElementById('filterModule')?.addEventListener('change', loadDiscussions);
-            document.getElementById('filterAssignment')?.addEventListener('change', loadDiscussions);
-            document.getElementById('filterStatus')?.addEventListener('change', applyFilters);
-            document.getElementById('searchInput')?.addEventListener('input', applyFilters);
+        // Format time
+        function formatTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         }
 
-        // Set user info
-        function setUserInfo() {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (user.name) {
-                document.getElementById('userName').textContent = user.name;
-                document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Get initials from name
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.split(' ')
+                .map(word => word.charAt(0))
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+
+        // Format photo URL with backend server
+        function getPhotoUrl(photoPath) {
+            if (!photoPath) return null;
+            // If already absolute URL, return as-is
+            if (photoPath.startsWith('http')) return photoPath;
+            // Otherwise, prepend backend server URL
+            return `http://localhost:5000${photoPath}`;
+        }
+
+        // Logout
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+
+        // User dropdown toggle
+        (function initUserDropdown() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info when current user is loaded
+                setTimeout(() => {
+                    if (currentUser) {
+                        const dropdownUserName = document.getElementById('dropdownUserName');
+                        const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                        if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                        if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                    }
+                }, 500);
             }
-        }
+        })();
 
-        // Logout function
-        window.logout = function() {
-            console.log('Logout clicked...');
-
-            // Clear all localStorage
-            localStorage.clear();
-            sessionStorage.clear();
-
-            console.log('Storage cleared, redirecting to login...');
-
-            // Redirect to login page
-            window.location.href = '../auth/login.html';
-        };
-
-        // Start when DOM is ready
+        // Initialize on load
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {

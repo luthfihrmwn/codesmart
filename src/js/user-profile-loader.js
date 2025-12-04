@@ -65,25 +65,44 @@ class UserProfileLoader {
             // User has a photo - display it
             const photoUrl = user.photo_url.startsWith('http')
                 ? user.photo_url
-                : `http://localhost:3000${user.photo_url}`;
+                : `http://localhost:5000${user.photo_url}`;
 
             console.log('UserProfileLoader: Setting photo URL:', photoUrl);
 
             // Clear text content and add image
             userAvatar.innerHTML = '';
             userAvatar.textContent = '';
-            userAvatar.style.background = 'none'; // Remove gradient
-            userAvatar.style.backgroundImage = `url('${photoUrl}')`;
-            userAvatar.style.backgroundSize = 'cover';
-            userAvatar.style.backgroundPosition = 'center';
-            userAvatar.style.backgroundRepeat = 'no-repeat';
-            userAvatar.style.color = 'transparent'; // Hide text if any
+
+            // Create img element for better control
+            const img = document.createElement('img');
+            img.src = photoUrl;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '10px';
+            img.style.display = 'block';
+
+            // Add error handler in case image fails to load
+            img.onerror = function() {
+                console.log('UserProfileLoader: Image failed to load, using initial');
+                const initial = (user.name || 'A')[0].toUpperCase();
+                userAvatar.innerHTML = '';
+                userAvatar.textContent = initial;
+                userAvatar.style.removeProperty('background');
+                userAvatar.style.color = 'white';
+            };
+
+            userAvatar.appendChild(img);
+            userAvatar.style.setProperty('background', 'transparent', 'important');
+            userAvatar.style.padding = '0';
+            userAvatar.style.overflow = 'hidden';
         } else {
             // No photo - show initial
             const initial = (user.name || 'A')[0].toUpperCase();
+            userAvatar.innerHTML = '';
             userAvatar.textContent = initial;
-            userAvatar.style.background = ''; // Restore gradient
-            userAvatar.style.backgroundImage = 'none';
+            userAvatar.style.removeProperty('background');
+            userAvatar.style.padding = '';
             userAvatar.style.color = 'white'; // White text
         }
     }

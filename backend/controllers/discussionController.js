@@ -12,13 +12,18 @@ exports.getDiscussions = async (req, res) => {
                 d.*,
                 u.name as author_name,
                 u.role as author_role,
+                u.photo_url as author_photo,
                 m.id as class_id,
                 m.name as class_name,
                 COUNT(DISTINCT dr.id) as replies_count,
                 MAX(dr.created_at) as last_reply_at,
                 CASE WHEN d.is_locked THEN 'locked'
                      ELSE 'active'
-                END as status
+                END as status,
+                CASE WHEN EXISTS(
+                    SELECT 1 FROM discussion_replies
+                    WHERE discussion_id = d.id AND is_solution = true
+                ) THEN true ELSE false END as is_solved
             FROM discussions d
             LEFT JOIN users u ON d.user_id = u.id
             LEFT JOIN modules m ON d.module_id = m.id
@@ -39,7 +44,7 @@ exports.getDiscussions = async (req, res) => {
         }
 
         query += `
-            GROUP BY d.id, u.name, u.role, m.id, m.name
+            GROUP BY d.id, u.name, u.role, u.photo_url, m.id, m.name
             ORDER BY d.is_pinned DESC,
                      COALESCE(MAX(dr.created_at), d.created_at) DESC
             LIMIT $${params.length + 1} OFFSET $${params.length + 2}
@@ -76,6 +81,7 @@ exports.getDiscussionById = async (req, res) => {
                 d.*,
                 u.name as author_name,
                 u.role as author_role,
+                u.photo_url as author_photo,
                 m.name as module_name,
                 a.title as assignment_title
             FROM discussions d
@@ -98,7 +104,8 @@ exports.getDiscussionById = async (req, res) => {
             `SELECT
                 dr.*,
                 u.name as author_name,
-                u.role as author_role
+                u.role as author_role,
+                u.photo_url as author_photo
             FROM discussion_replies dr
             LEFT JOIN users u ON dr.user_id = u.id
             WHERE dr.discussion_id = $1
@@ -444,6 +451,45 @@ async function createDiscussionNotification(discussion, author) {
         console.error('Error creating discussion notification:', error);
     }
 }
+
+/**
+ * Get replies for a specific discussion
+ */
+exports.getDiscussionReplies = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const query = `
+            SELECT
+                dr.*,
+                u.name as user_name,
+                u.role as user_role,
+                u.email as user_email,
+                0 as likes_count,
+                false as is_liked_by_user
+            FROM discussion_replies dr
+            LEFT JOIN users u ON dr.user_id = u.id
+            WHERE dr.discussion_id = $1
+            ORDER BY dr.created_at ASC
+        `;
+
+        const result = await pool.query(query, [id]);
+
+        res.json({
+            success: true,
+            data: {
+                replies: result.rows
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching discussion replies:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching discussion replies',
+            error: error.message
+        });
+    }
+};
 
 /**
  * Helper: Create notification for new reply

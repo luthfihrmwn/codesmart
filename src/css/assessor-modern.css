@@ -8,41 +8,41 @@
    CSS VARIABLES - MODERN COLOR PALETTE
    ======================================== */
 :root {
-    /* Primary Purple/Violet Colors */
-    --primary: #8b5cf6;
-    --primary-dark: #7c3aed;
-    --primary-light: #a78bfa;
-    --primary-lighter: #c4b5fd;
-    --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    /* Primary Colors - Matching Admin Theme */
+    --primary: #667eea;
+    --primary-dark: #5568d3;
+    --primary-light: #8b9bef;
+    --primary-lighter: #b4bef5;
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
-    /* Secondary Pink Accent */
-    --secondary: #ec4899;
-    --secondary-dark: #db2777;
-    --secondary-light: #f472b6;
-    --secondary-gradient: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    /* Secondary Purple Accent - Matching Admin Theme */
+    --secondary: #764ba2;
+    --secondary-dark: #5e3a82;
+    --secondary-light: #9067ba;
+    --secondary-gradient: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 
-    /* Status Colors */
-    --success: #10b981;
-    --success-dark: #059669;
-    --success-light: #34d399;
+    /* Status Colors - Matching Admin Theme */
+    --success: #48bb78;
+    --success-dark: #38a169;
+    --success-light: #68d391;
 
-    --warning: #f59e0b;
-    --warning-dark: #d97706;
-    --warning-light: #fbbf24;
+    --warning: #ed8936;
+    --warning-dark: #dd6b20;
+    --warning-light: #f6ad55;
 
-    --danger: #ef4444;
-    --danger-dark: #dc2626;
-    --danger-light: #f87171;
+    --danger: #f56565;
+    --danger-dark: #e53e3e;
+    --danger-light: #fc8181;
 
-    --info: #3b82f6;
-    --info-dark: #2563eb;
-    --info-light: #60a5fa;
+    --info: #4299e1;
+    --info-dark: #3182ce;
+    --info-light: #63b3ed;
 
-    /* Neutral Colors */
-    --dark: #1e293b;
-    --dark-lighter: #334155;
-    --light: #f8fafc;
-    --light-darker: #f1f5f9;
+    /* Neutral Colors - Matching Admin Theme */
+    --dark: #2d3748;
+    --dark-lighter: #4a5568;
+    --light: #ffffff;
+    --light-darker: #f8f9fa;
 
     /* Grayscale */
     --gray-50: #f9fafb;
@@ -1427,3 +1427,221 @@ html {
 .backdrop-blur-md { backdrop-filter: blur(8px); }
 .backdrop-blur-lg { backdrop-filter: blur(16px); }
 .backdrop-blur-xl { backdrop-filter: blur(24px); }
+
+/* ========================================
+   FORCE WHITE BACKGROUND - OVERRIDE DARK THEME
+   Ensure all elements stay white regardless of browser theme
+   ======================================== */
+
+/* Force white background on body and html */
+html,
+body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+/* Force white background on main content area */
+.main-content,
+.content-area,
+.page-content {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+}
+
+/* Force white background on all cards */
+.card,
+.stat-card,
+.module-card,
+.class-card,
+.assignment-card {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+/* Force white background on tables */
+table,
+table thead,
+table tbody,
+table tr,
+.modern-table,
+.table-responsive {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+/* Force specific colors on table rows */
+table tbody tr {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+}
+
+table tbody tr:nth-child(even) {
+    background: #f8f9fa !important;
+    background-color: #f8f9fa !important;
+}
+
+table tbody tr:hover {
+    background: #f1f3f5 !important;
+    background-color: #f1f3f5 !important;
+}
+
+/* Force white on table headers */
+table thead,
+table thead tr,
+table thead th,
+.modern-table thead {
+    background: #667eea !important;
+    background-color: #667eea !important;
+    color: #ffffff !important;
+}
+
+/* Force white background on card headers and bodies */
+.card-header,
+.card-body,
+.card-footer {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+/* Force white background on form elements */
+input,
+textarea,
+select,
+.form-control {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+    border-color: #e2e8f0 !important;
+}
+
+/* Force white background on modals */
+.modal,
+.modal-content,
+.modal-body,
+.modal-header,
+.modal-footer {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+/* Force white background on dropdowns */
+.dropdown-menu,
+.dropdown-item {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #2d3748 !important;
+}
+
+/* Preserve sidebar gradient */
+.admin-sidebar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+}
+
+/* Preserve button colors */
+.btn-primary,
+.btn-primary-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+}
+
+.btn-success {
+    background: #48bb78 !important;
+    color: white !important;
+}
+
+.btn-warning {
+    background: #ed8936 !important;
+    color: white !important;
+}
+
+.btn-danger {
+    background: #f56565 !important;
+    color: white !important;
+}
+
+.btn-info {
+    background: #4299e1 !important;
+    color: white !important;
+}
+
+/* Preserve stat icons */
+.stat-icon {
+    color: white !important;
+}
+
+.stat-icon.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.stat-icon.success {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
+}
+
+.stat-icon.warning {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%) !important;
+}
+
+.stat-icon.danger {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%) !important;
+}
+
+.stat-icon.info {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%) !important;
+}
+
+/* Preserve status badges */
+.badge-success,
+.status-badge.success {
+    background: #48bb78 !important;
+    color: white !important;
+}
+
+.badge-warning,
+.status-badge.warning {
+    background: #ed8936 !important;
+    color: white !important;
+}
+
+.badge-danger,
+.status-badge.danger {
+    background: #f56565 !important;
+    color: white !important;
+}
+
+.badge-info,
+.status-badge.info {
+    background: #4299e1 !important;
+    color: white !important;
+}
+
+/* Force text colors */
+h1, h2, h3, h4, h5, h6,
+.card-title,
+.page-title {
+    color: #2d3748 !important;
+}
+
+p, span, div, td, th, li {
+    color: inherit;
+}
+
+/* Override any dark theme from browser */
+@media (prefers-color-scheme: dark) {
+    html,
+    body,
+    .main-content,
+    .card,
+    .stat-card,
+    table,
+    .modal {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #2d3748 !important;
+    }
+}

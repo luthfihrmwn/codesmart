@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assessor Dashboard - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
-    <link rel="stylesheet" href="../../css/notification.css">
+                <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
-    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
-</head>
+    </head>
 <body>
     <!-- Sidebar -->
     <div class="admin-sidebar">
@@ -77,14 +76,6 @@
                     <span>Analytics</span>
                 </a>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -93,8 +84,7 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">
-                    <i class='bx bx-home-alt'></i> Dashboard
+                <h1 class="page-title-header">Dashboard
                 </h1>
             </div>
             <div class="header-right">
@@ -102,11 +92,30 @@
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu" onclick="toggleUserMenu()">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Assessor</div>
                         <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -190,15 +199,32 @@
 
             <!-- My Classes Section -->
             <div class="card">
-                <div class="card-header">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="card-title"><i class='bx bx-book-open'></i> My Classes</h2>
                     <a href="classes-sidebar.html" class="btn btn-outline btn-sm">View All</a>
                 </div>
-                <div class="card-body">
-                    <div class="modules-grid" id="myClassesGrid">
-                        <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                            <div class="loader"></div>
-                        </div>
+                <div class="card-body" style="padding: 0;">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Class Name</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Code</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Level</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Students</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Status</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myClassesTable" style="background: white;">
+                                <tr>
+                                    <td colspan="6" style="padding: 60px; text-align: center;">
+                                        <div class="loader"></div>
+                                        <p style="margin-top: 16px; color: #94a3b8;">Loading classes...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -210,6 +236,7 @@
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAssessor()) {
@@ -302,53 +329,97 @@
             `).join('');
         }
 
-        function renderMyClasses(modules) {
-            const grid = document.getElementById('myClassesGrid');
-            if (modules.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;padding:40px;color:#999;">No classes assigned</div>';
+        async function renderMyClasses(modules) {
+            const tbody = document.getElementById('myClassesTable');
+
+            // Get real data from database
+            let realClasses = [];
+
+            try {
+                const studentsResponse = await apiService.getStudents();
+                const students = studentsResponse.success ?
+                    (studentsResponse.data.students || studentsResponse.data || []) : [];
+
+                // Transform modules to classes format (show first 5)
+                realClasses = modules.slice(0, 5).map(module => {
+                    const moduleStudents = students.filter(s => s.current_level === module.level);
+
+                    return {
+                        id: module.id,
+                        name: module.title || module.name || 'Untitled Class',
+                        code: module.slug ? module.slug.toUpperCase().substring(0, 6) : 'MOD' + module.id,
+                        description: module.description || 'No description available',
+                        level: module.level || 'fundamental',
+                        student_count: moduleStudents.length,
+                        capacity: 30,
+                        status: module.is_active ? 'active' : 'inactive'
+                    };
+                });
+            } catch (error) {
+                console.error('Error enriching classes data:', error);
+            }
+
+            if (realClasses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 60px; text-align: center;">
+                            <i class='bx bx-book-open' style="font-size: 64px; color: #cbd5e0;"></i>
+                            <p style="margin-top: 16px; color: #94a3b8; font-size: 16px;">No classes assigned</p>
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 
-            grid.innerHTML = modules.map(module => `
-                <div class="module-card">
-                    <div class="module-header">
-                        <div>
-                            <div class="module-level">
-                                <span class="badge badge-${module.level === 'fundamental' ? 'success' : module.level === 'intermediate' ? 'warning' : 'danger'}">
-                                    ${module.level || 'Fundamental'}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="status-dot ${module.is_active ? '' : 'inactive'}"></div>
-                    </div>
-                    <div class="module-card-body">
-                        <h3 class="module-card-title">${module.title || module.name}</h3>
-                        <p class="module-card-description">${module.description || 'No description available'}</p>
-                        <div class="module-card-meta">
-                            <span><i class='bx bx-book'></i> ${module.total_classes || 0} Classes</span>
-                            <span><i class='bx bx-task'></i> ${module.total_assignments || 0} Assignments</span>
-                        </div>
-                        <div class="module-card-actions">
-                            <a href="classes-sidebar.html?module=${module.slug}" class="btn btn-primary btn-sm">
-                                <i class='bx bx-folder-open'></i> View Details
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+            tbody.innerHTML = realClasses.map(cls => {
+                const statusColor = cls.status === 'active' ? '#10b981' : '#94a3b8';
+                const statusBg = cls.status === 'active' ? '#d1fae5' : '#f1f5f9';
 
-        function logout() {
-            modalService.confirm({
-                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
-                message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
-                confirmText: 'Yes, Logout',
-                cancelText: 'Cancel',
-                danger: true,
-                onConfirm: function() {
-                    authService.logout();
-                }
-            });
+                const levelColors = {
+                    fundamental: { bg: '#fef3c7', text: '#f59e0b' },
+                    intermediate: { bg: '#dbeafe', text: '#3b82f6' },
+                    advance: { bg: '#d1fae5', text: '#10b981' }
+                };
+                const levelColor = levelColors[cls.level] || { bg: '#f1f5f9', text: '#64748b' };
+
+                return `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 16px;">
+                            <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${cls.name}</div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${cls.description || 'No description'}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 8px; background: #f1f5f9; color: #475569; border-radius: 6px; font-size: 12px; font-weight: 600;">${cls.code}</span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; background: ${levelColor.bg}; color: ${levelColor.text}; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize;">
+                                ${cls.level}
+                            </span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 14px; color: #1e293b; font-weight: 600;">${cls.student_count || 0} / ${cls.capacity || 30}</div>
+                            <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; overflow: hidden;">
+                                <div style="width: ${((cls.student_count || 0) / (cls.capacity || 30)) * 100}%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                            </div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; background: ${statusBg}; color: ${statusColor}; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize;">
+                                ${cls.status}
+                            </span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="window.location.href='classes-sidebar.html'" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 12px; color: #475569;" title="View">
+                                    <i class='bx bx-show'></i>
+                                </button>
+                                <button onclick="window.location.href='submissions-sidebar.html?class=${cls.id}'" style="padding: 6px 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; cursor: pointer; font-size: 12px; color: #0284c7;" title="Submissions">
+                                    <i class='bx bx-file'></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // Set user info
@@ -372,6 +443,62 @@
                 type: 'success'
             });
         }, 1000);
+
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+    <script src="../../js/assessor-navbar.js"></script>
+    <script src="../../js/assessor-data-loader.js"></script>
+    <script>
+        // Load dashboard data when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Wait for services to be ready
+            setTimeout(() => {
+                if (window.assessorDataLoader) {
+                    assessorDataLoader.loadDashboardStats();
+                    assessorDataLoader.loadRecentSubmissions();
+                }
+            }, 500);
+        });
     </script>
 </body>
 </html>

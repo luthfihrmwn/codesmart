@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Discussions API</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .discussion { border: 1px solid #ccc; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .loading { text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Test Discussions API</h1>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading">Loading...</div>';
+
+            try {
+                // Login first
+                const loginResponse = await fetch('http://localhost:5000/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'guru', password: 'guru123' })
+                });
+                const loginData = await loginResponse.json();
+
+                if (!loginData.success) {
+                    resultDiv.innerHTML = '<p style="color:red;">Login failed!</p>';
+                    return;
+                }
+
+                const token = loginData.data.token;
+                console.log('Token:', token);
+
+                // Get discussions
+                const discussionsResponse = await fetch('http://localhost:5000/api/v1/discussions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const discussionsData = await discussionsResponse.json();
+
+                console.log('Discussions Response:', discussionsData);
+
+                if (discussionsData.success && discussionsData.data) {
+                    const discussions = discussionsData.data;
+                    console.log('Total discussions:', discussions.length);
+
+                    if (discussions.length === 0) {
+                        resultDiv.innerHTML = '<p>No discussions found</p>';
+                    } else {
+                        resultDiv.innerHTML = `
+                            <h2>Found ${discussions.length} discussions:</h2>
+                            ${discussions.map(d => `
+                                <div class="discussion">
+                                    <h3>${d.title}</h3>
+                                    <p>${d.content}</p>
+                                    <p><small>By: ${d.author_name} | Replies: ${d.replies_count} | Solved: ${d.is_solved}</small></p>
+                                </div>
+                            `).join('')}
+                        `;
+                    }
+                } else {
+                    resultDiv.innerHTML = '<p style="color:red;">Failed to load discussions</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        testAPI();
+    </script>
+</body>
+</html>

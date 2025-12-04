@@ -1,0 +1,60 @@
+/* Assessor Full Width Layout Override */
+
+/* Make content full width */
+.admin-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 30px !important;
+}
+
+/* Stats grid full width */
+.stats-grid {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Cards full width */
+.card {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Table containers full width */
+.table-container,
+.data-table-container,
+.modern-table-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow-x: auto;
+}
+
+/* Data table full width */
+.data-table {
+    width: 100% !important;
+    min-width: 100%;
+}
+
+/* Modern toolbar full width */
+.modern-toolbar {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Analytics container full width */
+.analytics-container,
+.announcements-container,
+.discussions-container {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Remove any center alignment */
+.admin-main {
+    max-width: 100% !important;
+}
+
+/* Ensure admin content takes full available space */
+.admin-main .admin-content {
+    margin: 0 auto;
+    max-width: none !important;
+}

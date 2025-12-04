@@ -21,6 +21,7 @@ const discussionRoutes = require('./routes/discussions');
 const exportRoutes = require('./routes/exports');
 const analyticsRoutes = require('./routes/analytics');
 const mlRoutes = require('./routes/ml');
+const classesRoutes = require('./routes/classes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -109,6 +110,7 @@ app.use(`/api/${API_VERSION}/discussions`, discussionRoutes);
 app.use(`/api/${API_VERSION}/exports`, exportRoutes);
 app.use(`/api/${API_VERSION}/analytics`, analyticsRoutes);
 app.use(`/api/${API_VERSION}/ml`, mlRoutes);
+app.use(`/api/${API_VERSION}/classes`, classesRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {

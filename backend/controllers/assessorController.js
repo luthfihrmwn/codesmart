@@ -7,7 +7,7 @@ exports.getPendingSubmissions = async (req, res, next) => {
     try {
         const { moduleId, level } = req.query;
 
-        let whereClause = "WHERE s.status = 'submitted'";
+        let whereClause = "WHERE s.status = 'pending'";
         let params = [];
         let paramCount = 1;
 

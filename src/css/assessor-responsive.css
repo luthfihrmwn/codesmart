@@ -1,0 +1,618 @@
+/* ========================================
+   ASSESSOR RESPONSIVE & MODERN DESIGN
+   Membuat semua halaman assessor rapi, modern, dan responsive
+   ======================================== */
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+:root {
+    --sidebar-width: 280px;
+    --header-height: 80px;
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   MOBILE FIRST - BASE STYLES
+   ======================================== */
+
+/* Hide sidebar on mobile by default */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        position: fixed !important;
+        left: -280px !important;
+        top: 0 !important;
+        height: 100vh !important;
+        width: 280px !important;
+        transition: left 0.3s ease !important;
+        z-index: 1000 !important;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .admin-sidebar.mobile-open {
+        left: 0 !important;
+    }
+
+    /* Overlay when sidebar is open on mobile */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    body.sidebar-open::before {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Main content takes full width on mobile */
+    .admin-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Header adjustments for mobile */
+    .admin-header {
+        padding: 15px 20px !important;
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+    }
+
+    .page-title-header {
+        font-size: 20px !important;
+    }
+
+    /* Mobile menu toggle button */
+    .mobile-menu-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-right: 12px;
+        transition: var(--transition-smooth);
+    }
+
+    .mobile-menu-toggle:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .mobile-menu-toggle i {
+        font-size: 24px;
+    }
+
+    /* Stats grid - 1 column on mobile */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        padding: 0 20px !important;
+    }
+
+    /* Cards take full width */
+    .stat-card,
+    .card,
+    .assignment-card,
+    .class-card,
+    .discussion-item {
+        margin: 0 20px 15px !important;
+    }
+
+    /* Table responsive wrapper */
+    .table-responsive {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        margin: 0 20px !important;
+    }
+
+    table {
+        min-width: 600px !important;
+        font-size: 14px !important;
+    }
+
+    /* User menu on mobile */
+    .user-menu {
+        flex-direction: row !important;
+        gap: 10px !important;
+    }
+
+    .user-info {
+        display: none !important;
+    }
+
+    .user-avatar {
+        margin: 0 !important;
+    }
+
+    /* Content padding */
+    .admin-content {
+        padding: 20px 0 !important;
+    }
+
+    /* Form elements full width on mobile */
+    .form-group,
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100% !important;
+    }
+
+    /* Buttons stack on mobile */
+    .button-group {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .button-group button,
+    .button-group a {
+        width: 100% !important;
+    }
+}
+
+/* ========================================
+   TABLET STYLES (768px - 1024px)
+   ======================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .admin-sidebar {
+        width: 240px !important;
+    }
+
+    .admin-main {
+        margin-left: 240px !important;
+    }
+
+    /* Stats grid - 2 columns on tablet */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+
+    /* Table adjustments */
+    table {
+        font-size: 14px !important;
+    }
+
+    .page-title-header {
+        font-size: 22px !important;
+    }
+
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   DESKTOP STYLES (1024px+)
+   ======================================== */
+@media (min-width: 1025px) {
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+
+    /* Stats grid - 4 columns on desktop */
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    /* Optimal content width */
+    .admin-content {
+        max-width: 1400px !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* ========================================
+   MODERN CARD STYLES
+   ======================================== */
+.stat-card,
+.card,
+.assignment-card,
+.class-card {
+    background: white !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: var(--transition-smooth) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.stat-card:hover,
+.card:hover,
+.assignment-card:hover,
+.class-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* ========================================
+   MODERN TABLE STYLES
+   ======================================== */
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.modern-table thead {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.modern-table thead th {
+    padding: 16px 20px;
+    font-weight: 600;
+    text-align: left;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.modern-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: var(--transition-smooth);
+}
+
+.modern-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.modern-table tbody td {
+    padding: 16px 20px;
+    font-size: 15px;
+    color: #374151;
+}
+
+.modern-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* ========================================
+   MODERN BUTTON STYLES
+   ======================================== */
+.btn-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: var(--transition-smooth);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-modern-primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-modern-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-modern-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn-modern-secondary:hover {
+    background: #e5e7eb;
+}
+
+.btn-modern-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-modern-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+/* ========================================
+   MODERN FORM STYLES
+   ======================================== */
+.form-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-modern .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-modern label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+}
+
+.form-modern input,
+.form-modern select,
+.form-modern textarea {
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: var(--transition-smooth);
+}
+
+.form-modern input:focus,
+.form-modern select:focus,
+.form-modern textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ========================================
+   MODERN BADGE STYLES
+   ======================================== */
+.badge-modern {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* ========================================
+   LOADING STATES
+   ======================================== */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ========================================
+   EMPTY STATE STYLES
+   ======================================== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #d1d5db;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    font-size: 15px;
+    color: #6b7280;
+    max-width: 400px;
+}
+
+/* ========================================
+   SMOOTH SCROLLING
+   ======================================== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a4190 100%);
+}
+
+/* ========================================
+   ACCESSIBILITY IMPROVEMENTS
+   ======================================== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus styles for keyboard navigation */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+    .admin-sidebar,
+    .admin-header,
+    .notification-bell,
+    .user-menu,
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+
+    .admin-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .stat-card,
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+    }
+}
+
+/* ========================================
+   DARK MODE SUPPORT (Optional)
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+    /* Keeping light theme for now as requested */
+    /* Can be enabled later if needed */
+}
+
+/* ========================================
+   ANIMATION UTILITIES
+   ======================================== */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+
+.mt-1 { margin-top: 8px !important; }
+.mt-2 { margin-top: 16px !important; }
+.mt-3 { margin-top: 24px !important; }
+.mt-4 { margin-top: 32px !important; }
+
+.mb-1 { margin-bottom: 8px !important; }
+.mb-2 { margin-bottom: 16px !important; }
+.mb-3 { margin-bottom: 24px !important; }
+.mb-4 { margin-bottom: 32px !important; }
+
+.p-1 { padding: 8px !important; }
+.p-2 { padding: 16px !important; }
+.p-3 { padding: 24px !important; }
+.p-4 { padding: 32px !important; }
+
+.flex { display: flex !important; }
+.flex-column { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.justify-center { justify-content: center !important; }
+.justify-between { justify-content: space-between !important; }
+.align-center { align-items: center !important; }
+
+.gap-1 { gap: 8px !important; }
+.gap-2 { gap: 16px !important; }
+.gap-3 { gap: 24px !important; }
+
+.w-full { width: 100% !important; }
+.h-full { height: 100% !important; }
+
+.rounded { border-radius: 8px !important; }
+.rounded-lg { border-radius: 12px !important; }
+.rounded-xl { border-radius: 16px !important; }
+
+.shadow-sm { box-shadow: var(--shadow-sm) !important; }
+.shadow-md { box-shadow: var(--shadow-md) !important; }
+.shadow-lg { box-shadow: var(--shadow-lg) !important; }

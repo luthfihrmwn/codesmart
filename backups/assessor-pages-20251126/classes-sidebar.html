@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Classes - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+    <link rel="stylesheet" href="../../css/assessor-override.css">
+    <link rel="stylesheet" href="../../css/assessor-responsive.css">
+    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item active">
+                    <i class='bx bx-book-open'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Grading</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Grade Submissions</span>
+                </a>
+                <a href="students-sidebar.html" class="nav-item">
+                    <i class='bx bx-user-check'></i>
+                    <span>Student Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="analytics-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">
+                    <i class='bx bx-book-open'></i> My Classes
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Assessor</div>
+                        <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filters -->
+            <div class="modern-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search classes...">
+                        <i class='bx bx-search'></i>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <select id="levelFilter" class="modern-select">
+                        <option value="all">All Levels</option>
+                        <option value="fundamental">Fundamental</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advance">Advanced</option>
+                    </select>
+                    <button class="btn btn-outline btn-sm" onclick="refreshClasses()">
+                        <i class='bx bx-refresh'></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Classes Grid -->
+            <div class="modules-grid" id="classesGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class Details Modal -->
+    <div class="modal" id="classModal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class='bx bx-book-open'></i> Class Details</h3>
+                <button class="modal-close" onclick="closeClassModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="classDetails">
+                    <div class="loader"></div>
+                </div>
+
+                <!-- Class Info -->
+                <div id="classInfo" style="display: none;">
+                    <!-- Stats -->
+                    <div class="stats-grid" style="margin-bottom: 30px;">
+                        <div class="stat-card">
+                            <div class="stat-icon primary">
+                                <i class='bx bx-user'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="classStudents">0</h3>
+                                <p>Enrolled Students</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon info">
+                                <i class='bx bx-book'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="classModules">0</h3>
+                                <p>Total Modules</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon warning">
+                                <i class='bx bx-task'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="classAssignments">0</h3>
+                                <p>Assignments</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <i class='bx bx-check-circle'></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="classCompletion">0%</h3>
+                                <p>Avg Completion</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Students List -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class='bx bx-user'></i> Enrolled Students</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Progress</th>
+                                            <th>Avg Score</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentsList">
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: 20px;">
+                                                No students enrolled
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assignments List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class='bx bx-task'></i> Assignments</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Class</th>
+                                            <th>Due Date</th>
+                                            <th>Submissions</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="assignmentsList">
+                                        <tr>
+                                            <td colspan="6" style="text-align: center; padding: 20px;">
+                                                No assignments found
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeClassModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAssessor()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allClasses = [];
+
+        // Load classes (modules)
+        async function loadClasses() {
+            try {
+                // Load modules
+                const response = await apiService.getModules();
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to load classes');
+                }
+
+                let modules = response.data.modules || response.data || [];
+
+                // Enrich modules with statistics
+                const assignmentsResponse = await apiService.getAssessorAssignments();
+                const assignments = assignmentsResponse.success ?
+                    (assignmentsResponse.data.assignments || []) : [];
+
+                const studentsResponse = await apiService.getStudents();
+                const students = studentsResponse.success ?
+                    (studentsResponse.data.students || studentsResponse.data || []) : [];
+
+                // Add statistics to each module
+                modules = modules.map(module => {
+                    const moduleAssignments = assignments.filter(a => a.module_id == module.id);
+                    const moduleStudents = students.filter(s => s.current_level === module.level);
+
+                    return {
+                        ...module,
+                        total_assignments: moduleAssignments.length,
+                        total_students: moduleStudents.length,
+                        total_classes: module.total_classes || 0
+                    };
+                });
+
+                allClasses = modules;
+                renderClasses(allClasses);
+
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                document.getElementById('classesGrid').innerHTML =
+                    '<div style="grid-column: 1/-1; text-align:center;padding:40px;color:#999;">Error loading classes</div>';
+            }
+        }
+
+        function renderClasses(classes) {
+            const grid = document.getElementById('classesGrid');
+            if (classes.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;padding:40px;color:#999;">No classes found</div>';
+                return;
+            }
+
+            grid.innerHTML = classes.map(classItem => {
+                const levelColor = classItem.level === 'fundamental' ? 'success' :
+                                  classItem.level === 'intermediate' ? 'warning' : 'danger';
+
+                return `
+                    <div class="module-card">
+                        <div class="module-header">
+                            <div>
+                                <div class="module-level">
+                                    <span class="badge badge-${levelColor}">
+                                        ${(classItem.level || 'fundamental').toUpperCase()}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="status-dot ${classItem.is_active ? '' : 'inactive'}"></div>
+                        </div>
+                        <div class="module-card-body">
+                            <h3 class="module-card-title">${classItem.title || classItem.name}</h3>
+                            <p class="module-card-description">${classItem.description || 'No description available'}</p>
+
+                            <div class="module-card-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value">${classItem.total_students || 0}</span>
+                                    <span class="stat-label">Students</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">${classItem.total_classes || 0}</span>
+                                    <span class="stat-label">Classes</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">${classItem.total_assignments || 0}</span>
+                                    <span class="stat-label">Assignments</span>
+                                </div>
+                            </div>
+
+                            <div class="module-card-actions">
+                                <button class="btn btn-primary btn-sm" onclick="viewClassDetails('${classItem.slug || classItem.id}')">
+                                    <i class='bx bx-folder-open'></i> View Details
+                                </button>
+                                <a href="submissions-sidebar.html?module=${classItem.slug}" class="btn btn-outline btn-sm">
+                                    <i class='bx bx-file'></i> Submissions
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter classes
+        function filterClasses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const levelFilter = document.getElementById('levelFilter').value;
+
+            let filtered = allClasses.filter(classItem => {
+                const matchesSearch = !searchTerm ||
+                    (classItem.title || classItem.name || '').toLowerCase().includes(searchTerm) ||
+                    (classItem.description || '').toLowerCase().includes(searchTerm);
+
+                const matchesLevel = levelFilter === 'all' || classItem.level === levelFilter;
+
+                return matchesSearch && matchesLevel;
+            });
+
+            renderClasses(filtered);
+        }
+
+        // View class details
+        async function viewClassDetails(classSlug) {
+            const modal = document.getElementById('classModal');
+            modal.classList.add('active');
+
+            const detailsDiv = document.getElementById('classDetails');
+            const infoDiv = document.getElementById('classInfo');
+
+            detailsDiv.style.display = 'block';
+            infoDiv.style.display = 'none';
+
+            try {
+                // Get class info
+                const classItem = allClasses.find(c => c.slug === classSlug || c.id == classSlug);
+
+                // Get students (filter by current level matching class level)
+                const studentsResponse = await apiService.getStudents();
+                let students = [];
+                if (studentsResponse.success) {
+                    const allStudents = studentsResponse.data.students || studentsResponse.data || [];
+                    students = allStudents.filter(s => s.current_level === classItem.level);
+                }
+
+                // Get assignments for this class
+                const assignmentsResponse = await apiService.getModuleAssignments(classSlug);
+                const assignments = assignmentsResponse.success ?
+                    (assignmentsResponse.data.assignments || assignmentsResponse.data || []) : [];
+
+                displayClassDetails(classItem, students, assignments);
+
+            } catch (error) {
+                console.error('Error loading class details:', error);
+                detailsDiv.innerHTML = '<p style="text-align:center;color:#999;">Error loading class details</p>';
+            }
+        }
+
+        function displayClassDetails(classItem, students, assignments) {
+            const detailsDiv = document.getElementById('classDetails');
+            const infoDiv = document.getElementById('classInfo');
+
+            detailsDiv.style.display = 'none';
+            infoDiv.style.display = 'block';
+
+            // Display class basic info
+            detailsDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <i class='bx bx-info-circle'></i>
+                    <div>
+                        <strong>Class:</strong> ${classItem.title || classItem.name}<br>
+                        <strong>Level:</strong> ${(classItem.level || 'fundamental').toUpperCase()}<br>
+                        <strong>Status:</strong> ${classItem.is_active ? 'Active' : 'Inactive'}<br>
+                        <strong>Description:</strong> ${classItem.description || 'No description'}
+                    </div>
+                </div>
+            `;
+
+            // Update stats
+            const totalStudents = students.length;
+            const totalAssignments = assignments.length;
+            const avgCompletion = students.length > 0 ?
+                students.reduce((sum, s) => sum + (s.progress || 0), 0) / students.length : 0;
+
+            document.getElementById('classStudents').textContent = totalStudents;
+            document.getElementById('classModules').textContent = classItem.total_classes || 0;
+            document.getElementById('classAssignments').textContent = totalAssignments;
+            document.getElementById('classCompletion').textContent = avgCompletion.toFixed(0) + '%';
+
+            // Display students list
+            const studentsList = document.getElementById('studentsList');
+            if (students.length === 0) {
+                studentsList.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No students enrolled</td></tr>';
+            } else {
+                studentsList.innerHTML = students.map(student => `
+                    <tr>
+                        <td><strong>${student.name}</strong></td>
+                        <td>${student.email}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); width: ${student.progress || 0}%;"></div>
+                                </div>
+                                <span style="font-size: 12px; font-weight: 600; color: #667eea;">${student.progress || 0}%</span>
+                            </div>
+                        </td>
+                        <td>${student.average_score || student.avg_score || '-'}</td>
+                        <td>
+                            <span class="badge badge-${student.status === 'active' ? 'success' : 'secondary'}">
+                                ${student.status || 'active'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Display assignments list
+            const assignmentsList = document.getElementById('assignmentsList');
+            if (assignments.length === 0) {
+                assignmentsList.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No assignments found</td></tr>';
+            } else {
+                assignmentsList.innerHTML = assignments.map(assignment => {
+                    const dueDate = assignment.due_date ? new Date(assignment.due_date) : null;
+                    const isOverdue = dueDate && dueDate < new Date();
+
+                    return `
+                        <tr>
+                            <td><strong>${assignment.title}</strong></td>
+                            <td>Class ${assignment.class_number || 'N/A'}</td>
+                            <td>
+                                <span class="badge badge-${isOverdue ? 'danger' : 'info'}">
+                                    ${dueDate ? dueDate.toLocaleDateString() : 'No due date'}
+                                </span>
+                            </td>
+                            <td>${assignment.total_submissions || 0}</td>
+                            <td>
+                                <span class="badge badge-${assignment.is_active ? 'success' : 'secondary'}">
+                                    ${assignment.is_active ? 'Active' : 'Inactive'}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="submissions-sidebar.html?assignment=${assignment.id}" class="btn btn-primary btn-sm">
+                                        <i class='bx bx-file'></i> View
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function closeClassModal() {
+            document.getElementById('classModal').classList.remove('active');
+        }
+
+        function refreshClasses() {
+            loadClasses();
+            notificationService.show('success', 'Classes refreshed');
+        }
+
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterClasses);
+        document.getElementById('levelFilter').addEventListener('change', filterClasses);
+
+        // Close modal on outside click
+        document.getElementById('classModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeClassModal();
+            }
+        });
+
+        // Initialize
+        loadClasses();
+
+        // Notification bell
+        // Notification bell is now handled by notification-bell.js
+        // Old event listener removed to prevent conflict
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+    </script>
+    <script src="../../js/assessor-navbar.js"></script>
+</body>
+</html>

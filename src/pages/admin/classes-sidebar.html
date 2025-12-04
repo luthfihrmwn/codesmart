@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classes Management - CodeSmart Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <link rel="stylesheet" href="../../css/notification.css">
@@ -342,68 +343,58 @@
 
         // Load all classes
         async function loadClasses() {
+            console.log('🔄 Loading classes from database...');
             try {
-                // For now, use mock data since backend might not have the endpoint yet
-                // TODO: Replace with actual API call: const response = await apiService.fetchWithAuth('/admin/classes');
+                // Fetch real data from API
+                const response = await apiService.fetchWithAuth('/classes');
+                console.log('✅ Classes API response:', response);
 
-                const mockClasses = [
-                    {
-                        id: 1,
-                        name: 'Python Programming Basics',
-                        code: 'PY101',
-                        description: 'Introduction to Python programming',
-                        level: 'fundamental',
-                        assessor_id: 6,
-                        assessor_name: 'azzahra',
-                        student_count: 1,
-                        capacity: 30,
-                        schedule: 'Mon & Wed, 10:00-12:00',
-                        start_date: '2025-01-15',
-                        end_date: '2025-05-15',
-                        status: 'active'
-                    },
-                    {
-                        id: 2,
-                        name: 'Advanced JavaScript',
-                        code: 'JS201',
-                        description: 'Advanced JavaScript concepts',
-                        level: 'advance',
-                        assessor_id: 6,
-                        assessor_name: 'azzahra',
-                        student_count: 1,
-                        capacity: 25,
-                        schedule: 'Tue & Thu, 14:00-16:00',
-                        start_date: '2025-01-20',
-                        end_date: '2025-05-20',
-                        status: 'active'
-                    },
-                    {
-                        id: 3,
-                        name: 'Web Development Intermediate',
-                        code: 'WD102',
-                        description: 'Intermediate web development',
-                        level: 'intermediate',
-                        assessor_id: 6,
-                        assessor_name: 'azzahra',
-                        student_count: 0,
-                        capacity: 30,
-                        schedule: 'Mon & Fri, 13:00-15:00',
-                        start_date: '2025-02-01',
-                        end_date: '2025-06-01',
-                        status: 'inactive'
-                    }
-                ];
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to load classes');
+                }
 
-                allClasses = mockClasses;
+                // Map API response to expected format
+                allClasses = (response.data || []).map(cls => ({
+                    id: cls.id,
+                    name: cls.name,
+                    code: cls.code,
+                    description: cls.description || '',
+                    level: cls.level,
+                    assessor_id: cls.assessor_id,
+                    assessor_name: cls.assessor_name || 'Unassigned',
+                    assessor_photo: cls.assessor_photo || null,
+                    student_count: cls.student_count || cls.enrolled_students || 0,
+                    capacity: cls.capacity || 30,
+                    schedule: cls.schedule || 'Not scheduled',
+                    start_date: cls.start_date || cls.created_at,
+                    end_date: cls.end_date || '',
+                    status: cls.is_active ? 'active' : 'inactive'
+                }));
+
+                console.log(`📊 Loaded ${allClasses.length} classes from database`);
                 updateStats();
                 renderClasses();
             } catch (error) {
-                console.error('Error loading classes:', error);
+                console.error('❌ Error loading classes:', error);
                 modalService.addNotification({
                     title: 'Error',
-                    message: 'Failed to load classes',
+                    message: 'Failed to load classes: ' + error.message,
                     type: 'error'
                 });
+
+                // Show error in table
+                document.getElementById('classesTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 60px; text-align: center;">
+                            <i class='bx bx-error-circle' style="font-size: 48px; color: #ef4444;"></i>
+                            <p style="margin-top: 16px; color: #64748b;">Failed to load classes</p>
+                            <p style="color: #94a3b8; font-size: 14px;">${error.message}</p>
+                            <button onclick="loadClasses()" style="margin-top: 12px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                <i class='bx bx-refresh'></i> Retry
+                            </button>
+                        </td>
+                    </tr>
+                `;
             }
         }
 
@@ -502,9 +493,19 @@
                         </td>
                         <td style="padding: 16px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">
-                                    ${(cls.assessor_name || 'NA').substring(0, 2).toUpperCase()}
-                                </div>
+                                ${cls.assessor_photo ? `
+                                    <img src="http://localhost:5000${cls.assessor_photo}"
+                                         alt="${cls.assessor_name || 'Assessor'}"
+                                         style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div style="display: none; width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">
+                                        ${(cls.assessor_name || 'NA').substring(0, 2).toUpperCase()}
+                                    </div>
+                                ` : `
+                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">
+                                        ${(cls.assessor_name || 'NA').substring(0, 2).toUpperCase()}
+                                    </div>
+                                `}
                                 <div>
                                     <div style="font-size: 14px; color: #1e293b; font-weight: 500;">${cls.assessor_name || 'Not assigned'}</div>
                                 </div>
@@ -588,66 +589,50 @@
                 code: document.getElementById('classCode').value,
                 description: document.getElementById('classDescription').value,
                 level: document.getElementById('classLevel').value,
-                capacity: parseInt(document.getElementById('classCapacity').value),
-                assessor_id: parseInt(document.getElementById('classAssessor').value),
+                capacity: parseInt(document.getElementById('classCapacity').value) || 30,
+                assessor_id: parseInt(document.getElementById('classAssessor').value) || null,
                 schedule: document.getElementById('classSchedule').value,
-                start_date: document.getElementById('classStartDate').value,
-                end_date: document.getElementById('classEndDate').value,
-                status: document.getElementById('classActive').checked ? 'active' : 'inactive'
+                is_active: document.getElementById('classActive').checked
             };
 
             try {
-                // TODO: Replace with actual API call
-                // const response = await apiService.fetchWithAuth(
-                //     classId ? `/admin/classes/${classId}` : '/admin/classes',
-                //     {
-                //         method: classId ? 'PUT' : 'POST',
-                //         body: JSON.stringify(classData)
-                //     }
-                // );
-
-                // Mock success
-                const assessor = allAssessors.find(a => a.id === classData.assessor_id);
+                let response;
 
                 if (classId) {
-                    // Update existing
-                    const index = allClasses.findIndex(c => c.id === parseInt(classId));
-                    if (index !== -1) {
-                        allClasses[index] = {
-                            ...allClasses[index],
-                            ...classData,
-                            assessor_name: assessor?.name || 'Unknown'
-                        };
-                    }
-                    modalService.addNotification({
-                        title: 'Success',
-                        message: 'Class updated successfully',
-                        type: 'success'
+                    // Update existing class
+                    console.log('📝 Updating class:', classId, classData);
+                    response = await apiService.fetchWithAuth(`/classes/${classId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(classData)
                     });
                 } else {
-                    // Create new
-                    const newClass = {
-                        id: Date.now(),
-                        ...classData,
-                        assessor_name: assessor?.name || 'Unknown',
-                        student_count: 0
-                    };
-                    allClasses.unshift(newClass);
-                    modalService.addNotification({
-                        title: 'Success',
-                        message: 'Class created successfully',
-                        type: 'success'
+                    // Create new class
+                    console.log('➕ Creating new class:', classData);
+                    response = await apiService.fetchWithAuth('/classes', {
+                        method: 'POST',
+                        body: JSON.stringify(classData)
                     });
                 }
 
-                updateStats();
-                renderClasses();
+                console.log('✅ Save response:', response);
+
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to save class');
+                }
+
+                modalService.addNotification({
+                    title: 'Success',
+                    message: classId ? 'Class updated successfully' : 'Class created successfully',
+                    type: 'success'
+                });
+
                 closeClassModal();
+                await loadClasses(); // Reload to get fresh data
             } catch (error) {
-                console.error('Error saving class:', error);
+                console.error('❌ Error saving class:', error);
                 modalService.addNotification({
                     title: 'Error',
-                    message: 'Failed to save class',
+                    message: 'Failed to save class: ' + error.message,
                     type: 'error'
                 });
             }
@@ -655,26 +640,32 @@
 
         // Delete class
         async function deleteClass(classId) {
-            if (!confirm('Are you sure you want to delete this class?')) return;
+            if (!confirm('Are you sure you want to delete this class? This action cannot be undone.')) return;
 
             try {
-                // TODO: Replace with actual API call
-                // await apiService.fetchWithAuth(`/admin/classes/${classId}`, { method: 'DELETE' });
+                console.log('🗑️ Deleting class:', classId);
+                const response = await apiService.fetchWithAuth(`/classes/${classId}`, {
+                    method: 'DELETE'
+                });
 
-                allClasses = allClasses.filter(c => c.id !== classId);
-                updateStats();
-                renderClasses();
+                console.log('✅ Delete response:', response);
+
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to delete class');
+                }
 
                 modalService.addNotification({
                     title: 'Success',
                     message: 'Class deleted successfully',
                     type: 'success'
                 });
+
+                await loadClasses(); // Reload to get fresh data
             } catch (error) {
-                console.error('Error deleting class:', error);
+                console.error('❌ Error deleting class:', error);
                 modalService.addNotification({
                     title: 'Error',
-                    message: 'Failed to delete class',
+                    message: 'Failed to delete class: ' + error.message,
                     type: 'error'
                 });
             }

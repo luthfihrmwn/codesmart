@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Assignments - CodeSmart Assessor</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
-    <link rel="stylesheet" href="../../css/notification.css">
+                <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
-    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
-</head>
+    </head>
 <body>
     <!-- Sidebar -->
     <div class="admin-sidebar">
@@ -77,14 +76,6 @@
                     <span>Analytics</span>
                 </a>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -93,8 +84,7 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">
-                    <i class='bx bx-task'></i> Manage Assignments
+                <h1 class="page-title-header">Manage Assignments
                 </h1>
             </div>
             <div class="header-right">
@@ -102,11 +92,30 @@
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu" onclick="toggleUserMenu()">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Assessor</div>
                         <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,6 +123,46 @@
 
         <!-- Content -->
         <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-task'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalAssignments">0</h3>
+                        <p>Total Assignments</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-time-five'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingReview">0</h3>
+                        <p>Pending Review</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="completedAssignments">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-line-chart'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="avgScore">0%</h3>
+                        <p>Average Score</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Modern Toolbar -->
             <div class="modern-toolbar">
                 <div class="toolbar-left">
@@ -287,6 +336,7 @@
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAssessor()) {
@@ -295,6 +345,7 @@
 
         let allAssignments = [];
         let allModules = [];
+        let allSubmissions = [];
         let editingAssignmentId = null;
 
         // Load modules for dropdowns
@@ -333,6 +384,67 @@
             });
         }
 
+        // Update stats
+        async function updateStats() {
+            try {
+                // Calculate basic stats from assignments
+                const totalAssignments = allAssignments.length;
+                const activeAssignments = allAssignments.filter(a => a.is_active || a.status === 'active');
+
+                // Try to get submissions from multiple endpoints
+                let pendingSubmissions = [];
+                let gradedSubmissions = [];
+                allSubmissions = [];
+
+                try {
+                    // Try to get pending and graded submissions separately
+                    const [pendingResponse, gradedResponse] = await Promise.allSettled([
+                        apiService.getPendingSubmissions(),
+                        apiService.getGradedSubmissions()
+                    ]);
+
+                    if (pendingResponse.status === 'fulfilled' && pendingResponse.value.success) {
+                        pendingSubmissions = pendingResponse.value.data.submissions || pendingResponse.value.data || [];
+                    }
+
+                    if (gradedResponse.status === 'fulfilled' && gradedResponse.value.success) {
+                        gradedSubmissions = gradedResponse.value.data.submissions || gradedResponse.value.data || [];
+                    }
+
+                    // Combine all submissions
+                    allSubmissions = [...pendingSubmissions, ...gradedSubmissions];
+                } catch (submissionError) {
+                    console.warn('Could not load submissions for stats:', submissionError);
+                }
+
+                // Calculate average score
+                let avgScore = 0;
+                if (gradedSubmissions.length > 0) {
+                    const totalScore = gradedSubmissions.reduce((sum, s) => sum + (parseFloat(s.score) || 0), 0);
+                    const totalMaxScore = gradedSubmissions.reduce((sum, s) => {
+                        const assignment = allAssignments.find(a => a.id === s.assignment_id);
+                        return sum + (assignment ? (assignment.max_score || 100) : 100);
+                    }, 0);
+                    avgScore = totalMaxScore > 0 ? Math.round((totalScore / totalMaxScore) * 100) : 0;
+                }
+
+                // Update UI
+                document.getElementById('totalAssignments').textContent = totalAssignments;
+                document.getElementById('pendingReview').textContent = pendingSubmissions.length;
+                document.getElementById('completedAssignments').textContent = activeAssignments.length;
+                document.getElementById('avgScore').textContent = avgScore + '%';
+            } catch (error) {
+                console.error('Error updating stats:', error);
+                // Set default values on error
+                const totalAssignments = allAssignments.length;
+                const activeAssignments = allAssignments.filter(a => a.is_active || a.status === 'active');
+                document.getElementById('totalAssignments').textContent = totalAssignments;
+                document.getElementById('pendingReview').textContent = '0';
+                document.getElementById('completedAssignments').textContent = activeAssignments.length;
+                document.getElementById('avgScore').textContent = '0%';
+            }
+        }
+
         // Load assignments
         async function loadAssignments() {
             try {
@@ -347,6 +459,7 @@
                 if (response.success) {
                     allAssignments = response.data.assignments || response.data || [];
                     console.log('Assignments loaded:', allAssignments.length);
+                    updateStats();
                     renderAssignments(allAssignments);
                 } else {
                     console.error('API returned error:', response);
@@ -384,7 +497,8 @@
                 const moduleName = module ? (module.title || module.name) : 'N/A';
                 const dueDate = assignment.due_date ? new Date(assignment.due_date).toLocaleString() : 'No deadline';
                 const status = assignment.is_active || assignment.status === 'active' ? 'active' : 'inactive';
-                const submissionCount = assignment.submission_count || assignment.submissions_count || 0;
+                // Count submissions for this assignment from real data
+                const submissionCount = allSubmissions.filter(s => s.assignment_id === assignment.id).length;
 
                 return `
                     <tr>
@@ -656,8 +770,8 @@
 
         function logout() {
             modalService.confirm({
-                title: '<i class="bx bx-log-out"></i> Confirm Logout',
-                message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart?',
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
@@ -694,6 +808,46 @@
 
         // Notification bell is now handled by notification-bell.js
         // Old event listener and welcome toast removed to prevent conflict
+
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
     </script>
+    <script src="../../js/assessor-data-loader.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (window.assessorDataLoader) {
+                    assessorDataLoader.loadAssignments();
+                }
+            }, 500);
+        });
+    </script>
+    <script src="../../js/assessor-navbar.js"></script>
 </body>
 </html>

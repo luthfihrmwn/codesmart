@@ -4,13 +4,554 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Classes - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
-    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
-</head>
+    <style>
+        /* Modern Classes Page Styles */
+
+        /* Enhanced Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .stat-card .stat-info h3 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-info p {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Modern Toolbar */
+        .modern-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border-radius: 12px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            min-width: 150px;
+        }
+
+        .filter-select:hover {
+            border-color: #667eea;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Table Container */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        /* Modern Table Styles */
+        .modern-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+        }
+
+        .modern-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .modern-table thead tr th {
+            padding: 20px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: none;
+        }
+
+        .modern-table tbody tr {
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .modern-table tbody tr::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transform-origin: center;
+            transition: transform 0.3s ease;
+        }
+
+        .modern-table tbody tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+            z-index: 10;
+        }
+
+        .modern-table tbody tr:hover::before {
+            transform: scaleY(1);
+        }
+
+        .modern-table tbody tr td {
+            padding: 16px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .modern-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Column-specific alignment */
+        .modern-table tbody tr td:nth-child(1),
+        .modern-table thead tr th:nth-child(1) {
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .modern-table tbody tr td:nth-child(2),
+        .modern-table tbody tr td:nth-child(3),
+        .modern-table tbody tr td:nth-child(4),
+        .modern-table tbody tr td:nth-child(5),
+        .modern-table tbody tr td:nth-child(6),
+        .modern-table tbody tr td:nth-child(7),
+        .modern-table thead tr th:nth-child(2),
+        .modern-table thead tr th:nth-child(3),
+        .modern-table thead tr th:nth-child(4),
+        .modern-table thead tr th:nth-child(5),
+        .modern-table thead tr th:nth-child(6),
+        .modern-table thead tr th:nth-child(7) {
+            text-align: left;
+            padding-left: 8px;
+        }
+
+        /* Table Cell Content Styles */
+        .table-cell-main {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            line-height: 1.4;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .table-cell-sub {
+            font-size: 11px;
+            color: #94a3b8;
+            line-height: 1.4;
+            text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+        }
+
+        /* Code Badge in Table */
+        .code-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e7edff 100%);
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #667eea;
+            letter-spacing: 0.8px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.12);
+        }
+
+        .modern-table tbody tr:hover .code-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Level Badge */
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .level-badge i {
+            font-size: 14px;
+        }
+
+        .level-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: left 0.5s;
+        }
+
+        .modern-table tbody tr:hover .level-badge::before {
+            left: 100%;
+        }
+
+        .level-badge.fundamental {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(251, 191, 36, 0.5);
+        }
+
+        .level-badge.intermediate {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5);
+        }
+
+        .level-badge.advance {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
+        }
+
+        .modern-table tbody tr:hover .level-badge {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Student Progress in Table */
+        .student-count {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 120px;
+        }
+
+        .count-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .count-text .highlight {
+            color: #667eea;
+            font-size: 15px;
+        }
+
+        .progress-bar-container {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+            position: relative;
+        }
+
+        /* Status Badge in Table */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .status-badge.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-badge.inactive {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(107, 114, 128, 0.4);
+        }
+
+        .status-badge i {
+            font-size: 14px;
+        }
+
+        .modern-table tbody tr:hover .status-badge {
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Modern Action Buttons in Table */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-table-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-table-action::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .btn-table-action:hover::before {
+            width: 120px;
+            height: 120px;
+        }
+
+        .btn-table-action.view {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-table-action.view:hover {
+            transform: translateY(-3px) scale(1.15);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.7);
+        }
+
+        .btn-table-action.submissions {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+        }
+
+        .btn-table-action.submissions:hover {
+            transform: translateY(-3px) scale(1.15);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.7);
+        }
+
+        /* Modern Loader */
+        .loader-modern {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-right-color: #764ba2;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state i {
+            font-size: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .empty-state p {
+            font-size: 18px;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar-left {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .class-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    </head>
 <body>
     <!-- Sidebar -->
     <div class="admin-sidebar">
@@ -77,14 +618,6 @@
                     <span>Analytics</span>
                 </a>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -93,8 +626,7 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">
-                    <i class='bx bx-book-open'></i> My Classes
+                <h1 class="page-title-header">My Classes
                 </h1>
             </div>
             <div class="header-right">
@@ -102,11 +634,30 @@
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Assessor</div>
                         <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,152 +665,101 @@
 
         <!-- Content -->
         <div class="admin-content">
-            <!-- Filters -->
-            <div class="modern-toolbar">
-                <div class="toolbar-left">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Search classes...">
-                        <i class='bx bx-search'></i>
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-book-open'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalClasses">0</h3>
+                        <p>Total Classes</p>
                     </div>
                 </div>
-                <div class="toolbar-right">
-                    <select id="levelFilter" class="modern-select">
-                        <option value="all">All Levels</option>
-                        <option value="fundamental">Fundamental</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advance">Advanced</option>
-                    </select>
-                    <button class="btn btn-outline btn-sm" onclick="refreshClasses()">
-                        <i class='bx bx-refresh'></i> Refresh
-                    </button>
-                </div>
-            </div>
-
-            <!-- Classes Grid -->
-            <div class="modules-grid" id="classesGrid">
-                <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                    <div class="loader"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Class Details Modal -->
-    <div class="modal" id="classModal">
-        <div class="modal-content" style="max-width: 1000px;">
-            <div class="modal-header">
-                <h3 class="modal-title"><i class='bx bx-book-open'></i> Class Details</h3>
-                <button class="modal-close" onclick="closeClassModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="classDetails">
-                    <div class="loader"></div>
-                </div>
-
-                <!-- Class Info -->
-                <div id="classInfo" style="display: none;">
-                    <!-- Stats -->
-                    <div class="stats-grid" style="margin-bottom: 30px;">
-                        <div class="stat-card">
-                            <div class="stat-icon primary">
-                                <i class='bx bx-user'></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="classStudents">0</h3>
-                                <p>Enrolled Students</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon info">
-                                <i class='bx bx-book'></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="classModules">0</h3>
-                                <p>Total Modules</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon warning">
-                                <i class='bx bx-task'></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="classAssignments">0</h3>
-                                <p>Assignments</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon success">
-                                <i class='bx bx-check-circle'></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3 id="classCompletion">0%</h3>
-                                <p>Avg Completion</p>
-                            </div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
                     </div>
-
-                    <!-- Students List -->
-                    <div class="card" style="margin-bottom: 20px;">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class='bx bx-user'></i> Enrolled Students</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Progress</th>
-                                            <th>Avg Score</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="studentsList">
-                                        <tr>
-                                            <td colspan="5" style="text-align: center; padding: 20px;">
-                                                No students enrolled
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="stat-info">
+                        <h3 id="activeClasses">0</h3>
+                        <p>Active Classes</p>
                     </div>
-
-                    <!-- Assignments List -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class='bx bx-task'></i> Assignments</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Title</th>
-                                            <th>Class</th>
-                                            <th>Due Date</th>
-                                            <th>Submissions</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="assignmentsList">
-                                        <tr>
-                                            <td colspan="6" style="text-align: center; padding: 20px;">
-                                                No assignments found
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-user-check'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalStudents">0</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-task'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalAssignments">0</h3>
+                        <p>Total Assignments</p>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="closeClassModal()">Close</button>
+
+            <!-- Toolbar -->
+            <div class="card">
+                <div class="modern-toolbar">
+                    <div class="toolbar-left">
+                        <div class="search-box">
+                            <i class='bx bx-search'></i>
+                            <input type="text" id="searchInput" placeholder="Search classes...">
+                        </div>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select id="levelFilter" class="filter-select">
+                            <option value="all">All Levels</option>
+                            <option value="fundamental">Fundamental</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advance">Advance</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-right">
+                        <button onclick="refreshClasses()" class="btn-secondary">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes Table -->
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-body" style="padding: 0;">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Class Name</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Code</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Level</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Students</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Schedule</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Status</th>
+                                    <th style="padding: 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classesTableBody" style="background: white;">
+                                <tr>
+                                    <td colspan="7" style="padding: 60px; text-align: center;">
+                                        <div class="loader"></div>
+                                        <p style="margin-top: 16px; color: #94a3b8;">Loading classes...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -269,6 +769,7 @@
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAssessor()) {
@@ -277,267 +778,202 @@
 
         let allClasses = [];
 
-        // Load classes (modules)
+        // Load classes
         async function loadClasses() {
+            console.log('🔄 Loading classes assigned to assessor...');
             try {
-                // Load modules
-                const response = await apiService.getModules();
+                // Get current user
+                const currentUser = authService.getCurrentUser();
+                if (!currentUser || !currentUser.id) {
+                    throw new Error('User not authenticated');
+                }
+
+                console.log('👤 Current assessor ID:', currentUser.id);
+
+                // Load classes from new classes API
+                const response = await apiService.fetchWithAuth('/classes');
+
                 if (!response.success) {
                     throw new Error(response.message || 'Failed to load classes');
                 }
 
-                let modules = response.data.modules || response.data || [];
+                console.log('📦 Total classes from API:', response.data?.length || 0);
 
-                // Enrich modules with statistics
-                const assignmentsResponse = await apiService.getAssessorAssignments();
-                const assignments = assignmentsResponse.success ?
-                    (assignmentsResponse.data.assignments || []) : [];
+                // Filter only classes assigned to this assessor
+                const assignedClasses = (response.data || []).filter(cls =>
+                    cls.assessor_id === currentUser.id
+                );
 
-                const studentsResponse = await apiService.getStudents();
-                const students = studentsResponse.success ?
-                    (studentsResponse.data.students || studentsResponse.data || []) : [];
+                console.log('✅ Classes assigned to this assessor:', assignedClasses.length);
 
-                // Add statistics to each module
-                modules = modules.map(module => {
-                    const moduleAssignments = assignments.filter(a => a.module_id == module.id);
-                    const moduleStudents = students.filter(s => s.current_level === module.level);
+                // Map classes data to match table format
+                allClasses = assignedClasses.map(cls => ({
+                    id: cls.id,
+                    name: cls.name,
+                    code: cls.code,
+                    description: cls.description || 'No description available',
+                    level: cls.level,
+                    assessor_id: cls.assessor_id,
+                    assessor_name: cls.assessor_name,
+                    assessor_email: cls.assessor_email,
+                    assessor_photo: cls.assessor_photo || null,
+                    student_count: cls.student_count || cls.enrolled_students || 0,
+                    capacity: cls.capacity || 30,
+                    schedule: cls.schedule || 'Flexible',
+                    start_date: cls.created_at,
+                    end_date: null,
+                    status: cls.is_active ? 'active' : 'inactive'
+                }));
 
-                    return {
-                        ...module,
-                        total_assignments: moduleAssignments.length,
-                        total_students: moduleStudents.length,
-                        total_classes: module.total_classes || 0
-                    };
-                });
-
-                allClasses = modules;
-                renderClasses(allClasses);
-
+                updateStats();
+                renderClasses();
             } catch (error) {
-                console.error('Error loading classes:', error);
-                document.getElementById('classesGrid').innerHTML =
-                    '<div style="grid-column: 1/-1; text-align:center;padding:40px;color:#999;">Error loading classes</div>';
+                console.error('❌ Error loading classes:', error);
+                modalService.addNotification({
+                    title: 'Error',
+                    message: 'Failed to load classes from database',
+                    type: 'error'
+                });
+                allClasses = [];
+                renderClasses();
             }
         }
 
-        function renderClasses(classes) {
-            const grid = document.getElementById('classesGrid');
-            if (classes.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;padding:40px;color:#999;">No classes found</div>';
+        // Update stats
+        function updateStats() {
+            const activeClasses = allClasses.filter(c => c.status === 'active');
+            const totalStudents = allClasses.reduce((sum, c) => sum + (c.student_count || 0), 0);
+            const totalAssignments = activeClasses.length * 5; // Mock calculation
+
+            document.getElementById('totalClasses').textContent = allClasses.length;
+            document.getElementById('activeClasses').textContent = activeClasses.length;
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('totalAssignments').textContent = totalAssignments;
+        }
+
+        // Render classes table
+        function renderClasses() {
+            const tbody = document.getElementById('classesTableBody');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const levelFilter = document.getElementById('levelFilter').value;
+
+            let filteredClasses = allClasses.filter(cls => {
+                const matchSearch = cls.name.toLowerCase().includes(searchTerm) ||
+                                  cls.code.toLowerCase().includes(searchTerm);
+                const matchStatus = statusFilter === 'all' || cls.status === statusFilter;
+                const matchLevel = levelFilter === 'all' || cls.level === levelFilter;
+                return matchSearch && matchStatus && matchLevel;
+            });
+
+            if (filteredClasses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class='bx bx-book-open'></i>
+                            <p>No classes found</p>
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 
-            grid.innerHTML = classes.map(classItem => {
-                const levelColor = classItem.level === 'fundamental' ? 'success' :
-                                  classItem.level === 'intermediate' ? 'warning' : 'danger';
+            tbody.innerHTML = filteredClasses.map(cls => {
+                const statusColor = cls.status === 'active' ? '#10b981' : '#94a3b8';
+                const statusBg = cls.status === 'active' ? '#d1fae5' : '#f1f5f9';
+
+                const levelColors = {
+                    fundamental: { bg: '#fef3c7', text: '#f59e0b' },
+                    intermediate: { bg: '#dbeafe', text: '#3b82f6' },
+                    advance: { bg: '#d1fae5', text: '#10b981' }
+                };
+                const levelColor = levelColors[cls.level] || { bg: '#f1f5f9', text: '#64748b' };
 
                 return `
-                    <div class="module-card">
-                        <div class="module-header">
-                            <div>
-                                <div class="module-level">
-                                    <span class="badge badge-${levelColor}">
-                                        ${(classItem.level || 'fundamental').toUpperCase()}
-                                    </span>
-                                </div>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 16px;">
+                            <div style="font-weight: 600; color: #1e293b; font-size: 14px;">${cls.name}</div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${cls.description || 'No description'}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 8px; background: #f1f5f9; color: #475569; border-radius: 6px; font-size: 12px; font-weight: 600;">${cls.code}</span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; background: ${levelColor.bg}; color: ${levelColor.text}; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize;">
+                                ${cls.level}
+                            </span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 14px; color: #1e293b; font-weight: 600;">${cls.student_count || 0} / ${cls.capacity || 30}</div>
+                            <div style="width: 100%; height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 6px; overflow: hidden;">
+                                <div style="width: ${((cls.student_count || 0) / (cls.capacity || 30)) * 100}%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
                             </div>
-                            <div class="status-dot ${classItem.is_active ? '' : 'inactive'}"></div>
-                        </div>
-                        <div class="module-card-body">
-                            <h3 class="module-card-title">${classItem.title || classItem.name}</h3>
-                            <p class="module-card-description">${classItem.description || 'No description available'}</p>
-
-                            <div class="module-card-stats">
-                                <div class="stat-item">
-                                    <span class="stat-value">${classItem.total_students || 0}</span>
-                                    <span class="stat-label">Students</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">${classItem.total_classes || 0}</span>
-                                    <span class="stat-label">Classes</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">${classItem.total_assignments || 0}</span>
-                                    <span class="stat-label">Assignments</span>
-                                </div>
-                            </div>
-
-                            <div class="module-card-actions">
-                                <button class="btn btn-primary btn-sm" onclick="viewClassDetails('${classItem.slug || classItem.id}')">
-                                    <i class='bx bx-folder-open'></i> View Details
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="font-size: 13px; color: #64748b;">${cls.schedule || 'Flexible'}</div>
+                        </td>
+                        <td style="padding: 16px;">
+                            <span style="padding: 4px 12px; background: ${statusBg}; color: ${statusColor}; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize;">
+                                ${cls.status}
+                            </span>
+                        </td>
+                        <td style="padding: 16px;">
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="viewClass(${cls.id})" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 12px; color: #475569;" title="View Details">
+                                    <i class='bx bx-show'></i>
                                 </button>
-                                <a href="submissions-sidebar.html?module=${classItem.slug}" class="btn btn-outline btn-sm">
-                                    <i class='bx bx-file'></i> Submissions
-                                </a>
+                                <button onclick="viewSubmissions(${cls.id})" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 12px; color: #475569;" title="View Submissions">
+                                    <i class='bx bx-file'></i>
+                                </button>
                             </div>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
 
-        // Filter classes
-        function filterClasses() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const levelFilter = document.getElementById('levelFilter').value;
+        // View class (read-only)
+        function viewClass(classId) {
+            const cls = allClasses.find(c => c.id === classId);
+            if (!cls) return;
 
-            let filtered = allClasses.filter(classItem => {
-                const matchesSearch = !searchTerm ||
-                    (classItem.title || classItem.name || '').toLowerCase().includes(searchTerm) ||
-                    (classItem.description || '').toLowerCase().includes(searchTerm);
-
-                const matchesLevel = levelFilter === 'all' || classItem.level === levelFilter;
-
-                return matchesSearch && matchesLevel;
+            modalService.addNotification({
+                title: 'Class Details',
+                message: `Viewing: ${cls.name} (${cls.code})`,
+                type: 'info'
             });
-
-            renderClasses(filtered);
         }
 
-        // View class details
-        async function viewClassDetails(classSlug) {
-            const modal = document.getElementById('classModal');
-            modal.classList.add('active');
-
-            const detailsDiv = document.getElementById('classDetails');
-            const infoDiv = document.getElementById('classInfo');
-
-            detailsDiv.style.display = 'block';
-            infoDiv.style.display = 'none';
-
-            try {
-                // Get class info
-                const classItem = allClasses.find(c => c.slug === classSlug || c.id == classSlug);
-
-                // Get students (filter by current level matching class level)
-                const studentsResponse = await apiService.getStudents();
-                let students = [];
-                if (studentsResponse.success) {
-                    const allStudents = studentsResponse.data.students || studentsResponse.data || [];
-                    students = allStudents.filter(s => s.current_level === classItem.level);
-                }
-
-                // Get assignments for this class
-                const assignmentsResponse = await apiService.getModuleAssignments(classSlug);
-                const assignments = assignmentsResponse.success ?
-                    (assignmentsResponse.data.assignments || assignmentsResponse.data || []) : [];
-
-                displayClassDetails(classItem, students, assignments);
-
-            } catch (error) {
-                console.error('Error loading class details:', error);
-                detailsDiv.innerHTML = '<p style="text-align:center;color:#999;">Error loading class details</p>';
+        // View submissions for class
+        function viewSubmissions(classId) {
+            const cls = allClasses.find(c => c.id === classId);
+            if (cls) {
+                window.location.href = `submissions-sidebar.html?class=${cls.id}`;
             }
         }
 
-        function displayClassDetails(classItem, students, assignments) {
-            const detailsDiv = document.getElementById('classDetails');
-            const infoDiv = document.getElementById('classInfo');
-
-            detailsDiv.style.display = 'none';
-            infoDiv.style.display = 'block';
-
-            // Display class basic info
-            detailsDiv.innerHTML = `
-                <div class="alert alert-info">
-                    <i class='bx bx-info-circle'></i>
-                    <div>
-                        <strong>Class:</strong> ${classItem.title || classItem.name}<br>
-                        <strong>Level:</strong> ${(classItem.level || 'fundamental').toUpperCase()}<br>
-                        <strong>Status:</strong> ${classItem.is_active ? 'Active' : 'Inactive'}<br>
-                        <strong>Description:</strong> ${classItem.description || 'No description'}
-                    </div>
-                </div>
-            `;
-
-            // Update stats
-            const totalStudents = students.length;
-            const totalAssignments = assignments.length;
-            const avgCompletion = students.length > 0 ?
-                students.reduce((sum, s) => sum + (s.progress || 0), 0) / students.length : 0;
-
-            document.getElementById('classStudents').textContent = totalStudents;
-            document.getElementById('classModules').textContent = classItem.total_classes || 0;
-            document.getElementById('classAssignments').textContent = totalAssignments;
-            document.getElementById('classCompletion').textContent = avgCompletion.toFixed(0) + '%';
-
-            // Display students list
-            const studentsList = document.getElementById('studentsList');
-            if (students.length === 0) {
-                studentsList.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#999;">No students enrolled</td></tr>';
-            } else {
-                studentsList.innerHTML = students.map(student => `
-                    <tr>
-                        <td><strong>${student.name}</strong></td>
-                        <td>${student.email}</td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
-                                    <div style="height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); width: ${student.progress || 0}%;"></div>
-                                </div>
-                                <span style="font-size: 12px; font-weight: 600; color: #667eea;">${student.progress || 0}%</span>
-                            </div>
-                        </td>
-                        <td>${student.average_score || student.avg_score || '-'}</td>
-                        <td>
-                            <span class="badge badge-${student.status === 'active' ? 'success' : 'secondary'}">
-                                ${student.status || 'active'}
-                            </span>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            // Display assignments list
-            const assignmentsList = document.getElementById('assignmentsList');
-            if (assignments.length === 0) {
-                assignmentsList.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">No assignments found</td></tr>';
-            } else {
-                assignmentsList.innerHTML = assignments.map(assignment => {
-                    const dueDate = assignment.due_date ? new Date(assignment.due_date) : null;
-                    const isOverdue = dueDate && dueDate < new Date();
-
-                    return `
-                        <tr>
-                            <td><strong>${assignment.title}</strong></td>
-                            <td>Class ${assignment.class_number || 'N/A'}</td>
-                            <td>
-                                <span class="badge badge-${isOverdue ? 'danger' : 'info'}">
-                                    ${dueDate ? dueDate.toLocaleDateString() : 'No due date'}
-                                </span>
-                            </td>
-                            <td>${assignment.total_submissions || 0}</td>
-                            <td>
-                                <span class="badge badge-${assignment.is_active ? 'success' : 'secondary'}">
-                                    ${assignment.is_active ? 'Active' : 'Inactive'}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="submissions-sidebar.html?assignment=${assignment.id}" class="btn btn-primary btn-sm">
-                                        <i class='bx bx-file'></i> View
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-        }
-
-        function closeClassModal() {
-            document.getElementById('classModal').classList.remove('active');
-        }
-
+        // Refresh classes
         function refreshClasses() {
             loadClasses();
-            notificationService.show('success', 'Classes refreshed');
+            modalService.addNotification({
+                title: 'Refreshed',
+                message: 'Classes data refreshed',
+                type: 'info'
+            });
         }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', renderClasses);
+        document.getElementById('statusFilter').addEventListener('change', renderClasses);
+        document.getElementById('levelFilter').addEventListener('change', renderClasses);
+
+        // Initialize
+        loadClasses();
 
         function logout() {
             modalService.confirm({
                 title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
-                message: 'Are you sure you want to logout?',
+                message: 'Are you sure you want to logout from CodeSmart?',
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
@@ -545,32 +981,37 @@
                     authService.logout();
                 }
             });
-        }
+        };
 
-        // Set user info
-        const currentUser = authService.getCurrentUser();
-        if (currentUser) {
-            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
-            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
-        }
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
 
-        // Event listeners
-        document.getElementById('searchInput').addEventListener('input', filterClasses);
-        document.getElementById('levelFilter').addEventListener('change', filterClasses);
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
 
-        // Close modal on outside click
-        document.getElementById('classModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeClassModal();
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
             }
-        });
-
-        // Initialize
-        loadClasses();
-
-        // Notification bell
-        // Notification bell is now handled by notification-bell.js
-        // Old event listener removed to prevent conflict
+        })();
     </script>
+    <script src="../../js/assessor-navbar.js"></script>
 </body>
 </html>

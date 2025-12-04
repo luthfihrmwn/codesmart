@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessor Dashboard - CodeSmart</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <link rel="stylesheet" href="../../css/notification.css">
+    <link rel="stylesheet" href="../../css/modal-system.css">
+    <link rel="stylesheet" href="../../css/assessor-modern.css">
+    <link rel="stylesheet" href="../../css/assessor-override.css">
+    <link rel="stylesheet" href="../../css/assessor-responsive.css">
+    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item active">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-book-open'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Grading</div>
+                <a href="submissions-sidebar.html" class="nav-item">
+                    <i class='bx bx-file'></i>
+                    <span>Grade Submissions</span>
+                </a>
+                <a href="students-sidebar.html" class="nav-item">
+                    <i class='bx bx-user-check'></i>
+                    <span>Student Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <a href="analytics-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">
+                    <i class='bx bx-home-alt'></i> Dashboard
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Assessor</div>
+                        <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class='bx bx-user'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalStudents">0</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-file-blank'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingSubmissions">0</h3>
+                        <p>Pending Submissions</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-book-open'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="classesAssigned">0</h3>
+                        <p>Classes Assigned</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-circle'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="gradedThisWeek">0</h3>
+                        <p>Graded This Week</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Submissions -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class='bx bx-file'></i> Recent Submissions</h2>
+                    <a href="submissions-sidebar.html" class="btn btn-outline btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Assignment</th>
+                                    <th>Module</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentSubmissionsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <div class="loader"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Classes Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class='bx bx-book-open'></i> My Classes</h2>
+                    <a href="classes-sidebar.html" class="btn btn-outline btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="modules-grid" id="myClassesGrid">
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth() || !authService.isAssessor()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // Use assessor statistics API
+                const statsResponse = await apiService.getAssessorStatistics();
+
+                // Load students to get total count
+                const studentsResponse = await apiService.getStudents();
+                let totalStudents = 0;
+                if (studentsResponse && studentsResponse.success) {
+                    totalStudents = studentsResponse.data.count || studentsResponse.data.students?.length || 0;
+                }
+
+                // Update statistics cards
+                if (statsResponse && statsResponse.success) {
+                    const stats = statsResponse.data;
+                    document.getElementById('totalStudents').textContent = totalStudents;
+                    document.getElementById('pendingSubmissions').textContent = stats.pending?.total_pending || 0;
+                    document.getElementById('gradedThisWeek').textContent = stats.grading?.graded_last_week || 0;
+                } else {
+                    // Fallback to default values
+                    document.getElementById('totalStudents').textContent = totalStudents;
+                    document.getElementById('pendingSubmissions').textContent = '0';
+                    document.getElementById('gradedThisWeek').textContent = '0';
+                }
+
+                // Load classes assigned count
+                const modulesResponse = await apiService.getModules();
+                let classesCount = 0;
+                if (modulesResponse && modulesResponse.success) {
+                    const modules = modulesResponse.data.modules || modulesResponse.data || [];
+                    classesCount = modules.length;
+                    document.getElementById('classesAssigned').textContent = classesCount;
+                    // Render first 3 for display
+                    renderMyClasses(modules.slice(0, 3));
+                } else {
+                    document.getElementById('classesAssigned').textContent = '0';
+                    renderMyClasses([]);
+                }
+
+                // Load recent pending submissions
+                const submissionsResponse = await apiService.getPendingSubmissions();
+                if (submissionsResponse && submissionsResponse.success) {
+                    const submissions = (submissionsResponse.data.submissions || []).slice(0, 5);
+                    renderRecentSubmissions(submissions);
+                } else {
+                    renderRecentSubmissions([]);
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                // Silently set default values without showing error modal
+                document.getElementById('totalStudents').textContent = '0';
+                document.getElementById('pendingSubmissions').textContent = '0';
+                document.getElementById('classesAssigned').textContent = '0';
+                document.getElementById('gradedThisWeek').textContent = '0';
+                renderRecentSubmissions([]);
+                renderMyClasses([]);
+            }
+        }
+
+        function renderRecentSubmissions(submissions) {
+            const tbody = document.getElementById('recentSubmissionsTable');
+            if (submissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#999;">No pending submissions</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = submissions.map(submission => `
+                <tr>
+                    <td><strong>${submission.student_name || submission.user_name || 'N/A'}</strong></td>
+                    <td>${submission.assignment_title || 'N/A'}</td>
+                    <td>${submission.module_name || 'N/A'}</td>
+                    <td>${new Date(submission.submitted_at || submission.created_at).toLocaleDateString()}</td>
+                    <td><span class="badge badge-${submission.status === 'graded' ? 'success' : 'warning'}">${submission.status || 'pending'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="submissions-sidebar.html?id=${submission.id}" class="btn btn-primary btn-sm">
+                                <i class='bx bx-edit'></i> Grade
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderMyClasses(modules) {
+            const grid = document.getElementById('myClassesGrid');
+            if (modules.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center;padding:40px;color:#999;">No classes assigned</div>';
+                return;
+            }
+
+            grid.innerHTML = modules.map(module => `
+                <div class="module-card">
+                    <div class="module-header">
+                        <div>
+                            <div class="module-level">
+                                <span class="badge badge-${module.level === 'fundamental' ? 'success' : module.level === 'intermediate' ? 'warning' : 'danger'}">
+                                    ${module.level || 'Fundamental'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="status-dot ${module.is_active ? '' : 'inactive'}"></div>
+                    </div>
+                    <div class="module-card-body">
+                        <h3 class="module-card-title">${module.title || module.name}</h3>
+                        <p class="module-card-description">${module.description || 'No description available'}</p>
+                        <div class="module-card-meta">
+                            <span><i class='bx bx-book'></i> ${module.total_classes || 0} Classes</span>
+                            <span><i class='bx bx-task'></i> ${module.total_assignments || 0} Assignments</span>
+                        </div>
+                        <div class="module-card-actions">
+                            <a href="classes-sidebar.html?module=${module.slug}" class="btn btn-primary btn-sm">
+                                <i class='bx bx-folder-open'></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Set user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
+        }
+
+        // Initialize
+        loadDashboardData();
+
+        // Notification bell is now handled by notification-bell.js
+        // Old event listener removed to prevent conflict
+
+        // Add welcome notification
+        setTimeout(() => {
+            modalService.addNotification({
+                title: 'Welcome Back!',
+                message: 'You have successfully logged in to CodeSmart Assessor Dashboard',
+                type: 'success'
+            });
+        }, 1000);
+
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
+
+        // Logout function
+        function logout() {
+            modalService.confirm({
+                title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
+                message: 'Are you sure you want to logout from CodeSmart Assessor Dashboard?',
+                confirmText: 'Yes, Logout',
+                cancelText: 'Cancel',
+                danger: true,
+                onConfirm: function() {
+                    authService.logout();
+                }
+            });
+        }
+    </script>
+    <script src="../../js/assessor-navbar.js"></script>
+    <script src="../../js/assessor-data-loader.js"></script>
+    <script>
+        // Load dashboard data when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Wait for services to be ready
+            setTimeout(() => {
+                if (window.assessorDataLoader) {
+                    assessorDataLoader.loadDashboardStats();
+                    assessorDataLoader.loadRecentSubmissions();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

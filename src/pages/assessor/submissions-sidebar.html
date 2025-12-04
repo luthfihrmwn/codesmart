@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grade Submissions - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
-    <link rel="stylesheet" href="../../css/notification.css">
+                <link rel="stylesheet" href="../../css/notification.css">
     <link rel="stylesheet" href="../../css/modal-system.css">
-    <link rel="stylesheet" href="../../css/assessor-modern.css">
-    <link rel="stylesheet" href="/src/css/modern-enhancements.css">
-</head>
+    </head>
 <body>
     <!-- Sidebar -->
     <div class="admin-sidebar">
@@ -77,14 +76,6 @@
                     <span>Analytics</span>
                 </a>
             </div>
-
-            <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="#" class="nav-item" onclick="logout()">
-                    <i class='bx bx-log-out'></i>
-                    <span>Logout</span>
-                </a>
-            </div>
         </nav>
     </div>
 
@@ -93,8 +84,7 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1 class="page-title-header">
-                    <i class='bx bx-file'></i> Grade Submissions
+                <h1 class="page-title-header">Grade Submissions
                 </h1>
             </div>
             <div class="header-right">
@@ -102,11 +92,30 @@
                     <i class='bx bx-bell'></i>
                     <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                 </div>
-                <div class="user-menu">
+                <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">A</div>
                     <div class="user-info">
                         <div class="user-name" id="userName">Assessor</div>
                         <div class="user-role">Assessor</div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Assessor</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">assessor@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,6 +123,46 @@
 
         <!-- Content -->
         <div class="admin-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-icon warning">
+                        <i class='bx bx-time-five'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pendingSubmissions">0</h3>
+                        <p>Pending Grade</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i class='bx bx-check-double'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="gradedSubmissions">0</h3>
+                        <p>Graded</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">
+                        <i class='bx bx-line-chart'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="avgSubmissionScore">0%</h3>
+                        <p>Average Score</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">
+                        <i class='bx bx-alarm-exclamation'></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="lateSubmissions">0</h3>
+                        <p>Late Submissions</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Filters -->
             <div class="modern-toolbar">
                 <div class="toolbar-left">
@@ -222,6 +271,7 @@
     <script src="/src/js/notification-service.js"></script>
     <script src="/src/js/notification-bell.js"></script>
     <script src="/src/js/modal-service.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth() || !authService.isAssessor()) {
@@ -233,29 +283,85 @@
 
         // Load submissions
         async function loadSubmissions() {
+            console.log('🔄 Loading submissions...');
             try {
                 // Load pending submissions
+                console.log('📡 Fetching pending submissions...');
                 const pendingResponse = await apiService.getPendingSubmissions();
+                console.log('✅ Pending response:', pendingResponse);
+
+                console.log('📡 Fetching graded submissions...');
                 const gradedResponse = await apiService.getGradedSubmissions();
+                console.log('✅ Graded response:', gradedResponse);
 
                 const pending = pendingResponse.success ? (pendingResponse.data.submissions || pendingResponse.data || []) : [];
                 const graded = gradedResponse.success ? (gradedResponse.data.submissions || gradedResponse.data || []) : [];
 
                 allSubmissions = [...pending, ...graded];
+                console.log(`📊 Total submissions loaded: ${allSubmissions.length}`, allSubmissions);
 
                 // Load modules for filter
+                console.log('📡 Fetching modules...');
                 const modulesResponse = await apiService.getModules();
+                console.log('✅ Modules response:', modulesResponse);
+
                 if (modulesResponse.success) {
                     const modules = modulesResponse.data.modules || modulesResponse.data || [];
                     populateModuleFilter(modules);
                 }
 
+                console.log('📊 Updating stats...');
+                updateStats();
+
+                console.log('🎨 Rendering submissions...');
                 renderSubmissions(allSubmissions);
 
+                console.log('✅ Submissions loaded successfully!');
+
             } catch (error) {
-                console.error('Error loading submissions:', error);
+                console.error('❌ Error loading submissions:', error);
+                console.error('Error details:', error.message, error.stack);
                 document.getElementById('submissionsTable').innerHTML =
-                    '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">Error loading submissions</td></tr>';
+                    '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">Error loading submissions: ' + error.message + '</td></tr>';
+            }
+        }
+
+        // Update stats with real data
+        function updateStats() {
+            try {
+                // Count pending submissions
+                const pendingCount = allSubmissions.filter(s =>
+                    s.status === 'pending'
+                ).length;
+
+                // Count graded submissions
+                const gradedCount = allSubmissions.filter(s =>
+                    s.status === 'graded'
+                ).length;
+
+                // Calculate average score from graded submissions
+                const gradedSubmissions = allSubmissions.filter(s =>
+                    s.status === 'graded' && s.score !== null && s.score !== undefined
+                );
+                let avgScore = 0;
+                if (gradedSubmissions.length > 0) {
+                    const totalScore = gradedSubmissions.reduce((sum, s) => sum + parseFloat(s.score || 0), 0);
+                    avgScore = Math.round(totalScore / gradedSubmissions.length);
+                }
+
+                // Count late submissions (if due_date field exists)
+                const lateCount = allSubmissions.filter(s => {
+                    if (!s.submitted_at || !s.due_date) return false;
+                    return new Date(s.submitted_at) > new Date(s.due_date);
+                }).length;
+
+                // Update UI
+                document.getElementById('pendingSubmissions').textContent = pendingCount;
+                document.getElementById('gradedSubmissions').textContent = gradedCount;
+                document.getElementById('avgSubmissionScore').textContent = avgScore + '%';
+                document.getElementById('lateSubmissions').textContent = lateCount;
+            } catch (error) {
+                console.error('Error updating stats:', error);
             }
         }
 
@@ -289,8 +395,8 @@
                             <button class="btn btn-primary btn-sm" onclick="openGradeModal(${submission.id})">
                                 <i class='bx bx-edit'></i> ${submission.status === 'graded' ? 'Edit' : 'Grade'}
                             </button>
-                            ${submission.file_path ? `
-                                <a href="${submission.file_path}" class="btn btn-info btn-sm" download>
+                            ${submission.file_url || submission.file_path ? `
+                                <a href="${submission.file_url || submission.file_path}" class="btn btn-info btn-sm" download>
                                     <i class='bx bx-download'></i>
                                 </a>
                             ` : ''}
@@ -360,17 +466,17 @@
                         <strong>Submitted:</strong> ${new Date(submission.submitted_at || submission.created_at).toLocaleString()}
                     </div>
                 </div>
-                ${submission.file_path ? `
+                ${submission.file_url || submission.file_path ? `
                     <div style="margin: 20px 0;">
-                        <a href="${submission.file_path}" class="btn btn-info" download>
+                        <a href="${submission.file_url || submission.file_path}" class="btn btn-info" download>
                             <i class='bx bx-download'></i> Download Submission File
                         </a>
                     </div>
                 ` : ''}
-                ${submission.notes ? `
+                ${submission.submission_text || submission.notes ? `
                     <div class="form-group">
                         <label class="form-label">Student Notes:</label>
-                        <p style="padding: 12px; background: #f8f9fa; border-radius: 8px;">${submission.notes}</p>
+                        <p style="padding: 12px; background: #f8f9fa; border-radius: 8px;">${submission.submission_text || submission.notes}</p>
                     </div>
                 ` : ''}
             `;
@@ -473,26 +579,17 @@
                 console.error('Error exporting grades:', error);
                 notificationService.show('error', 'Failed to export grades');
             });
-        }
 
         function logout() {
             modalService.confirm({
                 title: '<i class=\'bx bx-log-out\'></i> Confirm Logout',
-                message: 'Are you sure you want to logout?',
+                message: 'Are you sure you want to logout from CodeSmart?',
                 confirmText: 'Yes, Logout',
                 cancelText: 'Cancel',
                 danger: true,
                 onConfirm: function() {
                     authService.logout();
                 }
-            });
-        }
-
-        // Set user info
-        const currentUser = authService.getCurrentUser();
-        if (currentUser) {
-            document.getElementById('userName').textContent = currentUser.name || 'Assessor';
-            document.getElementById('userAvatar').textContent = (currentUser.name || 'A')[0].toUpperCase();
         }
 
         // Event listeners
@@ -508,11 +605,54 @@
         });
 
         // Initialize
+        console.log('🚀 Page initializing...');
+        console.log('✅ apiService:', typeof apiService !== 'undefined' ? 'available' : 'NOT AVAILABLE');
+        console.log('✅ authService:', typeof authService !== 'undefined' ? 'available' : 'NOT AVAILABLE');
+
         loadSubmissions();
 
         // Notification bell
         // Notification bell is now handled by notification-bell.js
         // Old event listener removed to prevent conflict
+        // User dropdown toggle
+        (function() {
+            const userMenuToggle = document.getElementById('userMenuToggle');
+            const userDropdown = document.getElementById('userDropdown');
+
+            if (userMenuToggle && userDropdown) {
+                userMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenuToggle.contains(e.target)) {
+                        userDropdown.classList.remove('active');
+                    }
+                });
+
+                // Update dropdown user info
+                const currentUser = authService.getCurrentUser();
+                if (currentUser) {
+                    const dropdownUserName = document.getElementById('dropdownUserName');
+                    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+                    if (dropdownUserName) dropdownUserName.textContent = currentUser.name || 'Assessor';
+                    if (dropdownUserEmail) dropdownUserEmail.textContent = currentUser.email || '';
+                }
+            }
+        })();
     </script>
+    <script src="../../js/assessor-data-loader.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (window.assessorDataLoader) {
+                    assessorDataLoader.loadRecentSubmissions();
+                }
+            }, 500);
+        });
+    </script>
+    <script src="../../js/assessor-navbar.js"></script>
 </body>
 </html>
