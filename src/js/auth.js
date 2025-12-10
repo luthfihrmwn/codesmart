@@ -277,9 +277,9 @@ class AuthService {
         } else {
             // Check if user needs to take pretest
             if (!this.hasCompletedPretest()) {
-                window.location.href = '/src/pages/user/pretest-new.html';
+                window.location.href = '/src/pages/user/pretest.html';
             } else {
-                window.location.href = '/src/pages/user/dashboard-new.html';
+                window.location.href = '/src/pages/user/dashboard-sidebar.html';
             }
         }
     }

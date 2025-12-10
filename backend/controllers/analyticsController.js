@@ -108,8 +108,11 @@ exports.getModuleCompletionRates = async (req, res) => {
                 COUNT(DISTINCT CASE WHEN s.status = 'graded' THEN s.id END) as completed_submissions,
                 COUNT(DISTINCT s.id) as total_submissions,
                 ROUND(
-                    (COUNT(DISTINCT CASE WHEN s.status = 'graded' THEN s.id END)::float /
-                     NULLIF(COUNT(DISTINCT a.id) * COUNT(DISTINCT e.user_id), 0)) * 100,
+                    CAST(
+                        (COUNT(DISTINCT CASE WHEN s.status = 'graded' THEN s.id END)::float /
+                         NULLIF(COUNT(DISTINCT a.id) * COUNT(DISTINCT e.user_id), 0)) * 100
+                        AS numeric
+                    ),
                     2
                 ) as completion_rate
             FROM modules m
@@ -333,21 +336,29 @@ exports.getAtRiskStudents = async (req, res) => {
                 name,
                 email,
                 current_level,
+                pretest_score,
+                svm_predicted_level,
                 total_submissions,
                 pending_submissions,
                 average_score,
                 overdue_pending,
                 last_submission_date,
-                risk_level
+                risk_level,
+                risk_factors
             FROM (
                 SELECT
                     u.id,
                     u.name,
                     u.email,
                     u.current_level,
+                    u.pretest_score,
+                    u.svm_predicted_level,
                     COUNT(DISTINCT s.id) as total_submissions,
                     COUNT(DISTINCT CASE WHEN s.status = 'submitted' THEN s.id END) as pending_submissions,
-                    ROUND(AVG(CASE WHEN s.status = 'graded' THEN s.score END), 2) as average_score,
+                    ROUND(
+                        CAST(AVG(CASE WHEN s.status = 'graded' THEN s.score END) AS numeric),
+                        2
+                    ) as average_score,
                     COUNT(DISTINCT CASE
                         WHEN s.status = 'submitted'
                         AND s.submitted_at < NOW() - INTERVAL '7 days'
@@ -355,14 +366,26 @@ exports.getAtRiskStudents = async (req, res) => {
                     END) as overdue_pending,
                     MAX(s.submitted_at) as last_submission_date,
                     CASE
-                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' OR MAX(s.submitted_at) IS NULL THEN 'high'
+                        WHEN u.pretest_score IS NULL THEN 'high'
+                        WHEN u.pretest_score < 45 AND AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 'high'
+                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' OR (MAX(s.submitted_at) IS NULL AND u.created_at < NOW() - INTERVAL '7 days') THEN 'high'
                         WHEN MAX(s.submitted_at) < NOW() - INTERVAL '7 days' THEN 'medium'
                         WHEN AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 'medium'
+                        WHEN u.pretest_score < 45 THEN 'medium'
                         WHEN COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 3 THEN 'high'
                         ELSE 'low'
                     END as risk_level,
+                    ARRAY_REMOVE(ARRAY[
+                        CASE WHEN u.pretest_score IS NULL THEN 'No pretest taken' END,
+                        CASE WHEN u.pretest_score < 45 THEN 'Low pretest score' END,
+                        CASE WHEN AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 'Low average grade' END,
+                        CASE WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' OR (MAX(s.submitted_at) IS NULL AND u.created_at < NOW() - INTERVAL '7 days') THEN 'Inactive for 14+ days' END,
+                        CASE WHEN COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 3 THEN 'Multiple overdue submissions' END
+                    ], NULL) as risk_factors,
                     CASE
-                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' OR MAX(s.submitted_at) IS NULL THEN 1
+                        WHEN u.pretest_score IS NULL THEN 1
+                        WHEN u.pretest_score < 45 AND AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 1
+                        WHEN MAX(s.submitted_at) < NOW() - INTERVAL '14 days' OR (MAX(s.submitted_at) IS NULL AND u.created_at < NOW() - INTERVAL '7 days') THEN 1
                         WHEN MAX(s.submitted_at) < NOW() - INTERVAL '7 days' THEN 2
                         WHEN AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60 THEN 2
                         WHEN COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 3 THEN 1
@@ -370,11 +393,13 @@ exports.getAtRiskStudents = async (req, res) => {
                     END as risk_priority
                 FROM users u
                 LEFT JOIN submissions s ON u.id = s.user_id
-                WHERE u.role IN ('student', 'user')
-                GROUP BY u.id, u.name, u.email, u.current_level
+                WHERE u.role = 'student'
+                GROUP BY u.id, u.name, u.email, u.current_level, u.pretest_score, u.svm_predicted_level, u.created_at
                 HAVING
-                    MAX(s.submitted_at) < NOW() - INTERVAL '7 days'
-                    OR MAX(s.submitted_at) IS NULL
+                    u.pretest_score IS NULL
+                    OR u.pretest_score < 45
+                    OR MAX(s.submitted_at) < NOW() - INTERVAL '7 days'
+                    OR (MAX(s.submitted_at) IS NULL AND u.created_at < NOW() - INTERVAL '7 days')
                     OR AVG(CASE WHEN s.status = 'graded' THEN s.score END) < 60
                     OR COUNT(DISTINCT CASE WHEN s.status = 'submitted' AND s.submitted_at < NOW() - INTERVAL '7 days' THEN s.id END) > 2
             ) as at_risk
@@ -497,3 +522,118 @@ async function getStudentAnalytics(userId) {
         overview: result.rows[0]
     };
 }
+
+/**
+ * Get pretest statistics (for assessor/admin)
+ */
+exports.getPretestStatistics = async (req, res) => {
+    try {
+        // Overall pretest stats
+        const overallStatsQuery = `
+            SELECT
+                COUNT(DISTINCT CASE WHEN pretest_score IS NOT NULL THEN id END) as students_completed,
+                COUNT(DISTINCT CASE WHEN pretest_score IS NULL THEN id END) as students_pending,
+                COUNT(DISTINCT id) as total_students,
+                ROUND(
+                    CAST(AVG(pretest_score) AS numeric),
+                    2
+                ) as average_score,
+                MIN(pretest_score) as min_score,
+                MAX(pretest_score) as max_score,
+                ROUND(
+                    CAST(
+                        COUNT(DISTINCT CASE WHEN pretest_score IS NOT NULL THEN id END)::float /
+                        NULLIF(COUNT(DISTINCT id), 0) * 100
+                        AS numeric
+                    ),
+                    2
+                ) as completion_rate
+            FROM users
+            WHERE role = 'student'
+        `;
+
+        const overallStatsResult = await pool.query(overallStatsQuery);
+
+        // Level distribution
+        const levelDistributionQuery = `
+            SELECT
+                current_level,
+                COUNT(*) as count,
+                ROUND(
+                    CAST(AVG(pretest_score) AS numeric),
+                    2
+                ) as avg_score
+            FROM users
+            WHERE role = 'student' AND pretest_score IS NOT NULL
+            GROUP BY current_level
+            ORDER BY
+                CASE current_level
+                    WHEN 'fundamental' THEN 1
+                    WHEN 'intermediate' THEN 2
+                    WHEN 'advance' THEN 3
+                END
+        `;
+
+        const levelDistributionResult = await pool.query(levelDistributionQuery);
+
+        // SVM prediction accuracy
+        const svmAccuracyQuery = `
+            SELECT
+                COUNT(*) as total_with_svm,
+                COUNT(CASE WHEN svm_predicted_level = current_level THEN 1 END) as correct_predictions,
+                ROUND(
+                    CAST(
+                        COUNT(CASE WHEN svm_predicted_level = current_level THEN 1 END)::float /
+                        NULLIF(COUNT(*), 0) * 100
+                        AS numeric
+                    ),
+                    2
+                ) as accuracy_percentage
+            FROM users
+            WHERE role = 'student' AND svm_predicted_level IS NOT NULL AND current_level IS NOT NULL
+        `;
+
+        const svmAccuracyResult = await pool.query(svmAccuracyQuery);
+
+        // Score distribution (ranges)
+        const scoreDistributionQuery = `
+            SELECT
+                CASE
+                    WHEN pretest_score < 45 THEN 'fundamental'
+                    WHEN pretest_score < 70 THEN 'intermediate'
+                    ELSE 'advance'
+                END as score_range,
+                COUNT(*) as count,
+                MIN(pretest_score) as min_score,
+                MAX(pretest_score) as max_score
+            FROM users
+            WHERE role = 'student' AND pretest_score IS NOT NULL
+            GROUP BY
+                CASE
+                    WHEN pretest_score < 45 THEN 'fundamental'
+                    WHEN pretest_score < 70 THEN 'intermediate'
+                    ELSE 'advance'
+                END
+            ORDER BY min_score
+        `;
+
+        const scoreDistributionResult = await pool.query(scoreDistributionQuery);
+
+        res.json({
+            success: true,
+            data: {
+                overall: overallStatsResult.rows[0],
+                level_distribution: levelDistributionResult.rows,
+                svm_accuracy: svmAccuracyResult.rows[0],
+                score_distribution: scoreDistributionResult.rows
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching pretest statistics:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching pretest statistics',
+            error: error.message
+        });
+    }
+};

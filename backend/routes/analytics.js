@@ -6,7 +6,8 @@ const {
     getModuleCompletionRates,
     getGradeDistribution,
     getEngagementMetrics,
-    getAtRiskStudents
+    getAtRiskStudents,
+    getPretestStatistics
 } = require('../controllers/analyticsController');
 const { verifyToken, requireRole } = require('../middleware/auth');
 
@@ -57,5 +58,12 @@ router.get('/engagement', requireRole('assessor', 'admin'), getEngagementMetrics
  * @access  Private (Assessor/Admin)
  */
 router.get('/at-risk-students', requireRole('assessor', 'admin'), getAtRiskStudents);
+
+/**
+ * @route   GET /api/v1/analytics/pretest-stats
+ * @desc    Get pretest statistics (completion rate, level distribution, SVM accuracy)
+ * @access  Private (Assessor/Admin)
+ */
+router.get('/pretest-stats', requireRole('assessor', 'admin'), getPretestStatistics);
 
 module.exports = router;

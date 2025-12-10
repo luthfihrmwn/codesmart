@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Progress - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <style>
+        .progress-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .progress-title {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .progress-percentage {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .progress-bar-container {
+            background: #f0f0f0;
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-detail {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .module-progress-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .module-progress-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .module-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .module-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .module-level-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .level-fundamental {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .level-intermediate {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .level-advance {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .module-stats {
+            display: flex;
+            gap: 20px;
+            margin: 12px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .stat-item i {
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .achievement-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .achievement-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .achievement-icon.gold {
+            color: #FFD700;
+        }
+
+        .achievement-icon.silver {
+            color: #C0C0C0;
+        }
+
+        .achievement-icon.bronze {
+            color: #CD7F32;
+        }
+
+        .achievement-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .achievement-desc {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Learning</div>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="progress-sidebar.html" class="nav-item active">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>My Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="profile-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">My Progress</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-role">Student</div>
+                    </div>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Student</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">student@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile-sidebar.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Progress Overview -->
+            <div class="progress-overview">
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span class="progress-title">Overall Progress</span>
+                        <span class="progress-percentage" id="overallProgressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="overallProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-detail" id="overallProgressDetail">0 of 0 modules completed</div>
+                </div>
+
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span class="progress-title">Assignments</span>
+                        <span class="progress-percentage" id="assignmentProgressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="assignmentProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-detail" id="assignmentProgressDetail">0 of 0 completed</div>
+                </div>
+
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span class="progress-title">Average Score</span>
+                        <span class="progress-percentage" id="averageScore">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="averageScoreBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-detail">Across all assignments</div>
+                </div>
+
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span class="progress-title">Pretest Score</span>
+                        <span class="progress-percentage" id="pretestScore">0</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="pretestScoreBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-detail">Initial assessment</div>
+                </div>
+            </div>
+
+            <!-- Module Progress -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Module Progress</h2>
+                </div>
+                <div class="card-body">
+                    <div id="moduleProgressContainer">
+                        <div style="text-align: center; padding: 40px;">
+                            <div class="loader"></div>
+                            <p style="margin-top: 15px; color: #999;">Loading module progress...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Achievements</h2>
+                </div>
+                <div class="card-body">
+                    <div class="achievement-grid">
+                        <div class="achievement-card">
+                            <div class="achievement-icon bronze">
+                                <i class='bx bx-award'></i>
+                            </div>
+                            <div class="achievement-title">First Steps</div>
+                            <div class="achievement-desc">Complete your first module</div>
+                        </div>
+
+                        <div class="achievement-card">
+                            <div class="achievement-icon silver">
+                                <i class='bx bx-trophy'></i>
+                            </div>
+                            <div class="achievement-title">Quick Learner</div>
+                            <div class="achievement-desc">Complete 3 modules</div>
+                        </div>
+
+                        <div class="achievement-card">
+                            <div class="achievement-icon gold">
+                                <i class='bx bx-medal'></i>
+                            </div>
+                            <div class="achievement-title">Expert</div>
+                            <div class="achievement-desc">Complete all modules</div>
+                        </div>
+
+                        <div class="achievement-card">
+                            <div class="achievement-icon bronze">
+                                <i class='bx bx-star'></i>
+                            </div>
+                            <div class="achievement-title">Perfect Score</div>
+                            <div class="achievement-desc">Get 100 on any assignment</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        const currentUser = authService.getCurrentUser();
+        if (!currentUser) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        // Check pretest
+        if (!currentUser.pretest_score) {
+            window.location.href = 'pretest.html';
+        }
+
+        // Set user info
+        document.getElementById('userName').textContent = currentUser.name || 'Student';
+        document.getElementById('userAvatar').textContent = (currentUser.name || 'U')[0].toUpperCase();
+        document.getElementById('dropdownUserName').textContent = currentUser.name || 'Student';
+        document.getElementById('dropdownUserEmail').textContent = currentUser.email || '';
+
+        async function loadProgress() {
+            try {
+                // Load user progress
+                const progressRes = await apiService.getUserProgress();
+                if (progressRes.success && progressRes.data) {
+                    const progress = progressRes.data;
+
+                    // Overall progress
+                    const overallPercent = progress.overall_progress || 0;
+                    document.getElementById('overallProgressPercent').textContent = overallPercent + '%';
+                    document.getElementById('overallProgressBar').style.width = overallPercent + '%';
+                    document.getElementById('overallProgressDetail').textContent =
+                        `${progress.completed_modules || 0} of ${progress.total_modules || 0} modules completed`;
+
+                    // Assignment progress
+                    const assignmentPercent = progress.assignment_completion || 0;
+                    document.getElementById('assignmentProgressPercent').textContent = assignmentPercent + '%';
+                    document.getElementById('assignmentProgressBar').style.width = assignmentPercent + '%';
+                    document.getElementById('assignmentProgressDetail').textContent =
+                        `${progress.completed_assignments || 0} of ${progress.total_assignments || 0} completed`;
+
+                    // Average score
+                    const avgScore = progress.average_score || 0;
+                    document.getElementById('averageScore').textContent = avgScore + '%';
+                    document.getElementById('averageScoreBar').style.width = avgScore + '%';
+
+                    // Pretest score
+                    const pretestScore = currentUser.pretest_score || 0;
+                    const pretestPercent = (pretestScore / 30) * 100; // Assuming 30 questions
+                    document.getElementById('pretestScore').textContent = pretestScore;
+                    document.getElementById('pretestScoreBar').style.width = pretestPercent + '%';
+                }
+
+                // Load module progress
+                const enrollmentsRes = await apiService.getUserEnrollments();
+                if (enrollmentsRes.success && enrollmentsRes.data) {
+                    renderModuleProgress(enrollmentsRes.data);
+                }
+
+            } catch (error) {
+                console.error('Error loading progress:', error);
+                document.getElementById('moduleProgressContainer').innerHTML =
+                    '<p style="text-align:center;color:#999;padding:40px;">Failed to load progress data</p>';
+            }
+        }
+
+        function renderModuleProgress(modules) {
+            const container = document.getElementById('moduleProgressContainer');
+
+            if (!modules || modules.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#999;padding:40px;">No modules enrolled yet</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="module-progress-list">
+                    ${modules.map(module => `
+                        <div class="module-progress-item">
+                            <div class="module-progress-header">
+                                <div class="module-name">${module.module_name}</div>
+                                <span class="module-level-badge level-${module.difficulty_level}">
+                                    ${module.difficulty_level.toUpperCase()}
+                                </span>
+                            </div>
+                            <div class="module-stats">
+                                <div class="stat-item">
+                                    <i class='bx bx-calendar'></i>
+                                    <span>Started: ${formatDate(module.enrolled_at)}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class='bx bx-task'></i>
+                                    <span>${module.completed_assignments || 0}/${module.total_assignments || 0} Assignments</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 12px;">
+                                <div class="progress-header">
+                                    <span class="progress-title">Progress</span>
+                                    <span style="color: #667eea; font-weight: 600;">${module.progress || 0}%</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: ${module.progress || 0}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authService.logout();
+            }
+        }
+
+        // User dropdown toggle
+        const userMenuToggle = document.getElementById('userMenuToggle');
+        const userDropdown = document.getElementById('userDropdown');
+
+        if (userMenuToggle && userDropdown) {
+            userMenuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!userMenuToggle.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Initialize
+        loadProgress();
+    </script>
+</body>
+</html>

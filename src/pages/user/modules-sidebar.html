@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Modules - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <style>
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 24px;
+            color: white;
+        }
+
+        .module-header.fundamental {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .module-header.intermediate {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        }
+
+        .module-header.advance {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+        }
+
+        .module-level-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .module-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .module-description {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .module-body {
+            padding: 24px;
+        }
+
+        .module-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .module-stat i {
+            font-size: 18px;
+            color: #667eea;
+        }
+
+        .module-progress {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .module-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-module {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Learning</div>
+                <a href="modules-sidebar.html" class="nav-item active">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="progress-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>My Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Account</div>
+                <a href="profile-sidebar.html" class="nav-item">
+                    <i class='bx bx-user'></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">My Modules</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-role">Student</div>
+                    </div>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Student</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">student@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile-sidebar.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="filterModules('all')">
+                    <i class='bx bx-book'></i> All Modules
+                </div>
+                <div class="filter-tab" onclick="filterModules('fundamental')">
+                    <i class='bx bx-leaf'></i> Fundamental
+                </div>
+                <div class="filter-tab" onclick="filterModules('intermediate')">
+                    <i class='bx bx-trending-up'></i> Intermediate
+                </div>
+                <div class="filter-tab" onclick="filterModules('advance')">
+                    <i class='bx bx-trophy'></i> Advance
+                </div>
+            </div>
+
+            <!-- Modules Grid -->
+            <div id="modulesContainer">
+                <div class="empty-state">
+                    <div class="loader"></div>
+                    <p style="margin-top: 15px;">Loading your modules...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        const currentUser = authService.getCurrentUser();
+        if (!currentUser) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        // Check pretest
+        if (!currentUser.pretest_score) {
+            window.location.href = 'pretest.html';
+        }
+
+        // Set user info
+        document.getElementById('userName').textContent = currentUser.name || 'Student';
+        document.getElementById('userAvatar').textContent = (currentUser.name || 'U')[0].toUpperCase();
+        document.getElementById('dropdownUserName').textContent = currentUser.name || 'Student';
+        document.getElementById('dropdownUserEmail').textContent = currentUser.email || '';
+
+        let allModules = [];
+        let currentFilter = 'all';
+
+        async function loadModules() {
+            try {
+                const response = await apiService.getUserEnrollments();
+                if (response.success && response.data) {
+                    allModules = response.data;
+                    renderModules(allModules);
+                } else {
+                    throw new Error('Failed to load modules');
+                }
+            } catch (error) {
+                console.error('Error loading modules:', error);
+                document.getElementById('modulesContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-error-circle'></i>
+                        <h3>Failed to load modules</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderModules(modules) {
+            const container = document.getElementById('modulesContainer');
+
+            if (!modules || modules.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-book'></i>
+                        <h3>No Modules Found</h3>
+                        <p>You haven't enrolled in any modules yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="modules-grid">
+                    ${modules.map(module => `
+                        <div class="module-card" data-level="${module.difficulty_level}">
+                            <div class="module-header ${module.difficulty_level}">
+                                <div class="module-level-badge">${module.difficulty_level.toUpperCase()}</div>
+                                <div class="module-title">${module.module_name}</div>
+                                <div class="module-description">${module.description || 'Learn and master new programming concepts'}</div>
+                            </div>
+                            <div class="module-body">
+                                <div class="module-stat">
+                                    <i class='bx bx-time'></i>
+                                    <span>Estimated: ${module.estimated_duration || '4-6'} hours</span>
+                                </div>
+                                <div class="module-stat">
+                                    <i class='bx bx-task'></i>
+                                    <span>${module.total_assignments || 0} Assignments</span>
+                                </div>
+                                <div class="module-stat">
+                                    <i class='bx bx-calendar'></i>
+                                    <span>Enrolled: ${formatDate(module.enrolled_at)}</span>
+                                </div>
+
+                                <div class="module-progress">
+                                    <div class="progress-label">
+                                        <span>Progress</span>
+                                        <span style="color: #667eea;">${module.progress || 0}%</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: ${module.progress || 0}%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="module-actions">
+                                    <button class="btn-module btn-primary" onclick="viewModule(${module.module_id})">
+                                        ${module.progress > 0 ? 'Continue' : 'Start Learning'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function filterModules(level) {
+            currentFilter = level;
+
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.filter-tab').classList.add('active');
+
+            // Filter modules
+            const filtered = level === 'all'
+                ? allModules
+                : allModules.filter(m => m.difficulty_level === level);
+
+            renderModules(filtered);
+        }
+
+        function viewModule(moduleId) {
+            // For now, just show alert. Later integrate with module detail page
+            alert(`Opening module ${moduleId}. Module detail page will be available soon.`);
+            // window.location.href = `module-detail.html?id=${moduleId}`;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                authService.logout();
+            }
+        }
+
+        // User dropdown toggle
+        const userMenuToggle = document.getElementById('userMenuToggle');
+        const userDropdown = document.getElementById('userDropdown');
+
+        if (userMenuToggle && userDropdown) {
+            userMenuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!userMenuToggle.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Initialize
+        loadModules();
+    </script>
+</body>
+</html>

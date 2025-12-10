@@ -439,7 +439,7 @@
                     <tr>
                         <td><strong>${user.name || 'N/A'}</strong></td>
                         <td>${user.email}</td>
-                        <td><span class="badge badge-info">${user.role === 'user' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
+                        <td><span class="badge badge-info">${user.role === 'student' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
                         <td><span class="badge badge-${getBadgeColor(user.status)}">${user.status}</span></td>
                         <td>${user.pretest_score !== null ? user.pretest_score : '-'}</td>
                         <td>${(user.current_level || user.level) ? `<span class="badge badge-primary">${user.current_level || user.level}</span>` : '-'}</td>

@@ -22,6 +22,7 @@ const exportRoutes = require('./routes/exports');
 const analyticsRoutes = require('./routes/analytics');
 const mlRoutes = require('./routes/ml');
 const classesRoutes = require('./routes/classes');
+const pretestRoutes = require('./routes/pretest');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -111,6 +112,7 @@ app.use(`/api/${API_VERSION}/exports`, exportRoutes);
 app.use(`/api/${API_VERSION}/analytics`, analyticsRoutes);
 app.use(`/api/${API_VERSION}/ml`, mlRoutes);
 app.use(`/api/${API_VERSION}/classes`, classesRoutes);
+app.use(`/api/${API_VERSION}/pretest`, pretestRoutes);
 
 // Welcome route
 app.get('/', (req, res) => {

@@ -191,7 +191,7 @@ exports.getSubmission = async (req, res, next) => {
         const submission = result.rows[0];
 
         // Check access rights
-        if (req.user.role === 'user' && submission.user_id !== req.user.id) {
+        if (req.user.role === 'student' && submission.user_id !== req.user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied'
@@ -234,7 +234,7 @@ exports.downloadSubmission = async (req, res, next) => {
         const submission = result.rows[0];
 
         // Check access rights (only owner or admin/assessor can download)
-        if (req.user.role === 'user' && submission.user_id !== req.user.id) {
+        if (req.user.role === 'student' && submission.user_id !== req.user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied'

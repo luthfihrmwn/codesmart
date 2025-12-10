@@ -481,7 +481,7 @@
                 <tr>
                     <td><strong>${user.name || 'N/A'}</strong></td>
                     <td>${user.email}</td>
-                    <td><span class="badge badge-info">${user.role === 'user' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
+                    <td><span class="badge badge-info">${user.role === 'student' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
                     <td><span class="badge badge-${user.status === 'active' ? 'success' : 'warning'}">${user.status}</span></td>
                     <td>${new Date(user.created_at).toLocaleDateString()}</td>
                 </tr>

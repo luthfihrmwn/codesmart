@@ -125,7 +125,7 @@ exports.getModuleMaterials = async (req, res, next) => {
         const module = moduleResult.rows[0];
 
         // Check if user is enrolled (only for regular users, not admin/assessor)
-        if (req.user.role === 'user') {
+        if (req.user.role === 'student') {
             const enrollmentCheck = await query(
                 'SELECT id FROM enrollments WHERE user_id = $1 AND module_id = $2',
                 [req.user.id, module.id]
@@ -185,7 +185,7 @@ exports.getClassMaterial = async (req, res, next) => {
         const module = moduleResult.rows[0];
 
         // Check if user is enrolled (unless admin/assessor)
-        if (req.user.role === 'user') {
+        if (req.user.role === 'student') {
             const enrollmentCheck = await query(
                 'SELECT id, progress FROM enrollments WHERE user_id = $1 AND module_id = $2',
                 [req.user.id, module.id]

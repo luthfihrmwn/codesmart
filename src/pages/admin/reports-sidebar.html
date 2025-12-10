@@ -320,6 +320,63 @@
                 </div>
             </div>
 
+            <!-- Pretest Completion Report -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class='bx bx-clipboard'></i>
+                        Pretest Completion Report
+                    </h2>
+                    <button onclick="exportPretestCompletionCSV()" class="btn-primary" style="padding: 8px 16px; background: #10b981; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; color: white; display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-download'></i> Export CSV
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Stats Overview -->
+                    <div id="pretestStatsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                        <div style="text-align: center; padding: 20px;">
+                            <i class='bx bx-loader-alt bx-spin' style="font-size: 32px; color: #667eea;"></i>
+                            <p style="margin-top: 12px; color: #6b7280;">Loading pretest data...</p>
+                        </div>
+                    </div>
+
+                    <!-- Completion Table -->
+                    <div id="pretestCompletionTable">
+                        <div style="text-align: center; padding: 40px;">
+                            <i class='bx bx-loader-alt bx-spin' style="font-size: 32px; color: #667eea;"></i>
+                            <p style="margin-top: 12px; color: #6b7280;">Loading completion table...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level Recommendation vs Actual Performance -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class='bx bx-git-compare'></i>
+                        Level Recommendation vs Actual Performance
+                    </h2>
+                    <button onclick="exportComparisonCSV()" class="btn-primary" style="padding: 8px 16px; background: #10b981; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; color: white; display: flex; align-items: center; gap: 8px;">
+                        <i class='bx bx-download'></i> Export CSV
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Comparison Table -->
+                    <div id="comparisonTable">
+                        <div style="text-align: center; padding: 40px;">
+                            <i class='bx bx-loader-alt bx-spin' style="font-size: 32px; color: #667eea;"></i>
+                            <p style="margin-top: 12px; color: #6b7280;">Loading comparison data...</p>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Chart -->
+                    <div id="comparisonChartContainer" style="display: none; margin-top: 24px; height: 400px;">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <!-- SVM Predictions Analytics Section -->
             <div class="card" style="margin-top: 32px;">
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -456,8 +513,8 @@
                 const response = await apiService.getAllUsers();
                 if (response.success) {
                     const allUsersData = response.data.users || response.data || [];
-                    // Filter only users with role 'user' (not 'admin' or 'assessor')
-                    allUsers = allUsersData.filter(user => user.role === 'user');
+                    // Filter only users with role 'student' (not 'admin' or 'assessor')
+                    allUsers = allUsersData.filter(user => user.role === 'student');
                     console.log('Loaded users:', allUsers.length);
                     calculateUserLevels();
                 }
@@ -696,7 +753,7 @@
                     <tr style="opacity: 0.7;">
                         <td><strong>${user.name}</strong></td>
                         <td>${user.email}</td>
-                        <td><span class="badge badge-info">${user.role === 'user' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
+                        <td><span class="badge badge-info">${user.role === 'student' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
                         <td><span class="badge badge-${getLevelColor(user.level)}">${user.level}</span></td>
                         <td>${user.pretestScore}</td>
                         <td>${user.enrollments}</td>
@@ -719,7 +776,7 @@
                     <tr>
                         <td><strong>${user.name || 'N/A'}</strong></td>
                         <td>${user.email}</td>
-                        <td><span class="badge badge-info">${user.role === 'user' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
+                        <td><span class="badge badge-info">${user.role === 'student' ? 'STUDENT' : user.role.toUpperCase()}</span></td>
                         <td>${user.level ? `<span class="badge badge-${getLevelColor(user.level)}">${user.level}</span>` : '-'}</td>
                         <td>${user.pretest_score !== null ? user.pretest_score : '-'}</td>
                         <td>${enrollmentCount}</td>
@@ -1190,7 +1247,252 @@
         // Load SVM data on page load
         setTimeout(() => {
             loadSVMData();
+            loadPretestReports();
         }, 1500);
+
+        // ========================================
+        // Pretest Reports Functions
+        // ========================================
+        let pretestStudentsData = [];
+        let comparisonChart = null;
+
+        // Load pretest reports
+        async function loadPretestReports() {
+            try {
+                // Load pretest stats
+                const statsResponse = await apiService.fetchWithAuth('/analytics/pretest-stats');
+
+                // Load students
+                const studentsResponse = await apiService.fetchWithAuth('/admin/users?role=student');
+
+                if (statsResponse.success) {
+                    displayPretestStats(statsResponse.data.overall);
+                }
+
+                if (studentsResponse.success) {
+                    pretestStudentsData = studentsResponse.data.users || studentsResponse.data;
+                    displayPretestCompletionTable(pretestStudentsData);
+                    displayComparisonTable(pretestStudentsData);
+                }
+            } catch (error) {
+                console.error('Error loading pretest reports:', error);
+            }
+        }
+
+        // Display pretest stats
+        function displayPretestStats(stats) {
+            const statsHTML = `
+                <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${stats.total_students}</div>
+                    <div style="font-size: 13px; color: #718096; margin-top: 8px;">Total Students</div>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size: 28px; font-weight: 700; color: #10b981;">${stats.students_completed}</div>
+                    <div style="font-size: 13px; color: #718096; margin-top: 8px;">Completed</div>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size: 28px; font-weight: 700; color: #f59e0b;">${stats.students_pending}</div>
+                    <div style="font-size: 13px; color: #718096; margin-top: 8px;">Pending</div>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size: 28px; font-weight: 700; color: #667eea;">${stats.completion_rate}%</div>
+                    <div style="font-size: 13px; color: #718096; margin-top: 8px;">Completion Rate</div>
+                </div>
+            `;
+            document.getElementById('pretestStatsGrid').innerHTML = statsHTML;
+        }
+
+        // Display pretest completion table
+        function displayPretestCompletionTable(students) {
+            const completed = students.filter(s => s.pretest_score !== null);
+            const pending = students.filter(s => s.pretest_score === null);
+
+            const tableHTML = `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <tr>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Student Name</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Email</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Status</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Score</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Level Assigned</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Date Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody style="background: white;">
+                            ${completed.map(student => `
+                                <tr style="border-bottom: 1px solid #e5e7eb;">
+                                    <td style="padding: 12px; font-size: 13px;"><strong>${student.name}</strong></td>
+                                    <td style="padding: 12px; font-size: 13px;">${student.email}</td>
+                                    <td style="padding: 12px; font-size: 13px;"><span style="padding: 4px 8px; border-radius: 6px; background: #d1fae5; color: #065f46; font-size: 11px; font-weight: 600;"><i class='bx bx-check-circle'></i> Completed</span></td>
+                                    <td style="padding: 12px; font-size: 13px;"><strong>${student.pretest_score}</strong></td>
+                                    <td style="padding: 12px; font-size: 13px;"><span style="padding: 4px 8px; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 600;">${student.level || '-'}</span></td>
+                                    <td style="padding: 12px; font-size: 13px; color: #6b7280;">${student.updated_at ? new Date(student.updated_at).toLocaleDateString('id-ID') : '-'}</td>
+                                </tr>
+                            `).join('')}
+                            ${pending.map(student => `
+                                <tr style="border-bottom: 1px solid #e5e7eb;">
+                                    <td style="padding: 12px; font-size: 13px;"><strong>${student.name}</strong></td>
+                                    <td style="padding: 12px; font-size: 13px;">${student.email}</td>
+                                    <td style="padding: 12px; font-size: 13px;"><span style="padding: 4px 8px; border-radius: 6px; background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600;"><i class='bx bx-time'></i> Pending</span></td>
+                                    <td style="padding: 12px; font-size: 13px;">-</td>
+                                    <td style="padding: 12px; font-size: 13px;">-</td>
+                                    <td style="padding: 12px; font-size: 13px;">-</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('pretestCompletionTable').innerHTML = tableHTML;
+        }
+
+        // Display comparison table
+        function displayComparisonTable(students) {
+            const withPretest = students.filter(s => s.pretest_score !== null && s.svm_predicted_level);
+
+            if (withPretest.length === 0) {
+                document.getElementById('comparisonTable').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class='bx bx-data' style="font-size: 64px; color: #cbd5e0;"></i>
+                        <h4 style="color: #4a5568; margin-top: 16px;">No Data Available</h4>
+                        <p style="color: #718096; margin: 8px 0;">No students have completed pretest with SVM predictions yet</p>
+                    </div>
+                `;
+                document.getElementById('comparisonChartContainer').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('comparisonChartContainer').style.display = 'block';
+
+            const tableHTML = `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <tr>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Student Name</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Pretest Score</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">SVM Predicted</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Actual Level</th>
+                                <th style="padding: 12px; text-align: left; font-size: 13px;">Match</th>
+                            </tr>
+                        </thead>
+                        <tbody style="background: white;">
+                            ${withPretest.map(student => {
+                                const match = student.svm_predicted_level === student.level;
+                                return `
+                                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                                        <td style="padding: 12px; font-size: 13px;"><strong>${student.name}</strong></td>
+                                        <td style="padding: 12px; font-size: 13px;"><strong>${student.pretest_score}</strong></td>
+                                        <td style="padding: 12px; font-size: 13px;"><span style="padding: 4px 8px; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 600;">${student.svm_predicted_level}</span></td>
+                                        <td style="padding: 12px; font-size: 13px;"><span style="padding: 4px 8px; border-radius: 6px; background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: 600;">${student.level || '-'}</span></td>
+                                        <td style="padding: 12px; font-size: 13px; color: ${match ? '#10b981' : '#ef4444'}; font-weight: 600;">
+                                            <i class='bx ${match ? 'bx-check-circle' : 'bx-x-circle'}'></i>
+                                            ${match ? 'Match' : 'No Match'}
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('comparisonTable').innerHTML = tableHTML;
+
+            // Create comparison chart
+            createComparisonChart(withPretest);
+        }
+
+        // Create comparison chart
+        function createComparisonChart(students) {
+            const ctx = document.getElementById('comparisonChart');
+            if (!ctx) return;
+
+            if (comparisonChart) {
+                comparisonChart.destroy();
+            }
+
+            const matches = students.filter(s => s.svm_predicted_level === s.level).length;
+            const noMatches = students.length - matches;
+
+            comparisonChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Match', 'No Match'],
+                    datasets: [{
+                        data: [matches, noMatches],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: {
+                            display: true,
+                            text: `SVM Prediction Accuracy: ${((matches / students.length) * 100).toFixed(1)}%`,
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export pretest completion CSV
+        function exportPretestCompletionCSV() {
+            if (pretestStudentsData.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            const csvData = [
+                ['Student Name', 'Email', 'Status', 'Score', 'Level', 'Date Completed']
+            ];
+
+            pretestStudentsData.forEach(student => {
+                const status = student.pretest_score !== null ? 'Completed' : 'Pending';
+                csvData.push([
+                    student.name || 'N/A',
+                    student.email,
+                    status,
+                    student.pretest_score !== null ? student.pretest_score : '-',
+                    student.level || '-',
+                    student.updated_at ? new Date(student.updated_at).toLocaleDateString('id-ID') : '-'
+                ]);
+            });
+
+            exportToCSV(csvData, 'pretest_completion_' + new Date().toISOString().split('T')[0] + '.csv');
+        }
+
+        // Export comparison CSV
+        function exportComparisonCSV() {
+            const withPretest = pretestStudentsData.filter(s => s.pretest_score !== null && s.svm_predicted_level);
+
+            if (withPretest.length === 0) {
+                alert('No comparison data to export');
+                return;
+            }
+
+            const csvData = [
+                ['Student Name', 'Pretest Score', 'SVM Predicted Level', 'Actual Level', 'Match']
+            ];
+
+            withPretest.forEach(student => {
+                const match = student.svm_predicted_level === student.level;
+                csvData.push([
+                    student.name || 'N/A',
+                    student.pretest_score,
+                    student.svm_predicted_level,
+                    student.level || '-',
+                    match ? 'Match' : 'No Match'
+                ]);
+            });
+
+            exportToCSV(csvData, 'level_comparison_' + new Date().toISOString().split('T')[0] + '.csv');
+        }
     </script>
 
     <script>

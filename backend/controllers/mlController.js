@@ -180,8 +180,8 @@ exports.predictUserLevel = async (req, res, next) => {
     try {
         const { userId } = req.params;
 
-        // Check access: User can only predict for themselves, admin/assessor can predict for anyone
-        if (req.user.role === 'user' && parseInt(userId) !== req.user.id) {
+        // Check access: Student can only predict for themselves, admin/assessor can predict for anyone
+        if (req.user.role === 'student' && parseInt(userId) !== req.user.id) {
             return res.status(403).json({
                 success: false,
                 message: 'You can only predict your own level'

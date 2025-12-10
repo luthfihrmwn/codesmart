@@ -299,10 +299,23 @@ class APIService {
         return this.get('/users/profile');
     }
 
-    async submitPretest(answers) {
-        return this.post('/users/pretest/submit', { answers });
+    // ==========================================
+    // PRETEST ENDPOINTS (New)
+    // ==========================================
+
+    async getPretestQuestions() {
+        return this.get('/pretest/questions');
     }
 
+    async submitPretest(answers) {
+        return this.post('/pretest/submit', { answers });
+    }
+
+    async getPretestResults() {
+        return this.get('/pretest/results');
+    }
+
+    // Legacy endpoints (kept for backward compatibility)
     async getPretestResult() {
         return this.get('/users/pretest/result');
     }

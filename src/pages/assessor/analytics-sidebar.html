@@ -981,6 +981,57 @@
                     </div>
                 </div>
 
+                <!-- Pretest Analytics Section -->
+                <div class="chart-card full-width-card" style="margin-top: 3.5rem;">
+                    <h3>
+                        <i class='bx bx-clipboard'></i>
+                        Pretest Statistics
+                    </h3>
+
+                    <!-- Pretest Stats Overview -->
+                    <div id="pretestStatsOverview" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 24px 0;">
+                        <div style="text-align: center; padding: 20px;">
+                            <i class='bx bx-loader-alt bx-spin' style="font-size: 32px; color: #667eea;"></i>
+                            <p style="margin-top: 12px; color: #6b7280;">Loading pretest data...</p>
+                        </div>
+                    </div>
+
+                    <!-- Pretest Charts -->
+                    <div id="pretestChartsContainer" style="display: none;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                            <div>
+                                <h4 style="font-size: 16px; font-weight: 600; color: #2d3748; margin-bottom: 16px;">Level Distribution</h4>
+                                <div style="position: relative; height: 280px;">
+                                    <canvas id="pretestLevelChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 16px; font-weight: 600; color: #2d3748; margin-bottom: 16px;">Score Distribution</h4>
+                                <div style="position: relative; height: 280px;">
+                                    <canvas id="pretestScoreChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SVM Accuracy Badge -->
+                        <div style="text-align: center; margin: 24px 0;">
+                            <h4 style="font-size: 16px; font-weight: 600; color: #2d3748; margin-bottom: 16px;">SVM Prediction Accuracy</h4>
+                            <div id="svmAccuracyBadge" style="display: inline-flex; align-items: center; gap: 12px; padding: 16px 32px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; border-radius: 50px; font-weight: 700; font-size: 24px;">
+                                <i class='bx bx-check-circle' style="font-size: 28px;"></i>
+                                <span>--</span>
+                            </div>
+                            <p style="margin-top: 12px; color: #64748b;" id="svmAccuracyText">Loading accuracy data...</p>
+                        </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="pretestEmptyState" style="display: none; text-align: center; padding: 40px;">
+                        <i class='bx bx-clipboard' style="font-size: 64px; color: #cbd5e0;"></i>
+                        <h4 style="color: #4a5568; margin-top: 16px;">No Pretest Data Yet</h4>
+                        <p style="color: #718096; margin: 8px 0;">Students need to complete pretests to see statistics here</p>
+                    </div>
+                </div>
+
                 <!-- SVM Predictions Analytics Section -->
                 <div class="chart-card full-width-card" style="margin-top: 3.5rem;">
                     <h3 style="display: flex; justify-content: space-between; align-items: center;">
@@ -1992,8 +2043,164 @@
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 loadSVMData();
+                loadPretestAnalytics();
             }, 1000);
         });
+
+        // ========================================
+        // Pretest Analytics Functions
+        // ========================================
+        let pretestLevelChart = null;
+        let pretestScoreChart = null;
+
+        // Initialize pretest charts
+        function initPretestCharts() {
+            const levelCtx = document.getElementById('pretestLevelChart')?.getContext('2d');
+            if (levelCtx && !pretestLevelChart) {
+                pretestLevelChart = new Chart(levelCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Fundamental', 'Intermediate', 'Advance'],
+                        datasets: [{
+                            label: 'Number of Students',
+                            data: [0, 0, 0],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(240, 147, 251, 0.8)',
+                                'rgba(67, 233, 123, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(102, 126, 234)',
+                                'rgb(240, 147, 251)',
+                                'rgb(67, 233, 123)'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+
+            const scoreCtx = document.getElementById('pretestScoreChart')?.getContext('2d');
+            if (scoreCtx && !pretestScoreChart) {
+                pretestScoreChart = new Chart(scoreCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Fundamental', 'Intermediate', 'Advance'],
+                        datasets: [{
+                            data: [0, 0, 0],
+                            backgroundColor: [
+                                'rgba(102, 126, 234, 0.8)',
+                                'rgba(240, 147, 251, 0.8)',
+                                'rgba(67, 233, 123, 0.8)'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Load pretest analytics
+        async function loadPretestAnalytics() {
+            try {
+                const response = await apiService.fetchWithAuth('/analytics/pretest-stats');
+
+                if (response.success && response.data.overall.students_completed > 0) {
+                    const data = response.data;
+
+                    // Update stats overview
+                    const statsHTML = `
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${data.overall.students_completed}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Completed</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #f093fb;">${data.overall.students_pending}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Pending</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #4facfe;">${data.overall.average_score || 0}</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Avg Score</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="font-size: 28px; font-weight: 700; color: #43e97b;">${data.overall.completion_rate}%</div>
+                            <div style="font-size: 13px; color: #718096; margin-top: 8px;">Completion Rate</div>
+                        </div>
+                    `;
+                    document.getElementById('pretestStatsOverview').innerHTML = statsHTML;
+
+                    // Initialize and update charts
+                    initPretestCharts();
+                    updatePretestCharts(data.level_distribution, data.score_distribution);
+
+                    // Update SVM accuracy
+                    updateSVMAccuracy(data.svm_accuracy);
+
+                    // Show charts
+                    document.getElementById('pretestChartsContainer').style.display = 'block';
+                    document.getElementById('pretestEmptyState').style.display = 'none';
+                } else {
+                    showPretestEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading pretest analytics:', error);
+                showPretestEmptyState();
+            }
+        }
+
+        // Update pretest charts
+        function updatePretestCharts(levelDist, scoreDist) {
+            if (!pretestLevelChart || !pretestScoreChart) return;
+
+            // Update level chart
+            const levelData = [0, 0, 0];
+            levelDist.forEach(item => {
+                const idx = item.current_level === 'fundamental' ? 0 : item.current_level === 'intermediate' ? 1 : 2;
+                levelData[idx] = parseInt(item.count);
+            });
+            pretestLevelChart.data.datasets[0].data = levelData;
+            pretestLevelChart.update();
+
+            // Update score chart
+            const scoreData = [0, 0, 0];
+            scoreDist.forEach(item => {
+                const idx = item.score_range === 'fundamental' ? 0 : item.score_range === 'intermediate' ? 1 : 2;
+                scoreData[idx] = parseInt(item.count);
+            });
+            pretestScoreChart.data.datasets[0].data = scoreData;
+            pretestScoreChart.update();
+        }
+
+        // Update SVM accuracy
+        function updateSVMAccuracy(accuracy) {
+            const accuracyValue = accuracy.accuracy_percentage || 0;
+            const badge = document.getElementById('svmAccuracyBadge');
+            const text = document.getElementById('svmAccuracyText');
+
+            badge.querySelector('span').textContent = accuracyValue.toFixed(1) + '%';
+            text.textContent = `${accuracy.correct_predictions} out of ${accuracy.total_predictions} predictions correct`;
+        }
+
+        // Show empty state
+        function showPretestEmptyState() {
+            document.getElementById('pretestStatsOverview').innerHTML = '';
+            document.getElementById('pretestChartsContainer').style.display = 'none';
+            document.getElementById('pretestEmptyState').style.display = 'block';
+        }
         // User dropdown toggle
         (function() {
             const userMenuToggle = document.getElementById('userMenuToggle');

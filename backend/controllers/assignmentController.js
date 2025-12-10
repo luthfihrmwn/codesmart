@@ -51,8 +51,8 @@ exports.getModuleAssignments = async (req, res, next) => {
 
         const module = moduleResult.rows[0];
 
-        // Check enrollment for regular users
-        if (req.user.role === 'user') {
+        // Check enrollment for students
+        if (req.user.role === 'student') {
             const enrollmentCheck = await query(
                 'SELECT id FROM enrollments WHERE user_id = $1 AND module_id = $2',
                 [req.user.id, module.id]
@@ -121,8 +121,8 @@ exports.getAssignment = async (req, res, next) => {
 
         const assignment = result.rows[0];
 
-        // Check enrollment for regular users
-        if (req.user.role === 'user') {
+        // Check enrollment for students
+        if (req.user.role === 'student') {
             const enrollmentCheck = await query(
                 'SELECT id FROM enrollments WHERE user_id = $1 AND module_id = $2',
                 [req.user.id, assignment.module_id]

@@ -48,7 +48,8 @@ exports.getAllUsers = async (req, res, next) => {
         // Get users with pagination and enrollment count
         const result = await query(
             `SELECT u.id, u.username, u.email, u.name, u.phone, u.photo_url, u.role, u.status,
-                    u.pretest_score, u.current_level as level, u.created_at, u.updated_at,
+                    u.pretest_score, u.current_level as level, u.svm_predicted_level,
+                    u.svm_confidence, u.created_at, u.updated_at,
                     COUNT(DISTINCT e.id) as enrollment_count
              FROM users u
              LEFT JOIN enrollments e ON u.id = e.user_id

@@ -21,7 +21,7 @@ async function initDashboard() {
 
         // Check if pretest completed
         if (!currentUser.pretest_score) {
-            window.location.href = 'pretest-new.html';
+            window.location.href = 'pretest.html';
             return;
         }
 
