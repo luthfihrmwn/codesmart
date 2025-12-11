@@ -494,7 +494,7 @@
                         <td style="padding: 16px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 ${cls.assessor_photo ? `
-                                    <img src="http://localhost:5000${cls.assessor_photo}"
+                                    <img src="${window.location.protocol}//${window.location.host}${cls.assessor_photo}"
                                          alt="${cls.assessor_name || 'Assessor'}"
                                          style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">

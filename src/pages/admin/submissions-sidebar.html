@@ -580,7 +580,7 @@
                         <td style="padding: 16px;">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 ${sub.student_photo ? `
-                                    <img src="http://localhost:5000${sub.student_photo}"
+                                    <img src="${window.location.protocol}//${window.location.host}${sub.student_photo}"
                                          alt="${sub.student_name}"
                                          style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -656,7 +656,7 @@
                 <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
                     <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
                         ${sub.student_photo ? `
-                            <img src="http://localhost:5000${sub.student_photo}"
+                            <img src="${window.location.protocol}//${window.location.host}${sub.student_photo}"
                                  alt="${sub.student_name}"
                                  style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">

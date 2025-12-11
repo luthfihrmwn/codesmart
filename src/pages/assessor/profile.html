@@ -974,7 +974,7 @@
                         // Construct full URL for photo from backend
                         const photoUrl = user.photo_url.startsWith('http')
                             ? user.photo_url
-                            : `http://localhost:5000${user.photo_url}`;
+                            : `${window.location.protocol}//${window.location.host}${user.photo_url}`;
                         photoDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo">`;
                     } else {
                         // Show default initial if no photo
@@ -991,7 +991,7 @@
                         if (userAvatarNav && user.photo_url) {
                             const photoUrl = user.photo_url.startsWith('http')
                                 ? user.photo_url
-                                : `http://localhost:5000${user.photo_url}`;
+                                : `${window.location.protocol}//${window.location.host}${user.photo_url}`;
                             userAvatarNav.style.backgroundImage = `url('${photoUrl}')`;
                             userAvatarNav.style.backgroundSize = 'cover';
                             userAvatarNav.style.backgroundPosition = 'center';
@@ -1104,7 +1104,7 @@
                     const photoDisplay = document.getElementById('profilePhotoDisplay');
                     const photoUrl = response.data.photo_url.startsWith('http')
                         ? response.data.photo_url
-                        : `http://localhost:5000${response.data.photo_url}`;
+                        : `${window.location.protocol}//${window.location.host}${response.data.photo_url}`;
                     photoDisplay.innerHTML = `<img src="${photoUrl}" alt="Profile Photo">`;
 
                     // Hide save button

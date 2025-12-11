@@ -36,6 +36,10 @@ const API_VERSION = process.env.API_VERSION || 'v1';
 // MIDDLEWARE
 // ===========================================
 
+// Trust proxy - IMPORTANT for Cloudflare
+// This allows Express to trust X-Forwarded-* headers from Cloudflare/Nginx
+app.set('trust proxy', true);
+
 // Security headers
 app.use(helmet({
     contentSecurityPolicy: false, // Disable for development, enable in production
@@ -43,15 +47,19 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" } // Allow cross-origin resource sharing
 }));
 
-// CORS configuration
+// CORS configuration - Production Only
 const corsOptions = {
     origin: [
-        'http://localhost:8000',
-        'http://localhost:8080',
+        'https://codesmart.my.id',
+        'https://www.codesmart.my.id',
+        'http://codesmart.my.id',
+        'http://www.codesmart.my.id',
         process.env.FRONTEND_URL
     ].filter(Boolean),
     credentials: true,
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 app.use(cors(corsOptions));
 

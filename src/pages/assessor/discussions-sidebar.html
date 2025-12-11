@@ -1247,7 +1247,7 @@
             // If already absolute URL, return as-is
             if (photoPath.startsWith('http')) return photoPath;
             // Otherwise, prepend backend server URL
-            return `http://localhost:5000${photoPath}`;
+            return `${window.location.protocol}//${window.location.host}${photoPath}`;
         }
 
         // Logout

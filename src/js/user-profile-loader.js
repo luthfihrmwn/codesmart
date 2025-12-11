@@ -62,10 +62,10 @@ class UserProfileLoader {
 
         // Update avatar
         if (user.photo_url) {
-            // User has a photo - display it
+            // User has a photo - display it (use current domain for Nginx compatibility)
             const photoUrl = user.photo_url.startsWith('http')
                 ? user.photo_url
-                : `http://localhost:5000${user.photo_url}`;
+                : `${window.location.protocol}//${window.location.host}${user.photo_url}`;
 
             console.log('UserProfileLoader: Setting photo URL:', photoUrl);
 

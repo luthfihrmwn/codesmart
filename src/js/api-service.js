@@ -3,10 +3,11 @@
  * Handles all communication with backend API
  */
 
-// API Configuration
+// API Configuration - Production (Nginx Proxy)
+// Always use relative path through Nginx
 const API_CONFIG = {
-    BASE_URL: 'http://localhost:5000/api/v1', // Main backend
-    ML_URL: 'http://localhost:5000/api/v1',   // ML service for SVM predictions
+    BASE_URL: window.location.protocol + '//' + window.location.host + '/api/v1',
+    ML_URL: window.location.protocol + '//' + window.location.host + '/api/v1',
     TIMEOUT: 30000, // 30 seconds
 };
 
