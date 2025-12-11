@@ -3,7 +3,7 @@ name: CI/CD Deploy CodeSmart
 on:
   push:
     branches:
-      - main
+      - main  # Trigger deploy saat ada push ke branch main
 
 jobs:
   deploy:
@@ -14,11 +14,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # 2️⃣ Setup Node.js untuk backend
+    # 2️⃣ Setup Node.js (untuk backend)
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '20'  # Sesuaikan versi Node.js di server
 
     # 3️⃣ Install backend dependencies
     - name: Install backend dependencies
@@ -34,20 +34,20 @@ jobs:
         password: ${{ secrets.SERVER_PASSWORD }}
         port: 22
         script: |
-          echo "Backup existing project..."
+          echo "===== Backup existing project ====="
           cp -r /var/www/codesmart /var/www/codesmart_backup_$(date +%F_%H-%M-%S)
 
-          echo "Sync repository files..."
+          echo "===== Sync repository files to server ====="
           rsync -avz --delete ./ /var/www/codesmart/
 
-          echo "Install backend dependencies..."
+          echo "===== Install backend dependencies on server ====="
           cd /var/www/codesmart/backend
           npm install
 
-          echo "Restart Node.js server..."
+          echo "===== Restart Node.js server ====="
           pm2 restart codesmart || pm2 start server.js --name codesmart
 
-          echo "Reload Nginx..."
+          echo "===== Reload Nginx ====="
           systemctl reload nginx
 
-          echo "Deployment finished!"
+          echo "===== Deployment finished ====="
