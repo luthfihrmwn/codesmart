@@ -14,21 +14,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # 2️⃣ Install dependencies & build (opsional, jika frontend perlu build)
+    # 2️⃣ Setup Node.js untuk backend
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '20'
 
-    - name: Install dependencies
+    # 3️⃣ Install backend dependencies
+    - name: Install backend dependencies
       run: npm install
-      working-directory: ./backend  # ganti sesuai struktur folder backend
+      working-directory: ./backend
 
-    - name: Build frontend (jika ada)
-      run: npm run build
-      working-directory: ./frontend  # jika frontend perlu build, sesuaikan folder
-
-    # 3️⃣ Deploy ke server via SSH
+    # 4️⃣ Deploy ke server via SSH
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.6
       with:
@@ -48,11 +45,9 @@ jobs:
           npm install
 
           echo "Restart Node.js server..."
-          # Ganti 'codesmart' dengan nama process Node.js Anda di pm2
           pm2 restart codesmart || pm2 start server.js --name codesmart
 
           echo "Reload Nginx..."
           systemctl reload nginx
 
           echo "Deployment finished!"
-
