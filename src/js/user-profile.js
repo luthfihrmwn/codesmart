@@ -341,10 +341,13 @@ document.getElementById('profileForm').addEventListener('submit', async function
     }
 });
 
-// Retake pretest - DISABLED (students cannot retake pretest)
+// Retake pretest
 function retakePretest() {
-    alert('Pretest hanya dapat dilakukan satu kali. Anda tidak dapat mengulang pretest.');
-    return;
+    if (confirm('Apakah Anda yakin ingin mengulang pretest? Hasil pretest sebelumnya akan dihapus.')) {
+        // Note: Backend doesn't have endpoint to reset pretest yet
+        // For now, just redirect to pretest page
+        window.location.href = 'pretest-new.html';
+    }
 }
 
 // Loading spinner

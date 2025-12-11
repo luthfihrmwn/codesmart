@@ -8,45 +8,118 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .admin-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
         .assignments-grid {
             display: grid;
-            gap: 20px;
+            gap: 24px;
+            animation: slideInRight 0.5s ease-out 0.2s backwards;
         }
 
         .assignment-card {
             background: white;
-            border-radius: 12px;
-            padding: 24px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            padding: 28px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .assignment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+            animation: shimmer 3s infinite;
         }
 
         .assignment-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
 
         .assignment-card.overdue {
             border-left-color: #ff6b6b;
         }
 
+        .assignment-card.overdue::before {
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 107, 0.3), transparent);
+        }
+
         .assignment-card.completed {
             border-left-color: #4CAF50;
+        }
+
+        .assignment-card.completed::before {
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.3), transparent);
         }
 
         .assignment-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .assignment-title {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             color: #2d3748;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            transition: color 0.3s ease;
+        }
+
+        .assignment-card:hover .assignment-title {
+            color: #667eea;
         }
 
         .assignment-module {
@@ -54,86 +127,151 @@
             color: #6c757d;
             display: flex;
             align-items: center;
-            gap: 5px;
-        }
-
-        .assignment-status {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
+            gap: 6px;
             font-weight: 600;
         }
 
+        .assignment-module i {
+            color: #667eea;
+        }
+
+        .assignment-status {
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .assignment-status:hover {
+            transform: scale(1.05);
+        }
+
         .status-pending {
-            background: #fff3cd;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
             color: #856404;
         }
 
         .status-submitted {
-            background: #d1ecf1;
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
             color: #0c5460;
         }
 
         .status-graded {
-            background: #d4edda;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             color: #155724;
         }
 
         .status-overdue {
-            background: #f8d7da;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
             color: #721c24;
+            animation: pulse 2s ease-in-out infinite;
         }
 
         .assignment-meta {
             display: flex;
-            gap: 20px;
-            margin: 16px 0;
+            gap: 24px;
+            margin: 20px 0;
             flex-wrap: wrap;
         }
 
         .meta-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             font-size: 14px;
-            color: #6c757d;
+            color: #4a5568;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 6px 0;
+        }
+
+        .meta-item:hover {
+            color: #667eea;
+            transform: translateX(4px);
         }
 
         .meta-item i {
-            font-size: 18px;
+            font-size: 20px;
             color: #667eea;
+            background: linear-gradient(135deg, #e8eaff 0%, #f0f2ff 100%);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .meta-item:hover i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: rotate(5deg);
         }
 
         .assignment-description {
             font-size: 14px;
             color: #495057;
-            line-height: 1.6;
-            margin-bottom: 16px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: linear-gradient(to bottom, #f8f9ff 0%, #ffffff 100%);
+            border-radius: 10px;
+            border-left: 3px solid #e8eaff;
         }
 
         .assignment-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 16px;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .btn-assignment {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-assignment::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-assignment:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
         }
 
         .btn-outline {
@@ -145,57 +283,142 @@
         .btn-outline:hover {
             background: #667eea;
             color: white;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-outline:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
         .score-display {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: #f0f7ff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 700;
+            gap: 10px;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8eeff 100%);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 800;
             color: #667eea;
+            border: 2px solid #d0dcff;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .score-display:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+        }
+
+        .score-display i {
+            font-size: 20px;
         }
 
         .filter-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 35px;
             flex-wrap: wrap;
+            animation: slideInRight 0.4s ease-out;
         }
 
         .filter-tab {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
+            border: 2px solid #e8eaff;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4a5568;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .filter-tab i {
+            font-size: 18px;
             transition: all 0.3s ease;
         }
 
         .filter-tab:hover {
             border-color: #667eea;
             color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .filter-tab:hover i {
+            transform: rotate(10deg) scale(1.1);
         }
 
         .filter-tab.active {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-color: #667eea;
+            border-color: transparent;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .filter-tab.active i {
+            animation: pulse 1s ease-in-out infinite;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: #999;
+            animation: fadeInUp 0.5s ease-out;
         }
 
         .empty-state i {
-            font-size: 64px;
+            font-size: 80px;
             color: #ddd;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        /* Stagger animation for assignment cards */
+        .assignment-card:nth-child(1) { animation-delay: 0.1s; }
+        .assignment-card:nth-child(2) { animation-delay: 0.2s; }
+        .assignment-card:nth-child(3) { animation-delay: 0.3s; }
+        .assignment-card:nth-child(4) { animation-delay: 0.4s; }
+        .assignment-card:nth-child(5) { animation-delay: 0.5s; }
+        .assignment-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .assignment-card {
+                padding: 20px;
+            }
+
+            .assignment-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .assignment-meta {
+                gap: 16px;
+            }
+
+            .filter-tabs {
+                gap: 8px;
+            }
+
+            .filter-tab {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -227,6 +450,10 @@
                 <a href="assignments-sidebar.html" class="nav-item active">
                     <i class='bx bx-task'></i>
                     <span>Assignments</span>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
                 </a>
                 <a href="progress-sidebar.html" class="nav-item">
                     <i class='bx bx-bar-chart-alt-2'></i>
@@ -235,10 +462,22 @@
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="profile-sidebar.html" class="nav-item">
-                    <i class='bx bx-user'></i>
-                    <span>Profile</span>
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Community</div>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-group'></i>
+                    <span>My Classes</span>
                 </a>
             </div>
         </nav>
@@ -252,6 +491,10 @@
                 <h1 class="page-title-header">My Assignments</h1>
             </div>
             <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
                 <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">U</div>
                     <div class="user-info">
@@ -265,7 +508,7 @@
                             <div class="dropdown-user-email" id="dropdownUserEmail">student@codesmart.com</div>
                         </div>
                         <div class="dropdown-menu">
-                            <a href="profile-sidebar.html" class="dropdown-item">
+                            <a href="profile.html" class="dropdown-item">
                                 <i class='bx bx-user-circle'></i>
                                 <span>My Profile</span>
                             </a>
@@ -310,6 +553,9 @@
 
     <script src="/src/js/api-service.js"></script>
     <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth()) {

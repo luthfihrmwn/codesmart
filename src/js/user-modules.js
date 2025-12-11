@@ -23,7 +23,7 @@ async function initModules() {
         // Check if pretest completed
         if (!currentUser.pretest_score) {
             alert('Anda harus menyelesaikan pretest terlebih dahulu!');
-            window.location.href = 'pretest.html';
+            window.location.href = 'pretest-new.html';
             return;
         }
 

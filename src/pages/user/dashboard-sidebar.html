@@ -8,153 +8,567 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <style>
-        /* Custom styles for student dashboard */
+        /* Modern Dashboard Styles */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-slide-in-right {
+            animation: slideInRight 0.6s ease-out forwards;
+        }
+
+        /* Welcome Banner - Ultra Modern */
         .welcome-banner {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px;
-            border-radius: 16px;
+            padding: 50px;
+            border-radius: 24px;
             margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-banner h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .welcome-banner p {
-            font-size: 16px;
-            opacity: 0.9;
+            font-size: 18px;
+            opacity: 0.95;
+            font-weight: 500;
         }
 
+        .welcome-time {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Stats Grid - Enhanced */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--stat-color-1), var(--stat-color-2));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        }
+
+        .stat-card.primary {
+            --stat-color-1: #667eea;
+            --stat-color-2: #764ba2;
+        }
+
+        .stat-card.success {
+            --stat-color-1: #11998e;
+            --stat-color-2: #38ef7d;
+        }
+
+        .stat-card.warning {
+            --stat-color-1: #f093fb;
+            --stat-color-2: #f5576c;
+        }
+
+        .stat-card.info {
+            --stat-color-1: #4facfe;
+            --stat-color-2: #00f2fe;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--stat-color-1), var(--stat-color-2));
+            color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stat-trend.down {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1a202c;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--stat-color-1), var(--stat-color-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Progress Cards - Modern */
+        .progress-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             margin-bottom: 30px;
         }
 
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            font-size: 28px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
         .progress-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .progress-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         .progress-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .progress-title {
             font-size: 14px;
-            color: #6c757d;
+            color: #718096;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .progress-percentage {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .progress-bar-container {
-            background: #f0f0f0;
-            height: 8px;
+            background: #e2e8f0;
+            height: 12px;
             border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            position: relative;
         }
 
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
-            transition: width 0.5s ease;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255,255,255,0.3),
+                transparent
+            );
+            animation: shimmer 2s infinite;
         }
 
         .progress-detail {
             font-size: 13px;
-            color: #999;
+            color: #a0aec0;
+            font-weight: 500;
+        }
+
+        /* Module Cards - Ultra Modern */
+        .modules-grid {
+            display: grid;
+            gap: 20px;
         }
 
         .module-card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s ease;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
         }
 
         .module-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 50px rgba(0,0,0,0.12);
+        }
+
+        .module-content {
+            padding: 28px;
         }
 
         .module-header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
-            margin-bottom: 15px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .module-info {
+            flex: 1;
         }
 
         .module-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 5px;
+            color: #1a202c;
+            margin-bottom: 8px;
         }
 
-        .module-level {
-            display: inline-block;
-            padding: 4px 12px;
+        .module-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .meta-item i {
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .module-badge {
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .module-level.fundamental {
-            background: #d4edda;
-            color: #155724;
+        .module-badge.fundamental {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
         }
 
-        .module-level.intermediate {
-            background: #d1ecf1;
-            color: #0c5460;
+        .module-badge.intermediate {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
         }
 
-        .module-level.advance {
-            background: #f8d7da;
-            color: #721c24;
+        .module-badge.advance {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
         }
 
         .module-progress {
-            margin-bottom: 15px;
+            margin: 20px 0;
+        }
+
+        .module-progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .module-progress-label span:first-child {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .module-progress-label span:last-child {
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .module-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .btn-continue {
+        .btn-module {
             flex: 1;
-            padding: 10px 20px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-module i {
+            font-size: 18px;
+        }
+
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-continue:hover {
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            transform: translateY(-2px);
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #a0aec0;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        /* Loading Animation */
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-banner {
+                padding: 32px 24px;
+            }
+
+            .welcome-banner h1 {
+                font-size: 26px;
+            }
+
+            .welcome-banner p {
+                font-size: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .progress-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -187,6 +601,10 @@
                     <i class='bx bx-task'></i>
                     <span>Assignments</span>
                 </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
                 <a href="progress-sidebar.html" class="nav-item">
                     <i class='bx bx-bar-chart-alt-2'></i>
                     <span>My Progress</span>
@@ -194,10 +612,22 @@
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="profile-sidebar.html" class="nav-item">
-                    <i class='bx bx-user'></i>
-                    <span>Profile</span>
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Community</div>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-group'></i>
+                    <span>My Classes</span>
                 </a>
             </div>
         </nav>
@@ -211,6 +641,10 @@
                 <h1 class="page-title-header">Dashboard</h1>
             </div>
             <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
                 <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">U</div>
                     <div class="user-info">
@@ -218,14 +652,13 @@
                         <div class="user-role">Student</div>
                     </div>
 
-                    <!-- User Dropdown -->
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
                             <div class="dropdown-user-name" id="dropdownUserName">Student</div>
                             <div class="dropdown-user-email" id="dropdownUserEmail">student@codesmart.com</div>
                         </div>
                         <div class="dropdown-menu">
-                            <a href="profile-sidebar.html" class="dropdown-item">
+                            <a href="profile.html" class="dropdown-item">
                                 <i class='bx bx-user-circle'></i>
                                 <span>My Profile</span>
                             </a>
@@ -243,97 +676,126 @@
         <!-- Content -->
         <div class="admin-content">
             <!-- Welcome Banner -->
-            <div class="welcome-banner">
-                <h1>Welcome back, <span id="welcomeName">Student</span>! 👋</h1>
-                <p>Continue your learning journey and achieve your goals</p>
+            <div class="welcome-banner animate-fade-in-up">
+                <div class="welcome-content">
+                    <h1>Welcome back, <span id="welcomeName">Student</span>! 👋</h1>
+                    <p>Ready to continue your learning journey? Let's achieve your goals together!</p>
+                    <div class="welcome-time">
+                        <i class='bx bx-time-five'></i>
+                        <span id="currentTime"></span>
+                    </div>
+                </div>
             </div>
 
             <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon primary">
-                        <i class='bx bx-award'></i>
+                <div class="stat-card primary animate-fade-in-up" style="animation-delay: 0.1s">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class='bx bx-award'></i>
+                        </div>
+                        <div class="stat-trend">
+                            <i class='bx bx-trending-up'></i>
+                            <span>Initial</span>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3 id="pretestScore">0</h3>
-                        <p>Pretest Score</p>
-                    </div>
+                    <div class="stat-value" id="pretestScore">0</div>
+                    <div class="stat-label">Pretest Score</div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon success">
-                        <i class='bx bx-book'></i>
+                <div class="stat-card success animate-fade-in-up" style="animation-delay: 0.2s">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class='bx bx-book-open'></i>
+                        </div>
+                        <div class="stat-trend">
+                            <i class='bx bx-check'></i>
+                            <span>Active</span>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3 id="enrolledModules">0</h3>
-                        <p>Enrolled Modules</p>
-                    </div>
+                    <div class="stat-value" id="enrolledModules">0</div>
+                    <div class="stat-label">Enrolled Modules</div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon warning">
-                        <i class='bx bx-task'></i>
+                <div class="stat-card warning animate-fade-in-up" style="animation-delay: 0.3s">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class='bx bx-task'></i>
+                        </div>
+                        <div class="stat-trend down" id="assignmentTrend">
+                            <i class='bx bx-time'></i>
+                            <span>Pending</span>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3 id="pendingAssignments">0</h3>
-                        <p>Pending Assignments</p>
-                    </div>
+                    <div class="stat-value" id="pendingAssignments">0</div>
+                    <div class="stat-label">Pending Assignments</div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon info">
-                        <i class='bx bx-trending-up'></i>
+                <div class="stat-card info animate-fade-in-up" style="animation-delay: 0.4s">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class='bx bx-trending-up'></i>
+                        </div>
+                        <div class="stat-trend">
+                            <i class='bx bx-star'></i>
+                            <span>Good</span>
+                        </div>
                     </div>
-                    <div class="stat-info">
-                        <h3 id="avgScore">0%</h3>
-                        <p>Average Score</p>
-                    </div>
+                    <div class="stat-value"><span id="avgScore">0</span>%</div>
+                    <div class="stat-label">Average Score</div>
                 </div>
             </div>
 
             <!-- Learning Progress -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Learning Progress</h2>
+            <div class="progress-section animate-fade-in-up" style="animation-delay: 0.5s">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class='bx bx-bar-chart-alt-2'></i>
+                        Learning Progress
+                    </div>
                     <a href="progress-sidebar.html" class="btn btn-outline btn-sm">View Details</a>
                 </div>
-                <div class="card-body">
-                    <div class="stats-grid">
-                        <div class="progress-card">
-                            <div class="progress-header">
-                                <span class="progress-title">Overall Progress</span>
-                                <span class="progress-percentage" id="overallProgressPercent">0%</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" id="overallProgressBar" style="width: 0%"></div>
-                            </div>
-                            <div class="progress-detail" id="overallProgressDetail">0 of 0 modules completed</div>
+                <div class="progress-grid">
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <span class="progress-title">Overall Progress</span>
+                            <span class="progress-percentage" id="overallProgressPercent">0%</span>
                         </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="overallProgressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-detail" id="overallProgressDetail">0 of 0 modules completed</div>
+                    </div>
 
-                        <div class="progress-card">
-                            <div class="progress-header">
-                                <span class="progress-title">Assignments</span>
-                                <span class="progress-percentage" id="assignmentProgressPercent">0%</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" id="assignmentProgressBar" style="width: 0%"></div>
-                            </div>
-                            <div class="progress-detail" id="assignmentProgressDetail">0 of 0 completed</div>
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <span class="progress-title">Assignments</span>
+                            <span class="progress-percentage" id="assignmentProgressPercent">0%</span>
                         </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="assignmentProgressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-detail" id="assignmentProgressDetail">0 of 0 completed</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Current Modules -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Continue Learning</h2>
-                    <a href="modules-sidebar.html" class="btn btn-outline btn-sm">View All</a>
+            <!-- Continue Learning -->
+            <div class="progress-section animate-fade-in-up" style="animation-delay: 0.6s">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class='bx bx-play-circle'></i>
+                        Continue Learning
+                    </div>
+                    <a href="modules-sidebar.html" class="btn btn-outline btn-sm">View All Modules</a>
                 </div>
-                <div class="card-body" id="modulesContainer">
-                    <div style="text-align: center; padding: 40px; color: #999;">
-                        <div class="loader"></div>
-                        <p style="margin-top: 15px;">Loading modules...</p>
+                <div id="modulesContainer">
+                    <div class="empty-state">
+                        <div class="empty-state-icon loading-shimmer">
+                            <i class='bx bx-loader-circle bx-spin'></i>
+                        </div>
+                        <h3>Loading your modules...</h3>
+                        <p>Please wait while we fetch your learning materials</p>
                     </div>
                 </div>
             </div>
@@ -342,6 +804,9 @@
 
     <script src="/src/js/api-service.js"></script>
     <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth()) {
@@ -365,6 +830,22 @@
         document.getElementById('dropdownUserName').textContent = currentUser.name || 'Student';
         document.getElementById('dropdownUserEmail').textContent = currentUser.email || '';
 
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateTime();
+        setInterval(updateTime, 60000); // Update every minute
+
         // Load dashboard data
         async function loadDashboardData() {
             try {
@@ -379,21 +860,33 @@
                     // Overall progress
                     const overallPercent = progress.overall_progress || 0;
                     document.getElementById('overallProgressPercent').textContent = overallPercent + '%';
-                    document.getElementById('overallProgressBar').style.width = overallPercent + '%';
+                    setTimeout(() => {
+                        document.getElementById('overallProgressBar').style.width = overallPercent + '%';
+                    }, 300);
                     document.getElementById('overallProgressDetail').textContent =
                         `${progress.completed_modules || 0} of ${progress.total_modules || 0} modules completed`;
 
                     // Assignment progress
                     const assignmentPercent = progress.assignment_completion || 0;
                     document.getElementById('assignmentProgressPercent').textContent = assignmentPercent + '%';
-                    document.getElementById('assignmentProgressBar').style.width = assignmentPercent + '%';
+                    setTimeout(() => {
+                        document.getElementById('assignmentProgressBar').style.width = assignmentPercent + '%';
+                    }, 500);
                     document.getElementById('assignmentProgressDetail').textContent =
                         `${progress.completed_assignments || 0} of ${progress.total_assignments || 0} completed`;
 
                     // Stats
                     document.getElementById('enrolledModules').textContent = progress.total_modules || 0;
                     document.getElementById('pendingAssignments').textContent = progress.pending_assignments || 0;
-                    document.getElementById('avgScore').textContent = (progress.average_score || 0) + '%';
+                    document.getElementById('avgScore').textContent = progress.average_score || 0;
+
+                    // Update assignment trend
+                    const pendingCount = progress.pending_assignments || 0;
+                    const trendEl = document.getElementById('assignmentTrend');
+                    if (pendingCount === 0) {
+                        trendEl.className = 'stat-trend';
+                        trendEl.innerHTML = '<i class="bx bx-check"></i><span>All Done!</span>';
+                    }
                 }
 
                 // Load enrolled modules
@@ -404,8 +897,15 @@
 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
-                document.getElementById('modulesContainer').innerHTML =
-                    '<p style="text-align:center;color:#999;padding:40px;">Failed to load data</p>';
+                document.getElementById('modulesContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class='bx bx-error-circle'></i>
+                        </div>
+                        <h3>Oops! Something went wrong</h3>
+                        <p>Failed to load data. Please try refreshing the page.</p>
+                    </div>
+                `;
             }
         }
 
@@ -413,40 +913,76 @@
             const container = document.getElementById('modulesContainer');
 
             if (!enrollments || enrollments.length === 0) {
-                container.innerHTML = '<p style="text-align:center;color:#999;padding:40px;">No modules enrolled yet</p>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class='bx bx-book'></i>
+                        </div>
+                        <h3>No modules enrolled yet</h3>
+                        <p>Start your learning journey by enrolling in modules!</p>
+                    </div>
+                `;
                 return;
             }
 
             // Show only first 3 modules
             const displayModules = enrollments.slice(0, 3);
 
-            container.innerHTML = displayModules.map(enrollment => {
-                const progress = enrollment.progress || 0;
-                return `
-                    <div class="module-card">
-                        <div class="module-header">
-                            <div>
-                                <div class="module-title">${enrollment.module_name}</div>
-                                <span class="module-level ${enrollment.difficulty_level}">${enrollment.difficulty_level}</span>
+            container.innerHTML = `
+                <div class="modules-grid">
+                    ${displayModules.map((enrollment, index) => {
+                        const progress = enrollment.progress || 0;
+                        return `
+                            <div class="module-card animate-slide-in-right" style="animation-delay: ${index * 0.1}s">
+                                <div class="module-content">
+                                    <div class="module-header">
+                                        <div class="module-info">
+                                            <div class="module-title">${enrollment.module_name}</div>
+                                            <div class="module-meta">
+                                                <div class="meta-item">
+                                                    <i class='bx bx-time'></i>
+                                                    <span>4-6 hours</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <i class='bx bx-task'></i>
+                                                    <span>${enrollment.total_assignments || 0} assignments</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="module-badge ${enrollment.difficulty_level}">
+                                            ${enrollment.difficulty_level}
+                                        </span>
+                                    </div>
+                                    <div class="module-progress">
+                                        <div class="module-progress-label">
+                                            <span>Progress</span>
+                                            <span>${progress}%</span>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: ${progress}%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="module-actions">
+                                        <button class="btn-module btn-primary" onclick="continueModule(${enrollment.module_id})">
+                                            <i class='bx bx-play-circle'></i>
+                                            ${progress > 0 ? 'Continue' : 'Start'} Learning
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="module-progress">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                                <span style="color: #6c757d;">Progress</span>
-                                <span style="color: #667eea; font-weight: 600;">${progress}%</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: ${progress}%"></div>
-                            </div>
-                        </div>
-                        <div class="module-actions">
-                            <button class="btn-continue" onclick="continueModule(${enrollment.module_id})">
-                                ${progress > 0 ? 'Continue Learning' : 'Start Learning'}
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            // Trigger progress bar animations
+            setTimeout(() => {
+                document.querySelectorAll('.module-card .progress-bar-fill').forEach((bar, index) => {
+                    setTimeout(() => {
+                        bar.style.width = bar.style.width;
+                    }, index * 200);
+                });
+            }, 800);
         }
 
         function continueModule(moduleId) {

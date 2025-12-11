@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .admin-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .announcements-grid {
+            display: grid;
+            gap: 24px;
+            animation: slideInRight 0.5s ease-out 0.2s backwards;
+        }
+
+        .announcement-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .announcement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .announcement-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .announcement-card.important {
+            border-left-color: #ff6b6b;
+            background: linear-gradient(to bottom, #fff5f5 0%, #ffffff 100%);
+        }
+
+        .announcement-card.important::before {
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 107, 0.3), transparent);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .announcement-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            transition: color 0.3s ease;
+        }
+
+        .announcement-card:hover .announcement-title {
+            color: #667eea;
+        }
+
+        .announcement-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .meta-item:hover {
+            color: #667eea;
+            transform: translateX(4px);
+        }
+
+        .meta-item i {
+            font-size: 18px;
+            color: #667eea;
+            background: linear-gradient(135deg, #e8eaff 0%, #f0f2ff 100%);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .meta-item:hover i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: rotate(5deg);
+        }
+
+        .priority-badge {
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .priority-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .priority-high {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .priority-medium {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            color: #856404;
+        }
+
+        .priority-low {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+        }
+
+        .announcement-content {
+            font-size: 15px;
+            color: #495057;
+            line-height: 1.8;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f8f9ff 0%, #ffffff 100%);
+            border-radius: 12px;
+            border-left: 3px solid #e8eaff;
+            margin-bottom: 16px;
+        }
+
+        .announcement-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 2px solid #f0f2ff;
+        }
+
+        .class-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .class-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        .class-badge i {
+            font-size: 16px;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .author-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        .filter-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #e8eaff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4a5568;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .filter-tab i {
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .filter-tab:hover i {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .filter-tab.active i {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            color: #ddd;
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        /* Stagger animation */
+        .announcement-card:nth-child(1) { animation-delay: 0.1s; }
+        .announcement-card:nth-child(2) { animation-delay: 0.2s; }
+        .announcement-card:nth-child(3) { animation-delay: 0.3s; }
+        .announcement-card:nth-child(4) { animation-delay: 0.4s; }
+        .announcement-card:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .announcement-card {
+                padding: 20px;
+            }
+
+            .announcement-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .announcement-footer {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .filter-tabs {
+                gap: 8px;
+            }
+
+            .filter-tab {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Learning</div>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="progress-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>My Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item active">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Community</div>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-group'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Announcements</h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-role">Student</div>
+                    </div>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Student</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">student@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filters -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" data-filter="all">
+                    <i class='bx bx-list-ul'></i>
+                    <span>All Announcements</span>
+                </div>
+                <div class="filter-tab" data-filter="important">
+                    <i class='bx bx-error'></i>
+                    <span>Important</span>
+                </div>
+                <div class="filter-tab" data-filter="recent">
+                    <i class='bx bx-time'></i>
+                    <span>Recent (7 days)</span>
+                </div>
+            </div>
+
+            <!-- Announcements List -->
+            <div class="announcements-grid" id="announcementsContainer">
+                <div class="empty-state">
+                    <i class='bx bx-broadcast'></i>
+                    <h3>Loading Announcements...</h3>
+                    <p style="margin-top: 15px;">Please wait while we fetch your announcements</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        const currentUser = authService.getCurrentUser();
+        if (!currentUser) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allAnnouncements = [];
+        let currentFilter = 'all';
+
+        // Load announcements
+        async function loadAnnouncements() {
+            try {
+                // Get user's enrolled classes first
+                const enrollments = await apiService.getUserEnrollments();
+                const enrolledClassIds = enrollments.map(e => e.class_id).filter(id => id);
+
+                // Get all announcements
+                const response = await apiService.get('/announcements');
+
+                // Filter announcements - only show those for user's enrolled classes or global announcements
+                allAnnouncements = response.filter(announcement => {
+                    // Show if announcement is for a class the user is enrolled in
+                    // OR if announcement has no class_id (global announcement)
+                    return !announcement.class_id || enrolledClassIds.includes(announcement.class_id);
+                });
+
+                // Sort by date (newest first)
+                allAnnouncements.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                renderAnnouncements();
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+                document.getElementById('announcementsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-error-circle'></i>
+                        <h3>Failed to Load Announcements</h3>
+                        <p style="margin-top: 15px;">Please try refreshing the page</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderAnnouncements() {
+            const container = document.getElementById('announcementsContainer');
+
+            let filteredAnnouncements = allAnnouncements;
+
+            // Apply filters
+            if (currentFilter === 'important') {
+                filteredAnnouncements = allAnnouncements.filter(a => a.priority === 'high');
+            } else if (currentFilter === 'recent') {
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                filteredAnnouncements = allAnnouncements.filter(a =>
+                    new Date(a.created_at) >= sevenDaysAgo
+                );
+            }
+
+            if (filteredAnnouncements.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-broadcast'></i>
+                        <h3>No Announcements</h3>
+                        <p style="margin-top: 15px;">There are no announcements at this time</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredAnnouncements.map(announcement => {
+                const date = new Date(announcement.created_at);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const authorInitial = announcement.author_name ? announcement.author_name.charAt(0).toUpperCase() : 'A';
+                const isImportant = announcement.priority === 'high';
+
+                let priorityBadge = '';
+                if (announcement.priority === 'high') {
+                    priorityBadge = '<span class="priority-badge priority-high">HIGH PRIORITY</span>';
+                } else if (announcement.priority === 'medium') {
+                    priorityBadge = '<span class="priority-badge priority-medium">MEDIUM</span>';
+                } else {
+                    priorityBadge = '<span class="priority-badge priority-low">INFO</span>';
+                }
+
+                return `
+                    <div class="announcement-card ${isImportant ? 'important' : ''}">
+                        <div class="announcement-header">
+                            <div>
+                                <div class="announcement-title">${announcement.title}</div>
+                                <div class="announcement-meta">
+                                    <div class="meta-item">
+                                        <i class='bx bx-calendar'></i>
+                                        <span>${formattedDate}</span>
+                                    </div>
+                                    ${announcement.class_name ? `
+                                    <div class="meta-item">
+                                        <i class='bx bx-book-open'></i>
+                                        <span>${announcement.class_name}</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            ${priorityBadge}
+                        </div>
+
+                        <div class="announcement-content">
+                            ${announcement.content}
+                        </div>
+
+                        <div class="announcement-footer">
+                            ${announcement.class_name ? `
+                                <span class="class-badge">
+                                    <i class='bx bx-book-open'></i>
+                                    ${announcement.class_name}
+                                </span>
+                            ` : `
+                                <span class="class-badge">
+                                    <i class='bx bx-globe'></i>
+                                    Global Announcement
+                                </span>
+                            `}
+
+                            <div class="author-info">
+                                <div class="author-avatar">${authorInitial}</div>
+                                <span>By ${announcement.author_name || 'Admin'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderAnnouncements();
+            });
+        });
+
+        // Logout function
+        function logout() {
+            authService.logout();
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        // Initialize
+        loadAnnouncements();
+    </script>
+</body>
+</html>

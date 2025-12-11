@@ -8,29 +8,105 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../../css/admin-sidebar.css">
     <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .admin-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
         .modules-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 28px;
+            animation: slideInRight 0.5s ease-out 0.2s backwards;
         }
 
         .module-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 3s infinite;
         }
 
         .module-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
         }
 
         .module-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 30px 24px;
+            padding: 35px 28px;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transition: all 0.6s ease;
+        }
+
+        .module-card:hover .module-header::after {
+            top: -30%;
+            right: -30%;
         }
 
         .module-header.fundamental {
@@ -47,93 +123,184 @@
 
         .module-level-badge {
             display: inline-block;
-            padding: 4px 12px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
+            padding: 6px 16px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover .module-level-badge {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.05);
         }
 
         .module-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.3;
         }
 
         .module-description {
             font-size: 14px;
-            opacity: 0.9;
+            opacity: 0.95;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
 
         .module-body {
-            padding: 24px;
+            padding: 28px;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9ff 100%);
         }
 
         .module-stat {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 10px;
+            margin-bottom: 14px;
             font-size: 14px;
-            color: #6c757d;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            padding: 6px 0;
+        }
+
+        .module-stat:hover {
+            color: #667eea;
+            transform: translateX(4px);
         }
 
         .module-stat i {
-            font-size: 18px;
+            font-size: 20px;
             color: #667eea;
+            background: linear-gradient(135deg, #e8eaff 0%, #f0f2ff 100%);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .module-stat:hover i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: rotate(5deg);
         }
 
         .module-progress {
-            margin: 20px 0;
+            margin: 24px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 14px;
+            border: 2px solid #e8eaff;
+            transition: all 0.3s ease;
+        }
+
+        .module-progress:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
         }
 
         .progress-label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
+            color: #2d3748;
         }
 
         .progress-bar-container {
-            background: #f0f0f0;
-            height: 8px;
-            border-radius: 10px;
+            background: linear-gradient(to right, #f0f0f0 0%, #e8e8e8 100%);
+            height: 10px;
+            border-radius: 12px;
             overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-            transition: width 0.5s ease;
+            border-radius: 12px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
         }
 
         .module-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .btn-module {
             flex: 1;
-            padding: 12px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-module::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-module:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
         }
 
         .btn-outline {
@@ -145,46 +312,113 @@
         .btn-outline:hover {
             background: #667eea;
             color: white;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: #999;
+            animation: fadeInUp 0.5s ease-out;
         }
 
         .empty-state i {
-            font-size: 64px;
+            font-size: 80px;
             color: #ddd;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 10px;
         }
 
         .filter-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 35px;
             flex-wrap: wrap;
+            animation: slideInRight 0.4s ease-out;
         }
 
         .filter-tab {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
+            border: 2px solid #e8eaff;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4a5568;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .filter-tab i {
+            font-size: 18px;
             transition: all 0.3s ease;
         }
 
         .filter-tab:hover {
             border-color: #667eea;
             color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .filter-tab:hover i {
+            transform: rotate(10deg) scale(1.1);
         }
 
         .filter-tab.active {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-color: #667eea;
+            border-color: transparent;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .filter-tab.active i {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        /* Stagger animation for module cards */
+        .module-card:nth-child(1) { animation-delay: 0.1s; }
+        .module-card:nth-child(2) { animation-delay: 0.2s; }
+        .module-card:nth-child(3) { animation-delay: 0.3s; }
+        .module-card:nth-child(4) { animation-delay: 0.4s; }
+        .module-card:nth-child(5) { animation-delay: 0.5s; }
+        .module-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .modules-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .filter-tabs {
+                gap: 8px;
+            }
+
+            .filter-tab {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .module-header {
+                padding: 28px 20px;
+            }
+
+            .module-body {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -216,6 +450,10 @@
                 <a href="assignments-sidebar.html" class="nav-item">
                     <i class='bx bx-task'></i>
                     <span>Assignments</span>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
                 </a>
                 <a href="progress-sidebar.html" class="nav-item">
                     <i class='bx bx-bar-chart-alt-2'></i>
@@ -224,10 +462,22 @@
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Account</div>
-                <a href="profile-sidebar.html" class="nav-item">
-                    <i class='bx bx-user'></i>
-                    <span>Profile</span>
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Community</div>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-group'></i>
+                    <span>My Classes</span>
                 </a>
             </div>
         </nav>
@@ -241,6 +491,10 @@
                 <h1 class="page-title-header">My Modules</h1>
             </div>
             <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
                 <div class="user-menu" id="userMenuToggle">
                     <div class="user-avatar" id="userAvatar">U</div>
                     <div class="user-info">
@@ -254,7 +508,7 @@
                             <div class="dropdown-user-email" id="dropdownUserEmail">student@codesmart.com</div>
                         </div>
                         <div class="dropdown-menu">
-                            <a href="profile-sidebar.html" class="dropdown-item">
+                            <a href="profile.html" class="dropdown-item">
                                 <i class='bx bx-user-circle'></i>
                                 <span>My Profile</span>
                             </a>
@@ -299,6 +553,9 @@
 
     <script src="/src/js/api-service.js"></script>
     <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
     <script>
         // Auth check
         if (!authService.requireAuth()) {

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussions - CodeSmart</title>
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../../css/admin-sidebar.css">
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .admin-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .discussions-grid {
+            display: grid;
+            gap: 20px;
+            animation: slideInRight 0.5s ease-out 0.2s backwards;
+        }
+
+        .discussion-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        .discussion-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .discussion-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .discussion-card.solved {
+            border-left-color: #4CAF50;
+        }
+
+        .discussion-card.solved::before {
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.3), transparent);
+        }
+
+        .discussion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .discussion-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            transition: color 0.3s ease;
+        }
+
+        .discussion-card:hover .discussion-title {
+            color: #667eea;
+        }
+
+        .discussion-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .meta-item i {
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .discussion-content {
+            font-size: 14px;
+            color: #495057;
+            line-height: 1.7;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .discussion-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 2px solid #f0f2ff;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .discussion-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .author-time {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .discussion-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #f0f2ff 0%, #e8eaff 100%);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .stat-badge:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stat-badge i {
+            font-size: 16px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .status-open {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            color: #0c5460;
+        }
+
+        .status-solved {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
+        .class-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            color: #856404;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        .filter-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #e8eaff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #4a5568;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .filter-tab i {
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .filter-tab:hover i {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .filter-tab.active i {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .create-discussion-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .create-discussion-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.6);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            color: #ddd;
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        /* Stagger animation */
+        .discussion-card:nth-child(1) { animation-delay: 0.1s; }
+        .discussion-card:nth-child(2) { animation-delay: 0.2s; }
+        .discussion-card:nth-child(3) { animation-delay: 0.3s; }
+        .discussion-card:nth-child(4) { animation-delay: 0.4s; }
+        .discussion-card:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .discussion-card {
+                padding: 20px;
+            }
+
+            .discussion-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .discussion-footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-tabs {
+                gap: 8px;
+            }
+
+            .filter-tab {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .create-discussion-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard-sidebar.html" class="sidebar-logo">
+                <i class='bx bx-code-alt'></i>
+                <span>CodeSmart</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard-sidebar.html" class="nav-item">
+                    <i class='bx bx-home-alt'></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Learning</div>
+                <a href="modules-sidebar.html" class="nav-item">
+                    <i class='bx bx-book'></i>
+                    <span>Modules</span>
+                </a>
+                <a href="assignments-sidebar.html" class="nav-item">
+                    <i class='bx bx-task'></i>
+                    <span>Assignments</span>
+                </a>
+                <a href="materials-sidebar.html" class="nav-item">
+                    <i class='bx bx-folder'></i>
+                    <span>Learning Materials</span>
+                </a>
+                <a href="progress-sidebar.html" class="nav-item">
+                    <i class='bx bx-bar-chart-alt-2'></i>
+                    <span>My Progress</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Communication</div>
+                <a href="discussions-sidebar.html" class="nav-item active">
+                    <i class='bx bx-message-square-dots'></i>
+                    <span>Discussions</span>
+                </a>
+                <a href="announcements-sidebar.html" class="nav-item">
+                    <i class='bx bx-broadcast'></i>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Community</div>
+                <a href="classes-sidebar.html" class="nav-item">
+                    <i class='bx bx-group'></i>
+                    <span>My Classes</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1 class="page-title-header">Discussions</h1>
+            </div>
+            <div class="header-right">
+                <div class="notification-bell" id="notificationBellBtn">
+                    <i class='bx bx-bell'></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </div>
+                <div class="user-menu" id="userMenuToggle">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-role">Student</div>
+                    </div>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="dropdownUserName">Student</div>
+                            <div class="dropdown-user-email" id="dropdownUserEmail">student@codesmart.com</div>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class='bx bx-user-circle'></i>
+                                <span>My Profile</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item danger" onclick="logout(); return false;">
+                                <i class='bx bx-log-out'></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Filters -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" data-filter="all">
+                    <i class='bx bx-list-ul'></i>
+                    <span>All Discussions</span>
+                </div>
+                <div class="filter-tab" data-filter="my">
+                    <i class='bx bx-user'></i>
+                    <span>My Discussions</span>
+                </div>
+                <div class="filter-tab" data-filter="open">
+                    <i class='bx bx-chat'></i>
+                    <span>Open</span>
+                </div>
+                <div class="filter-tab" data-filter="solved">
+                    <i class='bx bx-check-circle'></i>
+                    <span>Solved</span>
+                </div>
+            </div>
+
+            <!-- Discussions List -->
+            <div class="discussions-grid" id="discussionsContainer">
+                <div class="empty-state">
+                    <i class='bx bx-message-square-dots'></i>
+                    <h3>Loading Discussions...</h3>
+                    <p style="margin-top: 15px;">Please wait while we fetch discussions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Discussion Button -->
+    <button class="create-discussion-btn" onclick="alert('Create discussion feature coming soon!')" title="Create New Discussion">
+        <i class='bx bx-plus'></i>
+    </button>
+
+    <script src="/src/js/api-service.js"></script>
+    <script src="/src/js/auth.js"></script>
+    <script src="/src/js/notification-service.js"></script>
+    <script src="/src/js/notification-bell.js"></script>
+    <script src="/src/js/user-profile-loader.js"></script>
+    <script>
+        // Auth check
+        if (!authService.requireAuth()) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        const currentUser = authService.getCurrentUser();
+        if (!currentUser) {
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        let allDiscussions = [];
+        let currentFilter = 'all';
+
+        // Load discussions
+        async function loadDiscussions() {
+            try {
+                // Get user's enrolled classes first
+                const enrollments = await apiService.getUserEnrollments();
+                const enrolledClassIds = enrollments.map(e => e.class_id).filter(id => id);
+
+                // Get all discussions
+                const response = await apiService.get('/discussions');
+
+                // Filter discussions - only show those for user's enrolled classes
+                allDiscussions = response.filter(discussion => {
+                    return enrolledClassIds.includes(discussion.class_id);
+                });
+
+                // Sort by date (newest first)
+                allDiscussions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                renderDiscussions();
+            } catch (error) {
+                console.error('Error loading discussions:', error);
+                document.getElementById('discussionsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-error-circle'></i>
+                        <h3>Failed to Load Discussions</h3>
+                        <p style="margin-top: 15px;">Please try refreshing the page</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDiscussions() {
+            const container = document.getElementById('discussionsContainer');
+
+            let filteredDiscussions = allDiscussions;
+
+            // Apply filters
+            if (currentFilter === 'my') {
+                filteredDiscussions = allDiscussions.filter(d => d.user_id === currentUser.id);
+            } else if (currentFilter === 'open') {
+                filteredDiscussions = allDiscussions.filter(d => d.status !== 'solved');
+            } else if (currentFilter === 'solved') {
+                filteredDiscussions = allDiscussions.filter(d => d.status === 'solved');
+            }
+
+            if (filteredDiscussions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class='bx bx-message-square-dots'></i>
+                        <h3>No Discussions Found</h3>
+                        <p style="margin-top: 15px;">Start a new discussion to ask questions or share knowledge!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredDiscussions.map(discussion => {
+                const date = new Date(discussion.created_at);
+                const timeAgo = getTimeAgo(date);
+                const authorInitial = discussion.author_name ? discussion.author_name.charAt(0).toUpperCase() : 'U';
+                const isSolved = discussion.status === 'solved';
+                const replyCount = discussion.reply_count || 0;
+                const viewCount = discussion.view_count || 0;
+
+                return `
+                    <div class="discussion-card ${isSolved ? 'solved' : ''}" onclick="window.location.href='discussion-detail.html?id=${discussion.id}'">
+                        <div class="discussion-header">
+                            <div style="flex: 1;">
+                                <div class="discussion-title">${discussion.title}</div>
+                                <div class="discussion-meta">
+                                    <div class="meta-item">
+                                        <i class='bx bx-book-open'></i>
+                                        <span>${discussion.class_name || 'General'}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class='bx bx-time'></i>
+                                        <span>${timeAgo}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="status-badge ${isSolved ? 'status-solved' : 'status-open'}">
+                                ${isSolved ? 'SOLVED' : 'OPEN'}
+                            </span>
+                        </div>
+
+                        <div class="discussion-content">
+                            ${discussion.content || 'No content available'}
+                        </div>
+
+                        <div class="discussion-footer">
+                            <div class="discussion-author">
+                                <div class="author-avatar">${authorInitial}</div>
+                                <div class="author-info">
+                                    <div class="author-name">${discussion.author_name || 'Anonymous'}</div>
+                                    <div class="author-time">${timeAgo}</div>
+                                </div>
+                            </div>
+
+                            <div class="discussion-stats">
+                                <div class="stat-badge">
+                                    <i class='bx bx-message-rounded'></i>
+                                    <span>${replyCount}</span>
+                                </div>
+                                <div class="stat-badge">
+                                    <i class='bx bx-show'></i>
+                                    <span>${viewCount}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+
+            return Math.floor(seconds) + " seconds ago";
+        }
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderDiscussions();
+            });
+        });
+
+        // Logout function
+        function logout() {
+            authService.logout();
+            window.location.href = '/src/pages/auth/login.html';
+        }
+
+        // Initialize
+        loadDiscussions();
+    </script>
+</body>
+</html>
